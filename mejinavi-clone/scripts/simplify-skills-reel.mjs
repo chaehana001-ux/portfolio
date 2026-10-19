@@ -1,0 +1,35 @@
+import fs from 'node:fs';
+const file='dist/script.js';
+let js=fs.readFileSync(file,'utf8');
+const start=js.indexOf("    const runway = document.createElement('div');");
+const end=js.indexOf('    let frame = 0;',start);
+if(start<0||end<0) throw new Error('Skill sequence not found');
+js=js.slice(0,start)+`    skills.classList.add('skills-linear');
+    skills.querySelector('.skills-tool-columns').after(reel);
+`+js.slice(end);
+js=js.replace('let loopFrame = 0, lastTime = 0, autoOffset = 0, scrollOffset = 0, cycle = 2200;', 'let loopFrame = 0, lastTime = 0, autoOffset = 0, cycle = 2200;');
+js=js.replace('    let orbitWidth = 0, orbitHeight = 0, progress = 0;\r\n    let startY = 100, endY = 100;','');
+js=js.replace('    let orbitWidth = 0, orbitHeight = 0, progress = 0;\n    let startY = 100, endY = 100;','');
+const paintStart=js.indexOf('    const paint = () => {',start);
+const paintEnd=js.indexOf('    const tick = time => {',paintStart);
+js=js.slice(0,paintStart)+`    const paint = () => {
+      const position = manualOffset + (motion.matches ? 0 : autoOffset);
+      const offset = ((position % cycle) + cycle) % cycle;
+      const pitch = (cards[0]?.offsetWidth || 104) + 14;
+      const span = pitch * cards.length;
+      const y = innerWidth < 768 ? 174 : 195;
+      cards.forEach((card,index) => {
+        const x = (((index*pitch-offset/cycle*span+span/2)%span)+span)%span-span/2;
+        card.style.transform = 'translate(-50%,-50%) translate3d('+x+'px,'+y+'px,0)';
+        card.style.opacity = '1';
+        card.style.zIndex = '2';
+      });
+    };
+`+js.slice(paintEnd);
+const renderStart=js.indexOf('    const render = () => {',paintStart);
+const renderEnd=js.indexOf('    const requestRender =',renderStart);
+js=js.slice(0,renderStart)+`    const render = () => { frame=0;paint(); };
+`+js.slice(renderEnd);
+js=js.replace("    addEventListener('scroll', requestRender, { passive: true });",'');
+js=js.replace('}).observe(skills);','}).observe(reel);');
+fs.writeFileSync(file,js);

@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+const root = path.resolve(import.meta.dirname,'../dist');
+const html = fs.readFileSync(path.join(root,'index.html'),'utf8');
+const assets = new Set([...html.matchAll(/\.\/assets\/[^\s"'<>),]+/g)].map(m=>m[0]));
+for (const asset of assets) assert(fs.existsSync(path.join(root,asset)), `Missing asset: ${asset}`);
+for (const section of ['messages','mejiro-data','lookbook','admissions','movie']) assert(html.includes(`id="${section}"`),`Missing section: ${section}`);
+assert(!html.includes('googletagmanager.com'), 'Original analytics must be removed');
+assert(!html.includes('src="/univ/mejinavi2026/'), 'Original asset paths remain');
+for(const file of ['styles.css','script.js']) assert(fs.existsSync(path.join(root,file)));
+console.log(`PASS: ${assets.size} HTML asset references, 5 main sections, local paths, no original analytics.`);

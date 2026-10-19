@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+const file=new URL('../dist/index.html',import.meta.url);
+let html=fs.readFileSync(file,'utf8');
+const start=html.indexOf('<header class="header">');
+const end=html.indexOf('<nav ',start);
+let header=html.slice(start,end);
+header=header.replace('class="logo md"','class="logo hana-brand-logo"');
+header=header.replace(/<span class="text-main">[\s\S]*?<\/span>/,`<span class="text-main"><img class="hana-brand-image" src="./assets/img/brand/hana-navy.png" alt="HANA" width="2172" height="724"><img class="hana-brand-image hana-brand-light" src="./assets/img/brand/hana-ivory.png" alt="" aria-hidden="true" width="2172" height="724"></span>`);
+header=header.replace(/<span class="text-sub">[\s\S]*?<\/span>/,'<span class="text-sub">DESIGN &amp; DEVELOPMENT</span>');
+html=html.slice(0,start)+header+html.slice(end);
+html=html.replace('<h1 class="hero-personal-title"><span>HANA’S</span>', '<h1 class="hero-personal-title"><span class="hero-hana-wordmark"><img src="./assets/img/brand/hana-navy.png" alt="HANA’S" width="2172" height="724" fetchpriority="high"></span>');
+html=html.replace('<title>MEJINAVI 2026 · Clone Study</title>', '<title>HANA · Portfolio</title>');
+fs.writeFileSync(file,html);

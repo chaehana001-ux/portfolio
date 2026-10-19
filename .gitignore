@@ -1,0 +1,11 @@
+.openai/
+.vscode/
+**/.openai/
+**/.preview/
+**/node_modules/
+**/.vercel/
+**/.env
+**/.env.*
+!**/.env.example
+*.log
+*.zip

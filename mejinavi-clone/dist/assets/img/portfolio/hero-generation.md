@@ -1,0 +1,6 @@
+# Hero illustration
+
+Tool: built-in image_gen (transparent PNG). Final asset: `hero-ideas.png`.
+Reference: local `.preview/desktop.png`, used only as an illustration-style reference.
+
+Prompt: Create a new illustration asset for HANA's UX/UI designer portfolio hero, landscape 3:2 composition, transparent background. Match the reference's simple playful Japanese editorial doodle illustration: thin slightly wobbly navy contour lines, very simplified friendly adult human faces, flat cream ivory fills, dusty lavender and champagne gold accents. No photorealism, gradients, shadows, or detailed anime eyes. Palette only navy #253563, ivory #FCF3E9, lavender #A9A2C8, gold #D9B77E. A thoughtful adult woman designer in side profile facing left, shoulder-length dark navy hair and cream shirt; her thoughts unfurl toward upper-right as an airy connected constellation of a browser wireframe screen, phone UI, video frame, cursor, pencil, loose papers, clouds, and orbital paths. Browser near center-right with simple lavender wireframe rectangles. Keep objects spaced, legible, and contained within the canvas, with transparent negative space and margin. No lettering, logos, mountains, trees, landscape, or website screenshot. The illustration will sit on a cream webpage beside an HTML title.
