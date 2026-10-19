@@ -14,7 +14,20 @@ npm start
 
 브라우저에서 http://localhost:4173 을 엽니다. 별도 패키지 설치나 빌드가 필요 없습니다. ES module을 사용하므로 HTML 파일을 더블클릭하는 대신 로컬 서버로 실행하세요.
 
-## 파일
+## Vercel 배포
+
+GitHub의 `portfolio` 저장소를 가져와 Framework Preset을 `Other`로 선택합니다.
+Root Directory가 저장소 루트(`.`)이면 루트의 `vercel.json`이 `mejinavi-clone/dist`를 배포합니다.
+Root Directory를 `mejinavi-clone`으로 지정하면 해당 폴더의 `vercel.json`이 `dist`를 배포합니다.
+Build Command와 Output Directory는 설정 파일을 사용하고 대시보드의 별도 Override는 끕니다.
+
+`npm run build`는 JavaScript 구문, 정적 파일 경로와 파일명 대소문자를 검사합니다.
+별도 환경변수와 의존성 설치는 필요하지 않습니다. `npm start`는 로컬 확인용 서버이며 Vercel에서는 실행하지 않습니다.
+
+브라우저 검증: 로컬 서버와 포트 9223의 Chromium 디버깅 세션을 실행한 뒤 `node scripts/check-deployment-browser.mjs`를 사용합니다.
+데스크톱·모바일에서 분석 카드 전환, 자료별 이미지 3장, 확대창 크기, Q&A, 실행 오류와 HTTP 오류를 검사합니다.
+
+## 파일 구성
 
 - `dist/index.html`: 전체 페이지 마크업 및 SVG 일러스트
 - `dist/assets/css/style.css`: 원본 반응형 스타일

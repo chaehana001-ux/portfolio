@@ -1,0 +1,8 @@
+.git
+.preview
+.openai
+.vscode
+node_modules
+image
+*.zip
+*.log

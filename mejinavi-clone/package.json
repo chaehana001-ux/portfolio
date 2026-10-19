@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "node --check dist/script.js && node --check dist/zara-story.js && node --check dist/assets/js/bundle.js && node scripts/check.mjs",
     "start": "node scripts/serve.mjs",
     "check": "node scripts/check.mjs"
   }

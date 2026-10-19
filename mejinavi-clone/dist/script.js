@@ -1,6 +1,86 @@
 /** Small, editable enhancements layered over the reference animation runtime. */
 (() => {
   'use strict';
+  const galleryMotion=matchMedia('(prefers-reduced-motion: reduce)');
+  const albumCards = [...document.querySelectorAll('.messages-list > .item')].slice(0,8);
+  const albumGroups = [];
+  albumCards.forEach(card => {
+    // Leave the reference runtime's transforms alone; animate a separate wrapper.
+    const contents = card.querySelector('.item-contents');
+    if (!contents) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'album-card-motion';
+    contents.before(wrapper);
+    wrapper.append(contents);
+  });
+  for (let index=0;index<albumCards.length;index+=2) albumGroups.push(albumCards.slice(index,index+2));
+  const albumEntrance = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const group = albumGroups.find(cards => cards[0]===entry.target);
+      if (!group) return;
+      albumEntrance.unobserve(entry.target);
+      const boxes = group.map(card => card.getBoundingClientRect());
+      const centerX = boxes.reduce((sum,box)=>sum+box.left+box.width/2,0)/boxes.length;
+      group.forEach((card,index) => {
+        const wrapper = card.querySelector('.album-card-motion');
+        wrapper.classList.add('album-dealt');
+        if (galleryMotion.matches) return;
+        const box = boxes[index];
+        const x = centerX-box.left-box.width/2;
+        wrapper.animate([
+          {translate:x+'px 35px',rotate:(index ? 7 : -7)+'deg',scale:'.88',opacity:1},
+          {translate:'0px -8px',rotate:(index ? -1 : 1)+'deg',scale:'1',opacity:1,offset:.82},
+          {translate:'0px 0px',rotate:'0deg',scale:'1',opacity:1}
+        ],{duration:1100,delay:index*100,easing:'cubic-bezier(.22,.75,.2,1)',fill:'backwards'});
+      });
+    });
+  },{threshold:.2});
+  albumGroups.forEach(group=>albumEntrance.observe(group[0]));
+  const galleryReveal=new IntersectionObserver(entries=>entries.forEach(entry=>{
+    entry.target.classList.toggle('gallery-in-view',entry.isIntersecting);
+  }),{threshold:.12});
+  document.querySelectorAll('.messages-list .photo-sample').forEach((card,index)=>{
+    const contents=card.querySelector('.item-contents');
+    const source=card.querySelector('.img-off picture');
+    if(!contents||!source)return;
+    const surface=document.createElement('div');surface.className='gallery-photo-surface';
+    const backdrop=source.cloneNode(true);backdrop.className='gallery-photo-backdrop';
+    backdrop.setAttribute('aria-hidden','true');backdrop.querySelector('img').alt='';
+    const picture=source.cloneNode(true);picture.className='gallery-photo-original';
+    surface.append(backdrop,picture);contents.append(surface);
+    card.style.setProperty('--gallery-delay',(index%4)*90+'ms');
+    card.style.setProperty('--gallery-phase',index*-.9+'s');
+    galleryReveal.observe(card);
+    let frame=0,pointer=null;
+    const render=()=>{
+      frame=0;
+      const box=surface.getBoundingClientRect();
+      const x=pointer?(pointer.x-box.left)/box.width-.5:0;
+      const y=pointer?(pointer.y-box.top)/box.height-.5:0;
+      surface.style.setProperty('--gallery-rx',(-y*5)+'deg');
+      surface.style.setProperty('--gallery-ry',(x*5)+'deg');
+    };
+    card.addEventListener('pointermove',event=>{
+      if(galleryMotion.matches||event.pointerType!=='mouse')return;
+      pointer={x:event.clientX,y:event.clientY};
+      if(!frame)frame=requestAnimationFrame(render);
+    });
+    card.addEventListener('pointerleave',()=>{pointer=null;if(!frame)frame=requestAnimationFrame(render);});
+  });
+  document.querySelectorAll('.culita-preview').forEach(preview=>{
+    const screen=preview.closest('.culita-preview-screen');
+    const width=Number(screen.dataset.previewWidth);
+    let visible=false;
+    const sync=()=>preview.contentWindow?.postMessage({type:'culita-preview-visibility',visible:visible&&!document.hidden},location.origin);
+    new ResizeObserver(()=>screen.style.setProperty('--culita-scale',String(screen.clientWidth/width))).observe(screen);
+    new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;sync();},{threshold:.1}).observe(screen);
+    preview.addEventListener('load',sync);
+    addEventListener('message',event=>{
+      if(event.origin===location.origin&&event.source===preview.contentWindow&&event.data?.type==='culita-preview-ready') sync();
+    });
+    document.addEventListener('visibilitychange',sync);
+  });
   const brandHeader = document.querySelector('.header');
   if (brandHeader?.querySelector('.hana-brand-logo')) {
     let brandFrame = 0;
@@ -299,6 +379,29 @@
       else addEventListener('load',initValuesFlip,{once:true});
     }
   }
+  const cloneSection = document.querySelector('.section-admissions');
+  if (cloneSection) {
+    const heading = cloneSection.querySelector('.portfolio-capabilities-heading');
+    if (heading) heading.innerHTML = '<span>PERSONAL STUDY · MEJINAVI</span><h2>CLONE CODING</h2><p>메지로대학교 MEJINAVI 사이트를 분석하며 익힌<br>레이아웃, 비주얼, 인터랙션과 반응형 구현을 정리했습니다.</p>';
+    const cloneCards = [
+      {title:'메인 레이아웃',label:'LAYOUT & STRUCTURE',items:['긴 페이지의 섹션 구성과 콘텐츠 흐름 분석','카드·슬라이더의 배치와 여백 재현'],tag:'HTML · CSS · LAYOUT'},
+      {title:'비주얼 스타일',label:'VISUAL & TYPOGRAPHY',items:['큰 타이포그래피와 둥근 카드 스타일 분석','컬러와 테두리·그림자로 화면의 깊이 표현'],tag:'TYPOGRAPHY · COLOR · DETAIL'},
+      {title:'스크롤 모션',label:'SCROLL & INTERACTION',items:['스크롤에 따른 콘텐츠 등장과 움직임 관찰','슬라이드 전환과 호버 반응을 구현하며 학습'],tag:'JAVASCRIPT · SLIDER · MOTION'},
+      {title:'반응형 화면',label:'RESPONSIVE & REFINE',items:['PC·모바일에 맞춰 카드와 텍스트 배치 조정','화면 크기별 가독성과 넘침 현상 점검'],tag:'DESKTOP · MOBILE · TEST'}
+    ];
+    cloneSection.querySelectorAll('.capability-card-content').forEach((card,index) => {
+      const data = cloneCards[index];
+      if (!data) return;
+      card.innerHTML = '<span class="capability-index">CLONE STUDY '+String(index+1).padStart(2,'0')+'</span><div class="capability-title"><small>'+data.label+'</small><h3>'+data.title+'</h3></div><ul>'+data.items.map(item => '<li>'+item+'</li>').join('')+'</ul><span class="capability-tag">'+data.tag+'</span>';
+    });
+    const sourceLink = document.createElement('a');
+    sourceLink.className = 'clone-study-source';
+    sourceLink.href = 'https://www.mejiro.ac.jp/univ/mejinavi2026/';
+    sourceLink.target = '_blank';
+    sourceLink.rel = 'noopener noreferrer';
+    sourceLink.textContent = 'MEJINAVI 원본 사이트 보기 ↗';
+    heading?.append(sourceLink);
+  }
   const workDataSection = document.querySelector('.section-mejiro-data');
   if (workDataSection) {
     workDataSection.classList.add('is-retrospective');
@@ -314,6 +417,12 @@
       {label:'IMPROVE',title:'What I Want to Improve',description:'어떤 화면에서도 내용이 자연스럽게 이어지도록 콘텐츠와 컴포넌트 구조를 더 개선하고 싶습니다.'},
       {label:'NEXT STEP',title:'My Next Step',description:'작은 시도와 반복을 이어가며, 피드백을 반영해 디자인과 구현 경험을 넓히겠습니다.'}
     ];
+    retrospectiveSteps.splice(0,4,
+      {label:'DISCOVER & DEFINE',title:'UX 기획',description:'사용자 관점에서 문제와 목표를 정의하고, 정보 구조와 화면 흐름을 설계합니다.\nRESEARCH · IA · USER FLOW'},
+      {label:'DESIGN THE EXPERIENCE',title:'UI 디자인',description:'브랜드에 맞는 비주얼 시스템을 구성하고, Figma 기반 반응형 화면을 제작합니다.\nFIGMA · PROTOTYPE · RESPONSIVE'},
+      {label:'BUILD & INTERACT',title:'프론트엔드',description:'HTML·CSS·JavaScript 기반 구현과 React·GSAP 인터랙션을 제작합니다.\nHTML · CSS · JS · REACT'},
+      {label:'SHIP & IMPROVE',title:'협업과 개선',description:'Git 기반 협업과 배포를 경험하고, 피드백을 반영해 반복적으로 개선합니다.\nGIT · GITHUB · VERCEL'}
+    );
     workSteps.forEach((step,index) => Object.assign(step,retrospectiveSteps[index]));
     const mainTitle = workDataSection.querySelector('.section-heading .text-main');
     const subTitle = workDataSection.querySelector('.section-heading .text-sub');
@@ -325,6 +434,16 @@
     if (subTitle) subTitle.textContent = '배운 점과 다음 작업에서 발전시키고 싶은 방향';
     if (guideItems[0]) guideItems[0].innerHTML = '<div class="icon-shinjuku">学</div><p class="icon-text">프로젝트에서 배운 점</p>';
     if (guideItems[1]) guideItems[1].innerHTML = '<div class="icon-iwatsuki">次</div><p class="icon-text">다음 작업의 방향</p>';
+    if (mainTitle) mainTitle.innerHTML = '<span class="work-data-title">CAPABILITIES</span>';
+    if (subTitle) subTitle.textContent = '아이디어를 구조화하고, 화면으로 설계해, 실제 웹 경험으로 완성합니다.';
+    if (guideItems[0]) guideItems[0].innerHTML = '<div class="icon-shinjuku">01</div><p class="icon-text">기획과 디자인</p>';
+    if (guideItems[1]) guideItems[1].innerHTML = '<div class="icon-iwatsuki">02</div><p class="icon-text">구현과 개선</p>';
+    const capabilityGuide = workDataSection.querySelector('.icon-guide');
+    if (capabilityGuide) {
+      capabilityGuide.classList.add('capability-overview');
+      capabilityGuide.setAttribute('aria-label','네 가지 핵심 역량');
+      capabilityGuide.innerHTML = ['UX 기획','UI 디자인','프론트엔드','협업과 개선'].map(title => '<li><span>'+title+'</span></li>').join('');
+    }
     document.querySelector('.work-retrospective')?.remove();
     const imageSlides = [...workDataSection.querySelectorAll('.img-slider .swiper-wrapper > .swiper-slide')];
     const textSlides = [...workDataSection.querySelectorAll('.text-slider .swiper-wrapper > .swiper-slide')];
@@ -354,11 +473,32 @@
       if (text) text.textContent = workSteps[index].description;
       slide.querySelector('.notes')?.remove();
     });
+    // Centered, auto-width Swiper needs enough slides to loop across wide screens.
+    ['.img-slider','.text-slider'].forEach(selector => {
+      const wrapper = workDataSection.querySelector(selector+' .swiper-wrapper');
+      if (!wrapper) return;
+      const originals = [...wrapper.children];
+      for (let repeat=0;repeat<2;repeat++) {
+        originals.forEach(slide => wrapper.append(slide.cloneNode(true)));
+      }
+    });
+    workDataSection.querySelectorAll('.slider-btn-next,.slider-btn-prev').forEach(button => {
+      button.addEventListener('click',event => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const swiper = workDataSection.querySelector('.img-slider')?.swiper;
+        if (!swiper || swiper.animating) return;
+        swiper.autoplay?.stop();
+        if (button.classList.contains('slider-btn-next')) swiper.slideNext(500);
+        else swiper.slidePrev(500);
+      },true);
+    });
     const bullets = workDataSection.querySelector('.slider-pagination-bullets');
     if (bullets) bullets.innerHTML = '<span class="slider-pagination-bullet slider-pagination-bullet-active"></span>'.repeat(1)+'<span class="slider-pagination-bullet"></span>'.repeat(3);
     addEventListener('load',() => setTimeout(() => {
       workDataSection.querySelector('.img-slider')?.swiper?.slideTo(0,0);
       workDataSection.querySelector('.text-slider')?.swiper?.slideTo(0,0);
+      workDataSection.querySelector('.img-slider')?.swiper?.autoplay?.stop();
     },100));
   }
   const projectCase = document.querySelector('.portfolio-projects .project-case');
@@ -557,6 +697,30 @@
         const screen=document.createElement('div');screen.className='case-macbook-screen';
         const base=document.createElement('div');base.className='case-macbook-base';base.setAttribute('aria-hidden','true');
         documentPanel.before(laptop);laptop.append(display,base);display.append(screen);screen.append(documentPanel);
+        const preview = document.createElement('iframe');
+        preview.className = 'case-live-preview';
+        preview.title = '딥티크 팀 프로젝트 메인부터 푸터까지 자동 재생';
+        preview.src = './team-preview.html';
+        preview.loading = 'lazy';
+        preview.allow = 'autoplay';
+        preview.setAttribute('sandbox','allow-scripts allow-same-origin');
+        screen.append(preview);
+        documentPanel.hidden = true;
+        let previewVisible = false;
+        const syncPreview = () => preview.contentWindow?.postMessage({type:'team-preview-visibility',visible:previewVisible&&!document.hidden&&!preview.hidden},location.origin);
+        preview.addEventListener('load',syncPreview);
+        new IntersectionObserver(entries=>{
+          previewVisible=entries[0].isIntersecting;
+          syncPreview();
+        },{threshold:.15}).observe(screen);
+        document.addEventListener('visibilitychange',syncPreview);
+        new ResizeObserver(()=>screen.style.setProperty('--preview-scale',String(screen.clientWidth/1440))).observe(screen);
+        section.querySelectorAll('[data-case-tab]').forEach(button=>button.addEventListener('click',()=>{
+          const showLive=button.dataset.caseTab==='0';
+          preview.hidden=!showLive;
+          documentPanel.hidden=showLive;
+          syncPreview();
+        }));
       } else {
         const stack=document.createElement('div');stack.className='case-planning-stack';
         documentPanel.before(stack);stack.append(documentPanel);
