@@ -26,11 +26,11 @@
  .collaboration-statement { font-size: 19px; }
 }
 [data-layout="page-home"] .section-messages .messages-list .photo-sample .img-container { visibility: hidden; }
-.gallery-photo-surface { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; background: var(--palette-ivory); opacity: 0; transform: perspective(900px) translateY(20px) rotateX(var(--gallery-rx,0deg)) rotateY(var(--gallery-ry,0deg)); transition: opacity .7s ease var(--gallery-delay,0ms),transform .7s ease,box-shadow .25s ease; }
+.gallery-photo-surface { position: absolute; inset: 0; overflow: visible; border-radius: inherit; background: var(--palette-ivory); opacity: 0; transform: perspective(900px) translateY(20px) rotateX(var(--gallery-rx,0deg)) rotateY(var(--gallery-ry,0deg)); transition: opacity .7s ease var(--gallery-delay,0ms),transform .7s ease,box-shadow .25s ease; }
 .gallery-in-view .gallery-photo-surface { opacity: 1; transform: perspective(900px) translateY(0) rotateX(var(--gallery-rx,0deg)) rotateY(var(--gallery-ry,0deg)); }
 .gallery-photo-surface > img { position: absolute !important; inset: 0; display: block; width: 100% !important; height: 100% !important; max-width: none !important; }
-.gallery-photo-original { object-fit: cover; object-position: center; }
-.gallery-photo-writing { z-index: 2; object-fit: cover; object-position: center; opacity: 0; transform: translate3d(0,8px,0) scale(.985); transition: opacity .28s ease,transform .38s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+.gallery-photo-original { object-fit: contain; object-position: center; border-radius: inherit; background: var(--palette-ivory); }
+.gallery-photo-writing { z-index: 2; inset: -2% !important; width: 104% !important; height: 104% !important; object-fit: contain; object-position: center; opacity: 0; filter: drop-shadow(.5px 0 0 rgb(255 255 255 / 92%)) drop-shadow(-.5px 0 0 rgb(255 255 255 / 92%)) drop-shadow(0 .5px 0 rgb(255 255 255 / 92%)) drop-shadow(0 -.5px 0 rgb(255 255 255 / 92%)) drop-shadow(0 1px 1px rgb(64 52 76 / 24%)); transform: translate3d(0,8px,0) scale(.985); transition: opacity .28s ease,transform .38s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
 .photo-sample:hover .gallery-photo-writing,.photo-sample:focus-within .gallery-photo-writing { opacity: 1; transform: translate3d(0,0,0) scale(1); animation: gallery-writing-wiggle .7s ease-in-out .16s 2; }
 .gallery-in-view .gallery-photo-original { animation-play-state: paused; }
 .photo-sample:hover .gallery-photo-surface { box-shadow: inset 0 0 0 2px rgb(64 52 76 / 20%); }
@@ -1040,15 +1040,19 @@ section.hero-creative { height: 220svh; }
   letter-spacing: -.075em;
 }
 .hero-personal-title .hero-title-diamond {
-  display: inline-grid;
-  place-items: center;
-  width: .58em;
-  margin: 0 .05em 0 .11em;
-  color: var(--palette-lavender);
-  font-size: .48em;
-  line-height: 1;
-  filter: drop-shadow(0 2px 0 var(--palette-navy));
-  transform: translateY(-.06em) rotate(45deg);
+  display: inline-block;
+  flex: 0 0 auto;
+  align-self: flex-start;
+  width: .31em;
+  height: .31em;
+  margin: .02em .07em 0 .1em;
+  overflow: hidden;
+  color: transparent;
+  font-size: 1em;
+  line-height: 0;
+  background: linear-gradient(145deg, #F5CBCB 8%, #C5B3D3 48%, #9C86B3 100%);
+  clip-path: polygon(50% 0, 62% 35%, 100% 50%, 62% 65%, 50% 100%, 38% 65%, 0 50%, 38% 35%);
+  filter: drop-shadow(0 .025em 0 var(--palette-navy)) drop-shadow(0 .06em .08em rgb(64 52 76 / 18%));
 }
 .hero-personal-title .hero-title-s { margin-left: -.03em; }
 .hero-personal-title .hero-title-portfolio {
@@ -1896,6 +1900,8 @@ img[src*="-bg"],
 [data-layout="page-home"] .section-messages .messages-list .item {
   counter-increment: photo-slot;
   cursor: default;
+  height: auto;
+  aspect-ratio: 9 / 16;
 }
 [data-layout="page-home"] .section-messages .messages-list .item:nth-child(n+9) {
   display: none;
@@ -1905,6 +1911,7 @@ img[src*="-bg"],
   border-radius: 1.428571428571429vw;
   box-sizing: border-box;
   background: var(--palette-ivory);
+  overflow: visible;
 }
 [data-layout="page-home"] .section-messages .messages-list .department,
 [data-layout="page-home"] .section-messages .messages-list .balloon,
@@ -1967,6 +1974,10 @@ img[src*="-bg"],
   letter-spacing: .12em;
 }
 @media only screen and (max-width:767px) {
+  [data-layout="page-home"] .section-messages .messages-list .item {
+    height: auto;
+    aspect-ratio: 9 / 16;
+  }
   [data-layout="page-home"] .section-messages .messages-list .item-contents {
     border-radius: 4vw;
   }

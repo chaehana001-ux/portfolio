@@ -1,0 +1,46 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vercel-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Production deployment
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: team_s09CDZoRptIlQnLUd76DWnqB
+      VERCEL_PROJECT_ID: prj_3O6VsSoKc4no3rUi7pizvfgeaC7K
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check deployment credentials
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "Add VERCEL_TOKEN in GitHub Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Download Vercel project settings
+        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+
+      - name: Build production output
+        run: vercel build --prod --token="$VERCEL_TOKEN"
+
+      - name: Deploy production output
+        run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
