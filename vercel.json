@@ -2,6 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "echo Static website - no dependencies",
-  "buildCommand": "npm --prefix mejinavi-clone run build",
-  "outputDirectory": "mejinavi-clone/dist"
+  "buildCommand": "npm --prefix \u1111\u1169\u1111\u1169\u11af run build",
+  "outputDirectory": "\u1111\u1169\u1111\u1169\u11af/dist"
 }

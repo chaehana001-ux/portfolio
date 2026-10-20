@@ -9,3 +9,7 @@
 !**/.env.example
 *.log
 *.zip
+._*
+/가이드/
+/가이드/
+.vercel
