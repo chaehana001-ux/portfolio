@@ -23,7 +23,7 @@ function frame(now){
   const bottom=Math.max(0,height-innerHeight);
   if(bottom<100)return;
   if(ending){position=0;scrollTo({top:0,behavior:'instant'});ending=false;waitUntil=now+4500;return;}
-  const speed=innerWidth<600?.32:.65;
+  const speed=innerWidth<600?.075:.11;
   position=Math.min(bottom,Math.max(position,scrollY)+elapsed*speed);
   scrollTo({top:position,behavior:'instant'});
   const footer=document.querySelector('footer')?.getBoundingClientRect();

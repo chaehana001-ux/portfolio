@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>딥티크 팀 프로젝트 실시간 미리보기</title>
+  <base href="https://mbc-teamproject-alpha.vercel.app/">
+  <script>
+    const previewParams = new URL(location.href).searchParams;
+    document.documentElement.dataset.previewMode = previewParams.get('mode') || 'full';
+    const previewRoutes = {
+      planet: '/about/for-the-planet',
+      fragrance: '/about/fragrances-story',
+      history: '/about/history',
+      gallery: '/galerie'
+    };
+    const previewRoute = previewRoutes[previewParams.get('page')] || '/';
+    history.replaceState(null, '', location.origin + previewRoute);
+  </script>
+  <link rel="stylesheet" crossorigin href="https://mbc-teamproject-alpha.vercel.app/assets/index-aR0QFVdc.css">
+  <style>html{scrollbar-width:none!important;scroll-behavior:auto!important}::-webkit-scrollbar{display:none!important}</style>
+  <script type="module" crossorigin src="https://mbc-teamproject-alpha.vercel.app/assets/index-DI4pN-zg.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+  (() => {
+    const previewMode=document.documentElement.dataset.previewMode;
+    const planetModes=['planet-main','planet-squirrel','planet-arch'];
+    const partialPreview=['interaction','flow','sensory','brand-history',...planetModes].includes(previewMode);
+    const previewScreens=previewMode==='planet-main'?1.65:previewMode==='flow'?2.75:previewMode==='sensory'?2.4:previewMode==='brand-history'?2.2:2.25;
+    const minimumScrollDuration=previewMode==='planet-main'?21000:planetModes.includes(previewMode)?18000:previewMode==='flow'?17000:previewMode==='sensory'?16000:previewMode==='brand-history'?19000:previewMode==='interaction'?14000:30000;
+    const scrollSpeed=innerWidth<600?75:110;
+    let active=false,previous=0,elapsed=0,hold=1800,phase='start';
+    let stable=0,lastHeight=0,ready=false,startPoint=0,endPoint=0,interactionPlayed=false;
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+    const playVideos=()=>document.querySelectorAll('video').forEach(video=>{
+      video.muted=true;video.playsInline=true;
+      if(active&&!reduced.matches)video.play().catch(()=>{});else video.pause();
+    });
+    addEventListener('message',event=>{
+      if(event.source!==parent||event.origin!==location.origin||event.data?.type!=='team-preview-visibility')return;
+      active=Boolean(event.data.visible);previous=0;playVideos();
+    });
+    parent.postMessage({type:'team-preview-ready'},location.origin);
+    new MutationObserver(playVideos).observe(document.querySelector('#root'),{childList:true,subtree:true});
+    const setPreviewRange=()=>{
+      const bottom=Math.max(0,document.documentElement.scrollHeight-innerHeight);
+      let section=null;
+      if(previewMode==='planet-squirrel') section=document.querySelector('.ftp-arch-scroll--first');
+      if(previewMode==='planet-arch') section=[...document.querySelectorAll('.ftp-arch-scroll')].find(node=>!node.classList.contains('ftp-arch-scroll--first'));
+      if(section){
+        const top=section.getBoundingClientRect().top+scrollY;
+        startPoint=Math.max(0,Math.min(bottom,top+innerHeight*.05));
+        endPoint=Math.min(bottom,startPoint+innerHeight*(previewMode==='planet-squirrel'?1.55:1.8));
+      }else{
+        startPoint=0;
+        endPoint=partialPreview?Math.min(bottom,innerHeight*previewScreens):bottom;
+      }
+      scrollTo({top:startPoint,behavior:'instant'});
+    };
+    const frame=now=>{
+      requestAnimationFrame(frame);
+      const height=document.documentElement.scrollHeight;
+      if(!ready){
+        stable=height===lastHeight?stable+16:0;lastHeight=height;
+        const targetReady=!planetModes.includes(previewMode)||previewMode==='planet-main'||document.querySelector('.ftp-arch-scroll');
+        if(document.readyState==='complete'&&document.fonts.status==='loaded'&&document.querySelector('footer')&&height>innerHeight+100&&stable>750&&targetReady){ready=true;setPreviewRange();}
+        previous=0;return;
+      }
+      if(!active||document.hidden||reduced.matches){previous=0;return;}
+      const delta=previous?now-previous:0;previous=now;
+      if(hold>0){hold-=delta;return;}
+      if(phase==='end'){
+        elapsed=0;phase='start';hold=2200;interactionPlayed=false;setPreviewRange();return;
+      }
+      elapsed+=delta;
+      const scrollTarget=Math.max(0,endPoint-startPoint);
+      const scrollDuration=Math.max(minimumScrollDuration,scrollTarget/scrollSpeed*1000);
+      const progress=Math.min(1,elapsed/scrollDuration);
+      scrollTo({top:startPoint+scrollTarget*progress,behavior:'instant'});
+      if(previewMode==='planet-squirrel'&&!interactionPlayed&&progress>.28){
+        const squirrelTrigger=document.querySelector('.ftp-hamster-trigger');
+        if(squirrelTrigger&&!squirrelTrigger.disabled){interactionPlayed=true;squirrelTrigger.click();}
+      }
+      if(progress===1){
+        phase='end';hold=3200;
+        parent.postMessage({type:'team-preview-complete',duration:elapsed,scroll:scrollY,bottom:scrollTarget},location.origin);
+      }
+    };
+    requestAnimationFrame(frame);
+  })();
+  </script>
+</body>
+</html>

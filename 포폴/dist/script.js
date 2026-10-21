@@ -80,7 +80,8 @@
     writing.alt='';
     writing.setAttribute('aria-hidden','true');
     writing.loading='lazy';
-    surface.append(photo,writing);contents.append(surface);
+    surface.append(photo,writing);
+    contents.append(surface);
     card.style.setProperty('--gallery-delay',(index%4)*90+'ms');
     card.style.setProperty('--gallery-phase',index*-.9+'s');
     galleryReveal.observe(card);
@@ -208,12 +209,12 @@
       displayedProgress = reduced.matches || target<displayedProgress ? target : Math.min(target,displayedProgress+delta*2.8);
       const progress = displayedProgress;
       const zoom = smooth(clamp((progress-.28)/.57));
-      const imageWidth = Math.min(art.clientWidth,art.clientHeight);
-      const imageHeight = imageWidth;
-      const baseWidth = imageWidth*.43;
+      const imageWidth = Math.min(art.clientWidth,art.clientHeight*1.5);
+      const imageHeight = imageWidth/1.5;
+      const baseWidth = imageWidth*.284;
       const baseHeight = baseWidth*.625;
-      const baseLeft = art.offsetLeft+(art.clientWidth-imageWidth)/2+imageWidth*.60-baseWidth/2;
-      const baseTop = art.offsetTop+(art.clientHeight-imageHeight)/2+imageHeight*.46-baseHeight/2;
+      const baseLeft = art.offsetLeft+(art.clientWidth-imageWidth)/2+imageWidth*.626-baseWidth/2;
+      const baseTop = art.offsetTop+(art.clientHeight-imageHeight)/2+imageHeight*.382-baseHeight/2;
       const width = baseWidth+(scene.clientWidth-baseWidth)*zoom;
       const height = baseHeight+(scene.clientHeight-baseHeight)*zoom;
       const press = 0;
@@ -702,7 +703,7 @@
       if(walkthroughBlockedKeys.has(event.key)) event.preventDefault();
     };
     const holdWalkthrough=()=>{
-      if(walkthroughHeld||!(horizontalMode.matches && !document.body.classList.contains('has-project-tabs'))) return;
+      if(walkthroughHeld||!horizontalMode.matches) return;
       walkthroughHeld=true;
       addEventListener('wheel',preventWalkthroughScroll,{passive:false,capture:true});
       addEventListener('touchmove',preventWalkthroughScroll,{passive:false,capture:true});
@@ -722,8 +723,8 @@
     const updateHorizontal=()=>{
       horizontalFrame=0;
       const travel=viewport.clientWidth*(panels.length-1);
-      const firstPanelHold=(horizontalMode.matches && !document.body.classList.contains('has-project-tabs'))?innerHeight*.25:0;
-      walkthrough.classList.toggle('case-horizontal-pinned',(horizontalMode.matches && !document.body.classList.contains('has-project-tabs')));
+      const firstPanelHold=horizontalMode.matches?innerHeight*.25:0;
+      walkthrough.classList.toggle('case-horizontal-pinned',horizontalMode.matches);
       panels.forEach(panel=>{
         const css=getComputedStyle(panel);
         const left=parseFloat(css.paddingLeft),right=parseFloat(css.paddingRight);
@@ -745,12 +746,12 @@
           ' Q '+w+' '+h+' '+(w-r)+' '+h+' H '+r+
           ' Q 0 '+h+' 0 '+(h-r)+' Z');
       });
-      walkthrough.style.height=(horizontalMode.matches && !document.body.classList.contains('has-project-tabs'))?sticky.offsetHeight+firstPanelHold+travel+'px':'';
+      walkthrough.style.height=horizontalMode.matches?sticky.offsetHeight+firstPanelHold+travel+'px':'';
       const walkthroughRect=walkthrough.getBoundingClientRect();
-      const rawOffset=(horizontalMode.matches && !document.body.classList.contains('has-project-tabs'))?Math.max(0,Math.min(travel,-walkthroughRect.top-firstPanelHold)):viewport.scrollLeft;
+      const rawOffset=horizontalMode.matches?Math.max(0,Math.min(travel,-walkthroughRect.top-firstPanelHold)):viewport.scrollLeft;
       const nextPanel=Math.min(panels.length-1,Math.floor((rawOffset+viewport.clientWidth*.08)/Math.max(1,viewport.clientWidth)));
       const hasReachedProjectWalkthrough = walkthroughRect.top <= -firstPanelHold;
-      if((horizontalMode.matches && !document.body.classList.contains('has-project-tabs')) && hasReachedProjectWalkthrough && nextPanel>pausedPanel){
+      if(horizontalMode.matches && hasReachedProjectWalkthrough && nextPanel>pausedPanel){
         const sectionTop=window.scrollY+walkthroughRect.top;
         const snapY=sectionTop+firstPanelHold+(nextPanel*viewport.clientWidth);
         pausedPanel=nextPanel;
@@ -765,7 +766,7 @@
         walkthroughRelease?.();
       }
       const offset=rawOffset;
-      track.style.transform=(horizontalMode.matches && !document.body.classList.contains('has-project-tabs'))?'translate3d('+(-offset)+'px,0,0)':'none';
+      track.style.transform=horizontalMode.matches?'translate3d('+(-offset)+'px,0,0)':'none';
       const active=Math.round(offset/Math.max(1,viewport.clientWidth));
       panels.forEach((panel,index)=>{
         const distance=Math.min(1,Math.abs(index-offset/Math.max(1,viewport.clientWidth)));
