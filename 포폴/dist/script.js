@@ -1,16 +1,10 @@
 /** Small, editable enhancements layered over the reference animation runtime. */
 (() => {
   'use strict';
-  // Follow the toolkit with clone-coding work, then close with the design principles.
-  const designValuesSection = document.querySelector('.clone-studies');
-  const cloneCodingSection = document.querySelector('.section-admissions');
-  const skillsSectionWrapper = document.getElementById('skills')?.closest('.information-wrapper');
-  if (cloneCodingSection && skillsSectionWrapper) {
-    skillsSectionWrapper.after(cloneCodingSection);
-  }
-  if (designValuesSection && cloneCodingSection) {
-    cloneCodingSection.after(designValuesSection);
-  }
+  // Place the clone-coding introduction directly after the movie section.
+  const cloneIntroSection = document.querySelector('.clone-studies');
+  const movieSection = document.querySelector('.section-movie');
+  if (cloneIntroSection && movieSection) movieSection.after(cloneIntroSection);
   const galleryMotion=matchMedia('(prefers-reduced-motion: reduce)');
   const albumCards = [...document.querySelectorAll('.messages-list > .item')].slice(0,8);
   const galleryPhotos = [
@@ -74,7 +68,7 @@
   const galleryReveal=new IntersectionObserver(entries=>entries.forEach(entry=>{
     entry.target.classList.toggle('gallery-in-view',entry.isIntersecting);
   }),{threshold:.12});
-  const isolateGalleryWriting=async(photo,writing,preserveDarkInk=false)=>{
+  const isolateGalleryWriting=async(photo,writing,preserveDarkInk=false,inkColor=[255,255,255])=>{
     try{
       await Promise.all([photo.decode(),writing.decode()]);
       const width=writing.naturalWidth;
@@ -140,9 +134,9 @@
           }
         }
         const alpha=connected?Math.max(0,Math.min(255,(differenceMap[index]-10)*6)):0;
-        marked.data[pixel]=255;
-        marked.data[pixel+1]=255;
-        marked.data[pixel+2]=255;
+        marked.data[pixel]=inkColor[0];
+        marked.data[pixel+1]=inkColor[1];
+        marked.data[pixel+2]=inkColor[2];
         marked.data[pixel+3]=alpha;
       }
       context.putImageData(marked,0,0);
@@ -177,7 +171,7 @@
     writing.loading='lazy';
     surface.append(photo,writing);
     contents.append(surface);
-    isolateGalleryWriting(photo,writing,index===2);
+    isolateGalleryWriting(photo,writing,index===2,index===4?[64,38,31]:[255,255,255]);
     card.style.setProperty('--gallery-delay',(index%4)*90+'ms');
     card.style.setProperty('--gallery-phase',index%2===0?'0s':'-1s');
     galleryReveal.observe(card);
@@ -601,6 +595,60 @@
       const stepIndex = Number(section.dataset.caseStep);
       const data = steps[stepIndex];
       const documentPanel=section.querySelector('.case-document');
+      if (stepIndex === 1) {
+        section.classList.add('has-interview-materials');
+        section.querySelector('.case-step-copy h4').textContent = '사용자 인터뷰와 분석';
+        section.querySelector('.case-step-english').textContent = 'Listening to users';
+        section.querySelector('.case-step-description').textContent = '';
+        const labels = ['인터뷰 원문','인터뷰 질문','응답 요약','어피니티 다이어그램'];
+        const files = ['interview-full.jpg','interview-questions.png','interview-summary.jpg','interview-affinity.jpg'];
+        const stage = document.createElement('div');
+        stage.className = 'case-interview-material';
+        const preview = document.createElement('button');
+        preview.type = 'button';
+        preview.className = 'case-interview-preview';
+        const image = document.createElement('img');
+        image.loading = 'lazy';
+        preview.append(image);
+        stage.append(preview);
+        const caption = section.querySelector('.case-enlarge');
+        caption.disabled = false;
+        let selected = 0;
+        const openMaterial = () => {
+          const full = document.createElement('img');
+          full.src = image.src;
+          full.alt = labels[selected];
+          full.style.cssText = 'display:block;width:100%;height:auto;';
+          dialog.querySelector('.case-dialog-content').replaceChildren(full);
+          dialog.querySelector('#case-dialog-title').textContent = labels[selected];
+          dialog.showModal();
+        };
+        preview.addEventListener('click',openMaterial);
+        caption.addEventListener('click',openMaterial);
+        const selectMaterial = index => {
+          selected = index;
+          image.src = './assets/img/portfolio/' + files[index];
+          image.alt = labels[index] + ' 원본 자료';
+          preview.setAttribute('aria-label',labels[index] + ' 크게 보기');
+          caption.replaceChildren(document.createTextNode(labels[index]));
+          const hint = document.createElement('span');
+          hint.textContent = '클릭하여 크게 보기 ↗';
+          caption.append(hint);
+          section.querySelectorAll('.case-tabs button').forEach((button,i) => button.setAttribute('aria-pressed',String(i === index)));
+        };
+        documentPanel.replaceWith(stage);
+        section.querySelector('.case-step-description').textContent = '딥티크 제품 구매와 웹사이트 이용 경험을 바탕으로 인터뷰를 진행하고, 응답을 주제별로 정리해 핵심 문제를 도출했습니다.';
+        const tabs = section.querySelector('.case-tabs');
+        tabs.replaceChildren(...labels.map((label,index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.textContent = label;
+          button.addEventListener('click',() => selectMaterial(index));
+          return button;
+        }));
+        selectMaterial(0);
+        return;
+      }
       if (data.title === '시장과 브랜드 이해') {
         section.querySelector('.case-step-description').textContent = '딥티크의 현재 온라인 경험을 자사·경쟁사 관점에서 살펴보고, 향수 시장에 영향을 주는 외부 환경과 고객·시장·브랜드의 관계를 분석했습니다. 네 가지 자료를 통해 브랜드의 강점과 개선 방향을 구체화했습니다.';
         const analysisCards = [
@@ -765,6 +813,7 @@
           return button;
         }));
         modes[0].show();
+        image.addEventListener('click',() => section.querySelector('.case-enlarge').click());
         section.querySelector('.case-enlarge').addEventListener('click',() => {
           if (!activeChart) {
             const copy = documentPanel.cloneNode(true);

@@ -17,9 +17,13 @@
   team.before(hub);
   const personalOverview = document.createElement('section');
   personalOverview.className = 'team-personal-overview';
+  personalOverview.id = 'personal-work';
   personalOverview.setAttribute('aria-labelledby','team-personal-overview-title');
   personalOverview.innerHTML = `<header class="team-personal-heading"><span>PERSONAL WORK · 02 PROJECTS</span><h3 id="team-personal-overview-title">개인 작업</h3><p>브랜드의 인상을 화면과 인터랙션으로 풀어낸 두 개의 개인 웹 프로젝트입니다.</p></header><div class="team-personal-grid"><article class="team-personal-card"><a class="team-personal-visual" href="https://website1-tau-six.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="CULITA 웹사이트 새 창에서 보기"><img src="./assets/img/portfolio/personal-luma-screen.png" alt="CULITA 마우스워시 브랜드 웹사이트 화면" loading="lazy"></a><div class="team-personal-copy"><span>01 · PERSONAL PROJECT</span><h4>CULITA <em>WEB DESIGN</em></h4><p>큰 타이포그래피와 입체적인 제품 비주얼, 스크롤 인터랙션을 연결해 쿨리타의 감각적인 브랜드 경험을 구현했습니다.</p><div class="team-personal-tags"><span>UI DESIGN</span><span>FRONTEND</span><span>INTERACTION</span></div><div class="team-personal-links"><a href="https://website1-tau-six.vercel.app/" target="_blank" rel="noopener noreferrer">WEBSITE ↗</a><a href="#personal-luma">자세히 보기 ↓</a></div></div></article><article class="team-personal-card"><a class="team-personal-visual" href="https://personal2-bice.vercel.app/pages/personal-02.html" target="_blank" rel="noopener noreferrer" aria-label="ONDA 웹사이트 새 창에서 보기"><img src="./assets/img/portfolio/personal-onda-screen.png" alt="ONDA 차 브랜드 웹사이트 화면" loading="lazy"></a><div class="team-personal-copy"><span>02 · PERSONAL PROJECT</span><h4>ONDA <em>WEB DESIGN</em></h4><p>차 이미지와 일상의 이야기를 연결하고 여백 중심의 화면 구성으로 차분한 브랜드 분위기를 표현했습니다.</p><div class="team-personal-tags"><span>BRANDING</span><span>RESPONSIVE</span><span>FRONTEND</span></div><div class="team-personal-links"><a href="https://personal2-bice.vercel.app/pages/personal-02.html" target="_blank" rel="noopener noreferrer">WEBSITE ↗</a><a href="#personal-onda">자세히 보기 ↓</a></div></div></article></div>`;
-  team.querySelector('.team-project-intro')?.after(personalOverview);
+  const skills = document.querySelector('#skills');
+  const skillsWrapper = skills?.closest('.information-wrapper');
+  if (skillsWrapper) skillsWrapper.before(personalOverview);
+  else if (skills) skills.before(personalOverview);
   const personalItems = [...document.querySelectorAll('.personal-case')];
   const personal = document.createElement('div');
   personal.id = 'personal-projects';
@@ -45,7 +49,9 @@
     window.ScrollTrigger?.refresh();
   };
   const select = (key, userAction=false) => {
-    Object.entries(panels).forEach(([name,panel])=>{ panel.hidden=name!==key; });
+    Object.entries(panels).forEach(([name,panel])=>{ panel.hidden=name!=='movie' && name!==key; });
+    const cloneIntro = document.querySelector('.clone-studies');
+    if (cloneIntro) cloneIntro.hidden = false;
     buttons.forEach(button=>{
       const selected=button.dataset.projectTab===key;
       button.setAttribute('aria-selected',String(selected));
@@ -74,7 +80,7 @@
     if (['#projects','#all-projects','#mejiro-data'].includes(hash)) return 'team';
     if (['#personal-projects','#personal-luma','#personal-onda'].includes(hash)) return 'personal';
     if (hash==='#movie') return 'movie';
-    if (['#admissions','#clone-projects'].includes(hash)) return 'clone';
+    if (['#admissions','#clone-projects','#clone-coding'].includes(hash)) return 'clone';
     return null;
   };
   document.addEventListener('click',event=>{
