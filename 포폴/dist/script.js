@@ -160,7 +160,7 @@
     const surface=document.createElement('div');surface.className='gallery-photo-surface';
     const photo=document.createElement('img');
     photo.className='gallery-photo-original';
-    photo.src=index===2 ? './assets/img/portfolio/gallery/photo-03-caption.png' : `./assets/img/portfolio/gallery/${asset[0]}-clean.png`;
+    photo.src=index===2 ? './assets/img/portfolio/gallery/photo-03-diary.png' : `./assets/img/portfolio/gallery/${asset[0]}-clean.png`;
     photo.alt=asset[1];
     photo.loading='lazy';
     const writing=document.createElement('img');

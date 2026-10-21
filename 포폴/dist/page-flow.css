@@ -1,0 +1,129 @@
+/* Shared rhythm and materials for one continuous portfolio page. */
+:root {
+  --page-space: clamp(64px, 7vw, 112px);
+  --page-heading: clamp(42px, 5.8vw, 88px);
+  --page-paper: var(--palette-ivory);
+  --page-line: rgb(64 52 76 / 24%);
+  --page-shadow: 0 6px 18px rgb(64 52 76 / 5%);
+}
+body.page-home { background: var(--page-paper); }
+[data-layout="page-home"] .all-projects,
+[data-layout="page-home"] .portfolio-projects,
+[data-layout="page-home"] .personal-case,
+[data-layout="page-home"] .information-wrapper:has(.section-skills),
+[data-layout="page-home"] .section-movie,
+[data-layout="page-home"] .section-short-movie,
+.portfolio-qa { background: var(--page-paper); }
+[data-layout="page-home"] .portfolio-projects { border-radius: 0; padding-bottom: var(--page-space); }
+.personal-case-onda { border-top: 0; }
+
+/* Color settles inside a section and returns to paper at either edge. */
+[data-layout="page-home"] .section-movie,
+[data-layout="page-home"] .section-messages,
+[data-layout="page-home"] .design-values-section,
+[data-layout="page-home"] .about-hana {
+  background: linear-gradient(180deg, var(--page-paper), #eee5f0 30%, #eee5f0 70%, var(--page-paper));
+}
+[data-layout="page-home"] .section-movie {
+  margin-top: 0;
+  padding-block: var(--page-space);
+}
+[data-layout="page-home"] .section-movie > .deco,
+[data-layout="page-home"] .section-movie .section-inner > .deco,
+[data-layout="page-home"] .section-short-movie > .deco,
+[data-layout="page-home"] .section-movie::before,
+[data-layout="page-home"] .section-movie::after,
+[data-layout="page-home"] .section-movie .section-inner::after {
+  display: none !important;
+}
+[data-layout="page-home"] .section-movie > .section-inner {
+  background: transparent;
+  padding-block: 0;
+}
+[data-layout="page-home"] .section-short-movie > .section-inner {
+  padding-block: var(--page-space);
+}
+[data-layout="page-home"] .section-messages {
+  margin-top: 0;
+  padding-block: var(--page-space);
+}
+[data-layout="page-home"] .information-container:has(.section-skills) {
+  padding-block: var(--page-space);
+}
+.team-personal-overview {
+  margin-block: 0;
+  padding-block: var(--page-space);
+}
+
+/* Shared display type and quiet introductory copy. */
+.all-projects-heading h2,
+.team-personal-heading h3,
+.skills-heading h2,
+.gallery-heading h2,
+[data-layout="page-home"] .clone-intro h2.section-heading,
+.portfolio-capabilities-heading h2,
+.portfolio-qa-heading h2 {
+  font-family: 'Cherry Bomb One', sans-serif;
+  font-size: var(--page-heading);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -.025em;
+  color: var(--palette-navy);
+  margin: 16px 0 22px;
+}
+.team-personal-heading,
+.clone-intro,
+.gallery-heading,
+.skills-heading,
+.all-projects-heading {
+  text-align: center;
+  width: min(88%, 1100px);
+  max-width: 1100px;
+  margin-inline: auto;
+}
+.team-personal-heading,
+.skills-heading { margin-bottom: clamp(32px, 4vw, 56px); }
+.all-projects-heading > span,
+.team-personal-heading > span,
+.gallery-eyebrow {
+  font: 700 11px/1.6 var(--font-body);
+  letter-spacing: .14em;
+}
+.all-projects-heading p,
+.team-personal-heading p,
+.gallery-heading p,
+.skills-heading > p,
+.clone-intro > p {
+  font: 400 clamp(14px, 1.1vw, 18px)/1.85 var(--font-body);
+  letter-spacing: -.02em;
+  color: rgb(64 52 76 / 85%);
+}
+.clone-eyebrow,
+.portfolio-qa-eyebrow {
+  background: #eadfed;
+  border-color: var(--page-line);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Repeat the same soft edges rather than switching framing styles. */
+.team-personal-card,
+.skills-tool-column,
+.project-category-tab {
+  border-color: var(--page-line);
+  border-radius: 24px;
+  box-shadow: var(--page-shadow);
+}
+.team-personal-card { background: #fff8f8; }
+[data-layout="page-home"] .section-skills .skills-tool-column {
+  background: #f2ecf4;
+  border-color: var(--page-line);
+  box-shadow: var(--page-shadow);
+}
+.portfolio-qa { padding-top: calc(var(--page-space) * .65); }
+@media (max-width: 767px) {
+  :root { --page-space: 64px; --page-heading: clamp(36px, 9vw, 58px); }
+  .team-personal-card, .skills-tool-column, .project-category-tab { border-radius: 20px; }
+  .team-personal-heading, .clone-intro { width: 90%; }
+  .all-projects-heading > span, .team-personal-heading > span, .gallery-eyebrow { font-size: 10px; }
+}

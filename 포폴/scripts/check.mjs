@@ -21,7 +21,7 @@ const checkPath = (reference, base) => {
   }
 };
 for (const asset of assets) checkPath(asset, root);
-for (const file of ['styles.css','assets/css/style.css']) {
+for (const file of ['styles.css','page-flow.css','assets/css/style.css']) {
   const source = fs.readFileSync(path.join(root,file),'utf8');
   for (const match of source.matchAll(/url\(\s*["']?([^\s"')]+)["']?\s*\)/g)) {
     if (!/^(?:data:|https?:|#|\/\/)/.test(match[1])) checkPath(match[1],path.dirname(path.join(root,file)));
