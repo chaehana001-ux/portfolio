@@ -176,7 +176,7 @@
   .team-capture-rituals { grid-template-columns: 1fr; gap: 20px; }
 }
 
-/* Personal-work summaries sit directly above the skills section. */
+/* Personal-work summaries sit directly above the movie section. */
 .team-personal-overview { width: min(1600px,88%); margin: clamp(64px,7vw,110px) auto 0; color: var(--palette-navy); }
 .team-personal-heading { max-width: 760px; margin-bottom: clamp(34px,4vw,64px); }
 .team-personal-heading > span { font: 700 10px/1.5 var(--font-body); letter-spacing: .12em; }

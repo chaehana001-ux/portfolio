@@ -160,7 +160,7 @@
     const surface=document.createElement('div');surface.className='gallery-photo-surface';
     const photo=document.createElement('img');
     photo.className='gallery-photo-original';
-    photo.src=`./assets/img/portfolio/gallery/${asset[0]}-clean.png`;
+    photo.src=index===2 ? './assets/img/portfolio/gallery/photo-03-caption.png' : `./assets/img/portfolio/gallery/${asset[0]}-clean.png`;
     photo.alt=asset[1];
     photo.loading='lazy';
     const writing=document.createElement('img');
@@ -169,9 +169,10 @@
     writing.alt='';
     writing.setAttribute('aria-hidden','true');
     writing.loading='lazy';
-    surface.append(photo,writing);
-    contents.append(surface);
-    isolateGalleryWriting(photo,writing,index===2,index===4?[64,38,31]:[255,255,255]);
+    surface.append(photo);
+    if(index!==2) surface.append(writing);
+    contents.replaceChildren(surface);
+    if(index!==2) isolateGalleryWriting(photo,writing,false,index===4?[64,38,31]:[255,255,255]);
     card.style.setProperty('--gallery-delay',(index%4)*90+'ms');
     card.style.setProperty('--gallery-phase',index%2===0?'0s':'-1s');
     galleryReveal.observe(card);
