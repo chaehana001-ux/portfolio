@@ -63,7 +63,7 @@
       title: '<em>better</em> TOGETHER',
       en: 'Through collaboration, I learned that great design is built on communication and shared ideas. Together, we refined every detail to achieve the best possible outcome.',
       ko: 'For The Planet 페이지를 작업하며 팀원들과 공통 스타일과 화면 연결을 확인했습니다. 각자 맡은 페이지가 하나의 딥티크 사이트로 이어지도록 의견을 나누었고, 소통과 협업이 완성도를 높이는 과정임을 배웠습니다.',
-      visual: `<div class="collaboration-photos" aria-label="딥티크 팀 프로젝트 협업 사진"><figure class="collaboration-photo collaboration-photo-main"><img src="./assets/img/portfolio/team-collaboration-01.png" alt="팀원들과 노트북 화면을 함께 살펴보며 의견을 나누는 모습" loading="lazy"><figcaption><span>PHOTO 01</span><small>함께 작업한 순간</small></figcaption></figure><figure class="collaboration-photo collaboration-photo-sub"><img src="./assets/img/portfolio/team-collaboration-02.png" alt="딥티크 사용자 분석 화면을 함께 검토하는 모습" loading="lazy"><figcaption><span>PHOTO 02</span><small>생각을 나누는 과정</small></figcaption></figure></div>`
+      visual: `<div class="collaboration-photos" aria-label="딥티크 팀 프로젝트 협업 사진"><figure class="collaboration-photo collaboration-photo-main"><img src="./assets/img/portfolio/team-collaboration-01.png" alt="팀원들과 노트북 화면을 함께 살펴보며 의견을 나누는 모습" loading="lazy"></figure><figure class="collaboration-photo collaboration-photo-sub"><img src="./assets/img/portfolio/team-collaboration-02.png" alt="딥티크 사용자 분석 화면을 함께 검토하는 모습" loading="lazy"></figure></div>`
     }
   ];
   const story = document.createElement('section');

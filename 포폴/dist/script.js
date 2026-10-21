@@ -1,6 +1,16 @@
 /** Small, editable enhancements layered over the reference animation runtime. */
 (() => {
   'use strict';
+  // Follow the toolkit with clone-coding work, then close with the design principles.
+  const designValuesSection = document.querySelector('.clone-studies');
+  const cloneCodingSection = document.querySelector('.section-admissions');
+  const skillsSectionWrapper = document.getElementById('skills')?.closest('.information-wrapper');
+  if (cloneCodingSection && skillsSectionWrapper) {
+    skillsSectionWrapper.after(cloneCodingSection);
+  }
+  if (designValuesSection && cloneCodingSection) {
+    cloneCodingSection.after(designValuesSection);
+  }
   const galleryMotion=matchMedia('(prefers-reduced-motion: reduce)');
   const albumCards = [...document.querySelectorAll('.messages-list > .item')].slice(0,8);
   const galleryPhotos = [
@@ -64,10 +74,95 @@
   const galleryReveal=new IntersectionObserver(entries=>entries.forEach(entry=>{
     entry.target.classList.toggle('gallery-in-view',entry.isIntersecting);
   }),{threshold:.12});
+  const isolateGalleryWriting=async(photo,writing,preserveDarkInk=false)=>{
+    try{
+      await Promise.all([photo.decode(),writing.decode()]);
+      const width=writing.naturalWidth;
+      const height=writing.naturalHeight;
+      const canvas=document.createElement('canvas');
+      canvas.width=width;
+      canvas.height=height;
+      const context=canvas.getContext('2d',{willReadFrequently:true});
+      context.drawImage(photo,0,0,width,height);
+      const clean=context.getImageData(0,0,width,height);
+      context.clearRect(0,0,width,height);
+      context.drawImage(writing,0,0,width,height);
+      const marked=context.getImageData(0,0,width,height);
+      const pixelCount=width*height;
+      const differenceMap=new Uint8Array(pixelCount);
+      const strokeCore=new Uint8Array(pixelCount);
+      const stableCore=new Uint8Array(pixelCount);
+      for(let index=0;index<pixelCount;index++){
+        const pixel=index*4;
+        const red=marked.data[pixel];
+        const green=marked.data[pixel+1];
+        const blue=marked.data[pixel+2];
+        const markedLight=(red+green+blue)/3;
+        const cleanLight=(clean.data[pixel]+clean.data[pixel+1]+clean.data[pixel+2])/3;
+        const signedDifference=markedLight-cleanLight;
+        const difference=Math.max(0,Math.min(255,Math.round(preserveDarkInk?Math.abs(signedDifference):signedDifference)));
+        const chroma=Math.max(red,green,blue)-Math.min(red,green,blue);
+        differenceMap[index]=difference;
+        if(preserveDarkInk
+          ? difference>=28&&markedLight<=190&&chroma<=70
+          : difference>=38&&markedLight>=165&&chroma<=65)strokeCore[index]=1;
+      }
+      for(let index=0;index<pixelCount;index++){
+        if(!strokeCore[index])continue;
+        const x=index%width;
+        const y=Math.floor(index/width);
+        let neighbours=0;
+        for(let offsetY=-1;offsetY<=1;offsetY++){
+          const nextY=y+offsetY;
+          if(nextY<0||nextY>=height)continue;
+          for(let offsetX=-1;offsetX<=1;offsetX++){
+            if(offsetX===0&&offsetY===0)continue;
+            const nextX=x+offsetX;
+            if(nextX>=0&&nextX<width&&strokeCore[nextY*width+nextX])neighbours++;
+          }
+        }
+        if(neighbours>=2)stableCore[index]=1;
+      }
+      for(let index=0;index<pixelCount;index++){
+        const pixel=index*4;
+        let connected=stableCore[index]===1;
+        if(!connected&&differenceMap[index]>=14){
+          const x=index%width;
+          const y=Math.floor(index/width);
+          for(let offsetY=-2;offsetY<=2&&!connected;offsetY++){
+            const nextY=y+offsetY;
+            if(nextY<0||nextY>=height)continue;
+            for(let offsetX=-2;offsetX<=2;offsetX++){
+              const nextX=x+offsetX;
+              if(nextX<0||nextX>=width)continue;
+              if(stableCore[nextY*width+nextX]){connected=true;break;}
+            }
+          }
+        }
+        const alpha=connected?Math.max(0,Math.min(255,(differenceMap[index]-10)*6)):0;
+        marked.data[pixel]=255;
+        marked.data[pixel+1]=255;
+        marked.data[pixel+2]=255;
+        marked.data[pixel+3]=alpha;
+      }
+      context.putImageData(marked,0,0);
+      const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+      if(!blob)return;
+      const previous=writing.dataset.objectUrl;
+      if(previous)URL.revokeObjectURL(previous);
+      const objectUrl=URL.createObjectURL(blob);
+      writing.dataset.objectUrl=objectUrl;
+      writing.src=objectUrl;
+      writing.classList.add('gallery-photo-writing--isolated','gallery-photo-writing--ready');
+    }catch(error){
+      console.warn('Gallery handwriting overlay could not be isolated.',error);
+    }
+  };
   albumCards.forEach((card,index)=>{
     const contents=card.querySelector('.item-contents');
     const asset=galleryPhotos[index];
     if(!contents||!asset)return;
+    card.dataset.galleryIndex=String(index+1);
     const surface=document.createElement('div');surface.className='gallery-photo-surface';
     const photo=document.createElement('img');
     photo.className='gallery-photo-original';
@@ -82,8 +177,9 @@
     writing.loading='lazy';
     surface.append(photo,writing);
     contents.append(surface);
+    isolateGalleryWriting(photo,writing,index===2);
     card.style.setProperty('--gallery-delay',(index%4)*90+'ms');
-    card.style.setProperty('--gallery-phase',index*-.9+'s');
+    card.style.setProperty('--gallery-phase',index%2===0?'0s':'-1s');
     galleryReveal.observe(card);
     let frame=0,pointer=null;
     const render=()=>{
@@ -469,13 +565,12 @@
     const orderedPanels = [...document.querySelectorAll('[data-case-step]')];
     if (orderedPanels.length === 6) {
       const implementationPanel = orderedPanels.pop();
-      orderedPanels[0].before(implementationPanel);
-      orderedPanels.unshift(implementationPanel);
-      steps.unshift(steps.pop());
+      implementationPanel.remove();
+      steps.pop();
       orderedPanels.forEach((panel,index) => {
         panel.dataset.caseStep = String(index);
         const count = panel.querySelector('.case-step-count');
-        if (count) count.textContent = 'PROCESS '+String(index+1).padStart(2,'0')+' / 06';
+        if (count) count.textContent = 'PROCESS '+String(index+1).padStart(2,'0')+' / 05';
         const note = panel.querySelector('.case-doc-content > small');
         if (note) note.textContent = 'PROCESS NOTE · '+String(index+1).padStart(2,'0');
       });
@@ -614,6 +709,132 @@
         }));
         selectGroup(groups[0]);
         section.querySelector('.case-enlarge').addEventListener('click',() => openImages(currentGroup));
+        return;
+      }
+      if (data.docs?.[0]?.title === 'Information architecture') {
+        const flowCharts = [
+          { label: 'GALERIE FLOW', src: './assets/img/portfolio/user-flow-galerie.png', alt: '향을 시각적으로 이해하고 탐색하는 갤러리 사용자 플로우차트' },
+          { label: 'FULL SITE FLOW', src: './assets/img/portfolio/user-flow-full-site.png', alt: '공식 정보 탐색부터 재구매까지 이어지는 전체 사이트 사용자 플로우차트' },
+          { label: 'IMMERSIVE FLOW', src: './assets/img/portfolio/user-flow-immersive.png', alt: '브랜드 경험에서 향수 히스토리까지 이어지는 몰입형 사용자 플로우차트' }
+        ];
+        section.classList.add('has-flow-gallery');
+        const gallery = document.createElement('div');
+        gallery.className = 'case-flow-gallery';
+        const viewport = document.createElement('div');
+        viewport.className = 'case-flow-viewport';
+        const image = document.createElement('img');
+        image.className = 'case-flow-image';
+        image.loading = 'lazy';
+        const flowSelector = document.createElement('div');
+        flowSelector.className = 'case-flow-selector';
+        viewport.append(image);
+        documentPanel.replaceWith(gallery);
+        // Keep chart choices above the document so they read as view tabs, not image captions.
+        gallery.append(flowSelector,viewport,documentPanel);
+        const tabs = section.querySelector('.case-tabs');
+        const menuTree = { label: '메뉴트리', src: './assets/img/portfolio/menu-tree.png', alt: '딥티크 리디자인 메뉴 구조와 페이지 계층을 정리한 메뉴트리' };
+        let activeChart = menuTree;
+        const selectChart = (chart,index) => {
+          activeChart = chart;
+          image.src = chart.src;
+          image.alt = chart.alt;
+          viewport.scrollTop = 0;
+          flowSelector.querySelectorAll('button').forEach((button,buttonIndex) => button.setAttribute('aria-pressed',String(buttonIndex === index)));
+        };
+        flowSelector.replaceChildren(...flowCharts.map((chart,index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.textContent = chart.label;
+          button.addEventListener('click',() => selectChart(chart,index));
+          return button;
+        }));
+        const modes = [
+          { label: '메뉴트리', show: () => { activeChart = menuTree; image.src = menuTree.src; image.alt = menuTree.alt; viewport.scrollTop = 0; viewport.hidden = false; flowSelector.hidden = true; documentPanel.hidden = true; gallery.classList.add('is-menu-tree'); gallery.classList.remove('has-flow-selector'); } },
+          { label: '사용자 플로우', show: () => { viewport.hidden = false; flowSelector.hidden = false; documentPanel.hidden = true; gallery.classList.remove('is-menu-tree'); gallery.classList.add('has-flow-selector'); selectChart(flowCharts[0],0); } },
+          { label: '요구사항', show: () => { viewport.hidden = true; flowSelector.hidden = true; gallery.classList.remove('is-menu-tree','has-flow-selector'); renderDocument(documentPanel,data.docs[2]); documentPanel.hidden = false; activeChart = null; } }
+        ];
+        tabs.replaceChildren(...modes.map((mode,index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.textContent = mode.label;
+          button.addEventListener('click',() => {
+            modes.forEach((item,itemIndex) => tabs.children[itemIndex].setAttribute('aria-pressed',String(item === mode)));
+            mode.show();
+          });
+          button.setAttribute('aria-pressed',String(index === 0));
+          return button;
+        }));
+        modes[0].show();
+        section.querySelector('.case-enlarge').addEventListener('click',() => {
+          if (!activeChart) {
+            const copy = documentPanel.cloneNode(true);
+            copy.hidden = false;
+            dialog.querySelector('.case-dialog-content').replaceChildren(copy);
+            dialog.querySelector('#case-dialog-title').textContent = '요구사항';
+            dialog.showModal();
+            return;
+          }
+          const content = document.createElement('div');
+          content.className = 'case-flow-full';
+          const fullImage = document.createElement('img');
+          fullImage.src = activeChart.src;
+          fullImage.alt = activeChart.alt;
+          content.append(fullImage);
+          dialog.querySelector('.case-dialog-content').replaceChildren(content);
+          dialog.querySelector('#case-dialog-title').textContent = activeChart.label;
+          dialog.showModal();
+        });
+        return;
+      }
+      if (data.docs?.[0]?.title === 'Visual direction') {
+        const designBoards = [
+          { label: '와이어프레임', src: './assets/img/portfolio/process-wireframe.png', alt: '정보 구조와 주요 화면 레이아웃을 정리한 딥티크 와이어프레임 보드', wide: true },
+          { label: '디자인 시스템', src: './assets/img/portfolio/process-design-system.png', alt: '로고와 색상, 타이포그래피를 정리한 딥티크 디자인 시스템 보드', wide: true },
+          { label: '컴포넌트', src: './assets/img/portfolio/process-components.png', alt: '내비게이션과 버튼, 상품 카드, 푸터를 정리한 딥티크 컴포넌트 보드', wide: false }
+        ];
+        section.classList.add('has-design-gallery');
+        section.querySelector('.case-step-copy > h4').textContent = '화면 설계와 디자인 구체화';
+        section.querySelector('.case-step-english').textContent = 'From Structure to Experience';
+        section.querySelector('.case-step-description').textContent = '와이어프레임을 바탕으로 정보의 흐름과 화면 구조를 정리하고, 자연·예술·향의 이야기를 담은 디자인 요소를 적용하여 딥티크만의 브랜드 경험을 구체화했습니다.';
+        const gallery = document.createElement('div');
+        gallery.className = 'case-design-gallery';
+        const viewport = document.createElement('div');
+        viewport.className = 'case-design-viewport';
+        const image = document.createElement('img');
+        image.className = 'case-design-image';
+        image.loading = 'lazy';
+        viewport.append(image);
+        gallery.append(viewport);
+        documentPanel.replaceWith(gallery);
+        const tabs = section.querySelector('.case-tabs');
+        let activeBoard = designBoards[0];
+        const selectBoard = (board,index) => {
+          activeBoard = board;
+          image.src = board.src;
+          image.alt = board.alt;
+          viewport.scrollTop = 0;
+          gallery.classList.toggle('is-wide',board.wide);
+          tabs.querySelectorAll('button').forEach((button,buttonIndex) => button.setAttribute('aria-pressed',String(buttonIndex === index)));
+        };
+        tabs.replaceChildren(...designBoards.map((board,index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.textContent = board.label;
+          button.addEventListener('click',() => selectBoard(board,index));
+          return button;
+        }));
+        selectBoard(designBoards[0],0);
+        section.querySelector('.case-enlarge').addEventListener('click',() => {
+          const content = document.createElement('div');
+          content.className = 'case-design-full';
+          const fullImage = document.createElement('img');
+          fullImage.src = activeBoard.src;
+          fullImage.alt = activeBoard.alt;
+          content.append(fullImage);
+          dialog.querySelector('.case-dialog-content').replaceChildren(content);
+          dialog.querySelector('#case-dialog-title').textContent = activeBoard.label;
+          dialog.showModal();
+        });
         return;
       }
       if (data.docs[0].image) {
