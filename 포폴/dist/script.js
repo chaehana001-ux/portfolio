@@ -63,12 +63,23 @@
   addEventListener('load',queueAlbum);
   galleryMotion.addEventListener('change',queueAlbum);
   const albumList = document.querySelector('.messages-list');
-  if (albumList) new ResizeObserver(queueAlbum).observe(albumList);
+  if (albumList) {
+    new ResizeObserver(queueAlbum).observe(albumList);
+    // One clock for all eight cards, independent of loading or scroll entry.
+    const handwritingEpoch = performance.now();
+    const syncHandwriting = () => {
+      const phase = Math.floor((performance.now() - handwritingEpoch) / 1000) % 2;
+      albumList.dataset.inkPhase = phase === 0 ? 'odd' : 'even';
+    };
+    syncHandwriting();
+    setInterval(syncHandwriting, 1000);
+    document.addEventListener('visibilitychange', syncHandwriting);
+  }
   queueAlbum();
   const galleryReveal=new IntersectionObserver(entries=>entries.forEach(entry=>{
     entry.target.classList.toggle('gallery-in-view',entry.isIntersecting);
   }),{threshold:.12});
-  const isolateGalleryWriting=async(photo,writing,preserveDarkInk=false,inkColor=[255,255,255])=>{
+  const isolateGalleryWriting=async(photo,writing,preserveDarkInk=false,inkColor=[255,255,255],inkRegions=null)=>{
     try{
       await Promise.all([photo.decode(),writing.decode()]);
       const width=writing.naturalWidth;
@@ -88,6 +99,11 @@
       const stableCore=new Uint8Array(pixelCount);
       for(let index=0;index<pixelCount;index++){
         const pixel=index*4;
+        if(inkRegions){
+          const x=(index%width)/width;
+          const y=Math.floor(index/width)/height;
+          if(!inkRegions.some(([left,top,right,bottom])=>x>=left&&x<=right&&y>=top&&y<=bottom))continue;
+        }
         const red=marked.data[pixel];
         const green=marked.data[pixel+1];
         const blue=marked.data[pixel+2];
@@ -160,21 +176,26 @@
     const surface=document.createElement('div');surface.className='gallery-photo-surface';
     const photo=document.createElement('img');
     photo.className='gallery-photo-original';
-    photo.src=index===2 ? './assets/img/portfolio/gallery/photo-03-diary.png' : `./assets/img/portfolio/gallery/${asset[0]}-clean.png`;
+    photo.src=`./assets/img/portfolio/gallery/${asset[0]}-clean.png`;
     photo.alt=asset[1];
     photo.loading='lazy';
     const writing=document.createElement('img');
     writing.className='gallery-photo-writing';
-    writing.src=`./assets/img/portfolio/gallery/${asset[0]}-writing.png`;
+    writing.src=index===2 ? './assets/img/portfolio/gallery/photo-03-diary.png' : `./assets/img/portfolio/gallery/${asset[0]}-writing.png`;
     writing.alt='';
     writing.setAttribute('aria-hidden','true');
     writing.loading='lazy';
-    surface.append(photo);
-    if(index!==2) surface.append(writing);
+    surface.append(photo,writing);
     contents.replaceChildren(surface);
-    if(index!==2) isolateGalleryWriting(photo,writing,false,index===4?[64,38,31]:[255,255,255]);
+    if(index===2){
+      // Restrict extraction to the actual doodles, keeping faces out of the mask.
+      const regions=[[0,0,1,.079],[.16,.079,.27,.112],[.74,.11,.81,.14],[0,.49,.079,.58],[.945,.72,1,.79],[0,.915,1,1]];
+      isolateGalleryWriting(photo,writing,true,[83,54,79],regions);
+    }else{
+      isolateGalleryWriting(photo,writing,false,index===4?[64,38,31]:[255,255,255]);
+    }
+    if(index===2) card.tabIndex=0;
     card.style.setProperty('--gallery-delay',(index%4)*90+'ms');
-    card.style.setProperty('--gallery-phase',index%2===0?'0s':'-1s');
     galleryReveal.observe(card);
     let frame=0,pointer=null;
     const render=()=>{
