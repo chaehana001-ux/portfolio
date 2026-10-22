@@ -91,5 +91,6 @@
   },true);
   // The research slides remain available without consuming six screens of scroll.
   select(hashCategory(location.hash)||'team');
+  document.dispatchEvent(new CustomEvent('portfolio:sections-ready'));
   addEventListener('load',refresh,{once:true});
 })();

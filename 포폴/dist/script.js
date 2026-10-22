@@ -252,6 +252,30 @@
     const art = creativeHero.querySelector('.hero-art-world') || creativeHero.querySelector('.hero-ideas-art');
     const originalWorld = creativeHero.querySelector('.hero-original-world');
     const copy = creativeHero.querySelector('.hero-portal-copy');
+    const aboutTitle = copy.querySelector('.about-intro-message h2');
+    if (aboutTitle && aboutTitle.dataset.letterRevealReady !== 'true') {
+      aboutTitle.dataset.letterRevealReady = 'true';
+      const label = aboutTitle.textContent.replace(/\s+/g, ' ').trim();
+      aboutTitle.setAttribute('aria-label', label);
+      let aboutLetterIndex = 0;
+      const textNodes = [];
+      const walker = document.createTreeWalker(aboutTitle, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) textNodes.push(walker.currentNode);
+      textNodes.forEach(textNode => {
+        const fragment = document.createDocumentFragment();
+        [...textNode.textContent].forEach(character => {
+          const letter = document.createElement('span');
+          letter.className = `about-title-letter${character === ' ' ? ' about-title-space' : ''}`;
+          letter.setAttribute('aria-hidden', 'true');
+          letter.textContent = character === ' ' ? '\u00a0' : character;
+          letter.style.setProperty('--about-letter-delay', `${aboutLetterIndex * 55}ms`);
+          fragment.append(letter);
+          aboutLetterIndex += 1;
+        });
+        textNode.replaceWith(fragment);
+      });
+      aboutTitle.classList.add('is-about-title-ready');
+    }
     const figmaWindow = creativeHero.querySelector('.hero-figma-window');
     // One live window contains both the Figma preview and the character introduction.
     figmaWindow.append(copy);
@@ -291,6 +315,27 @@
     let clickUntil = 0;
     let displayedProgress = 0;
     let lastHeroFrame = performance.now();
+    let aboutHoldPlayed = false;
+    let aboutHoldTimer = 0;
+    const aboutBlockedKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ']);
+    const blockAboutScroll = event => {
+      if (event.type !== 'keydown' || aboutBlockedKeys.has(event.key)) event.preventDefault();
+    };
+    const releaseAboutScroll = () => {
+      clearTimeout(aboutHoldTimer);
+      window.removeEventListener('wheel', blockAboutScroll, { capture: true });
+      window.removeEventListener('touchmove', blockAboutScroll, { capture: true });
+      window.removeEventListener('keydown', blockAboutScroll, { capture: true });
+      document.documentElement.classList.remove('is-about-pin-holding');
+    };
+    const holdAboutScroll = () => {
+      releaseAboutScroll();
+      document.documentElement.classList.add('is-about-pin-holding');
+      window.addEventListener('wheel', blockAboutScroll, { passive: false, capture: true });
+      window.addEventListener('touchmove', blockAboutScroll, { passive: false, capture: true });
+      window.addEventListener('keydown', blockAboutScroll, { capture: true });
+      aboutHoldTimer = window.setTimeout(releaseAboutScroll, 1000);
+    };
     const playHeroClick = now => {
       clickPlayed = true;
       clickUntil = now + 440;
@@ -319,7 +364,9 @@
       if(rawProgress>=.18&&!clickPlayed&&!reduced.matches) playHeroClick(now);
       const target = now<clickUntil ? Math.min(rawProgress,.26) : rawProgress;
       displayedProgress = reduced.matches || target<displayedProgress ? target : Math.min(target,displayedProgress+delta*2.8);
-      const progress = displayedProgress;
+      // Complete the zoom before the sticky hero ends, leaving a readable
+      // hold on the fully opened ABOUT ME screen.
+      const progress = clamp(displayedProgress / .78);
       const zoom = smooth(clamp((progress-.28)/.57));
       const imageWidth = Math.min(art.clientWidth,art.clientHeight*1.5);
       const imageHeight = imageWidth/1.5;
@@ -348,6 +395,14 @@
       copy.style.transform = 'translate(-50%,-50%) scale('+Math.min(width/scene.clientWidth,height/scene.clientHeight)+')';
       copy.style.opacity = String(reveal);
       copy.style.visibility = reveal>0?'visible':'hidden';
+      const aboutTitleVisible = reduced.matches || reveal >= .38;
+      aboutTitle?.classList.toggle('is-about-title-visible', aboutTitleVisible);
+      if (!reduced.matches && aboutTitleVisible && !aboutHoldPlayed) {
+        aboutHoldPlayed = true;
+        holdAboutScroll();
+      } else if (reveal < .12) {
+        aboutHoldPlayed = false;
+      }
       const approach = smooth(clamp(progress/.18));
       const cursorX = baseLeft+baseWidth*(.94-.52*approach);
       const cursorY = baseTop+baseHeight*(.84-.44*approach);
@@ -372,6 +427,7 @@
     addEventListener('scroll', queueHero, {passive:true});
     addEventListener('resize', queueHero);
     reduced.addEventListener('change', queueHero);
+    addEventListener('pagehide', releaseAboutScroll, { once: true });
     new ResizeObserver(queueHero).observe(scene);
     updateHero();
   }
@@ -1238,6 +1294,575 @@
       .filter(visible).find(element => element.tagName === 'BUTTON');
     close?.click();
   });
+})();
+
+// Reveal the three design-value cards upward in sequence as the section enters.
+(() => {
+  const initDesignValuesReveal = () => {
+    const values = document.querySelector('.design-values-content');
+    if (!values || values.dataset.revealReady === 'true') return;
+    values.dataset.revealReady = 'true';
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      values.classList.add('is-values-revealed');
+      return;
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.intersectionRatio >= .18) values.classList.add('is-values-revealed');
+        else if (!entry.isIntersecting) values.classList.remove('is-values-revealed');
+      });
+    }, { threshold: [0, .18], rootMargin: '0px 0px -8% 0px' });
+
+    observer.observe(values);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDesignValuesReveal, { once: true });
+  } else {
+    initDesignValuesReveal();
+  }
+})();
+
+// Fly every primary section title into place with one shared interaction.
+(() => {
+  const initSectionTitleFlights = () => {
+    const footerLogo = document.querySelector('[data-layout="page-home"] .footer .logo');
+    if (footerLogo && !footerLogo.querySelector('.footer-contact-flight-title')) {
+      const contactTitle = document.createElement('span');
+      contactTitle.className = 'footer-contact-flight-title';
+      contactTitle.textContent = 'CONTACT';
+      footerLogo.append(contactTitle);
+      footerLogo.classList.add('has-flight-title');
+    }
+    if (footerLogo && !footerLogo.querySelector('.footer-hana-brand')) {
+      const contactTitle = footerLogo.querySelector('.footer-contact-flight-title');
+      const brand = document.createElement('img');
+      brand.className = 'footer-hana-brand';
+      brand.src = './assets/img/brand/hana-lavender.png';
+      brand.alt = 'HANA';
+      brand.width = 2172;
+      brand.height = 724;
+      brand.decoding = 'async';
+      contactTitle?.after(brand);
+    }
+
+    const titles = document.querySelectorAll([
+      '.all-projects-heading h2',
+      '.team-personal-heading h3',
+      '.clone-intro h2.section-heading',
+      '.skills-heading h2',
+      '.gallery-heading h2'
+    ].join(','));
+
+    titles.forEach(title => {
+      const heading = title.parentElement;
+      if (!heading || title.dataset.titleFlightReady === 'true') return;
+      title.dataset.titleFlightReady = 'true';
+
+      const label = title.textContent.replace(/\s+/g, ' ').trim();
+      title.setAttribute('aria-label', label);
+      title.textContent = '';
+      [...label].forEach((character, index) => {
+        const letter = document.createElement('span');
+        letter.className = `section-flight-letter${character === ' ' ? ' section-flight-space' : ''}`;
+        letter.setAttribute('aria-hidden', 'true');
+        letter.textContent = character === ' ' ? '\u00a0' : character;
+        const direction = index % 4;
+        letter.style.setProperty('--section-fly-x', `${[-90, 48, -38, 82][direction]}px`);
+        letter.style.setProperty('--section-fly-y', `${[54, 88, 110, 62][direction]}px`);
+        letter.style.setProperty('--section-fly-r', `${[-12, 8, -6, 11][direction]}deg`);
+        letter.style.setProperty('--section-fly-delay', `${index * 46}ms`);
+        title.append(letter);
+      });
+      title.classList.add('section-title-flight');
+      heading.classList.add('section-title-flight-host', 'is-flight-ready');
+
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+        heading.classList.add('is-title-arrived');
+        return;
+      }
+
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.intersectionRatio >= .3) heading.classList.add('is-title-arrived');
+          else if (!entry.isIntersecting) heading.classList.remove('is-title-arrived');
+        });
+      }, { threshold: [0, .3], rootMargin: '0px 0px -10% 0px' });
+      observer.observe(heading);
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(initSectionTitleFlights), { once: true });
+  } else {
+    requestAnimationFrame(initSectionTitleFlights);
+  }
+  document.addEventListener('portfolio:sections-ready', () => requestAnimationFrame(initSectionTitleFlights));
+})();
+
+// Deepen the MONSTER title and summary one character at a time.
+(() => {
+  const initMonsterToneReveal = () => {
+    const description = document.querySelector('.monster-description');
+    if (!description || description.dataset.toneRevealReady === 'true') return;
+    const lines = [description.querySelector('h3'), description.querySelector('.monster-summary')].filter(Boolean);
+    if (!lines.length) return;
+    description.dataset.toneRevealReady = 'true';
+
+    let characterIndex = 0;
+    lines.forEach((line, lineIndex) => {
+      const label = line.textContent.trim();
+      line.setAttribute('aria-label', label);
+      line.textContent = '';
+      [...label].forEach(character => {
+        const letter = document.createElement('span');
+        letter.className = `monster-tone-letter${character === ' ' ? ' monster-tone-space' : ''}`;
+        letter.setAttribute('aria-hidden', 'true');
+        letter.textContent = character === ' ' ? '\u00a0' : character;
+        letter.style.setProperty('--tone-delay', `${characterIndex * 54 + lineIndex * 90}ms`);
+        line.append(letter);
+        characterIndex += 1;
+      });
+    });
+    description.classList.add('is-tone-ready');
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      description.classList.add('is-tone-visible');
+      return;
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.intersectionRatio >= .35) description.classList.add('is-tone-visible');
+        else if (!entry.isIntersecting) description.classList.remove('is-tone-visible');
+      });
+    }, { threshold: [0, .35], rootMargin: '0px 0px -8% 0px' });
+    observer.observe(description);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMonsterToneReveal, { once: true });
+  } else {
+    initMonsterToneReveal();
+  }
+})();
+
+// Match the movie introduction to the shared portfolio heading system.
+(() => {
+  const initMovieHeading = () => {
+    const heading = document.querySelector('[data-layout="page-home"] .section-movie .section-heading');
+    if (!heading || heading.dataset.movieHeadingReady === 'true') return;
+
+    heading.dataset.movieHeadingReady = 'true';
+    heading.removeAttribute('data-anime');
+    heading.classList.add('movie-section-heading');
+    heading.innerHTML = `
+      <span class="movie-heading-kicker">VISUAL STORY · 03 FILMS</span>
+      <span class="movie-heading-title" aria-label="MOVIE"></span>
+      <span class="movie-heading-description">감각과 이야기를 움직임으로 담아낸 영상 작업입니다.</span>
+    `;
+
+    const title = heading.querySelector('.movie-heading-title');
+    const offsets = [
+      ['-90px', '45px', '-10deg'],
+      ['-46px', '-62px', '7deg'],
+      ['0px', '72px', '-5deg'],
+      ['48px', '-54px', '8deg'],
+      ['92px', '40px', '-8deg']
+    ];
+
+    [...'MOVIE'].forEach((character, index) => {
+      const letter = document.createElement('span');
+      const [x, y, rotation] = offsets[index];
+      letter.className = 'movie-title-letter';
+      letter.setAttribute('aria-hidden', 'true');
+      letter.textContent = character;
+      letter.style.setProperty('--fly-x', x);
+      letter.style.setProperty('--fly-y', y);
+      letter.style.setProperty('--fly-r', rotation);
+      letter.style.setProperty('--fly-delay', `${index * 55}ms`);
+      title.append(letter);
+    });
+    heading.classList.add('is-flight-ready');
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      heading.classList.add('is-title-arrived');
+      return;
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.intersectionRatio >= .34) heading.classList.add('is-title-arrived');
+        else if (!entry.isIntersecting) heading.classList.remove('is-title-arrived');
+      });
+    }, { threshold: [0, .34], rootMargin: '0px 0px -8% 0px' });
+    observer.observe(heading);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMovieHeading, { once: true });
+  } else {
+    initMovieHeading();
+  }
+})();
+
+// Deepen the journey statement one character at a time while preserving its mixed fonts.
+(() => {
+  const initJourneyToneReveal = () => {
+    const opening = document.querySelector('.about-story-opening');
+    const lines = [...(opening?.querySelectorAll('.opening-line') || [])];
+    if (!opening || !lines.length || opening.dataset.journeyToneReady === 'true') return;
+    opening.dataset.journeyToneReady = 'true';
+
+    // Give the reveal its own scroll distance while keeping the statement in view.
+    if (!opening.parentElement.classList.contains('journey-pin-stage')) {
+      const stage = document.createElement('div');
+      stage.className = 'journey-pin-stage';
+      opening.before(stage);
+      stage.append(opening);
+    }
+
+    let characterIndex = 0;
+    lines.forEach(line => {
+      const label = line.textContent.replace(/\s+/g, ' ').trim();
+      line.setAttribute('aria-label', label);
+      const textNodes = [];
+      const walker = document.createTreeWalker(line, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) textNodes.push(walker.currentNode);
+      textNodes.forEach(textNode => {
+        // The line already has a flex gap between its styled word groups.
+        // Removing indentation/bridge whitespace prevents that gap doubling.
+        if (textNode.parentElement === line && !textNode.textContent.trim()) {
+          textNode.remove();
+          return;
+        }
+        const fragment = document.createDocumentFragment();
+        [...textNode.textContent].forEach(character => {
+          const letter = document.createElement('span');
+          letter.className = `journey-tone-letter${character === ' ' ? ' journey-tone-space' : ''}`;
+          letter.setAttribute('aria-hidden', 'true');
+          letter.textContent = character === ' ' ? '\u00a0' : character;
+          letter.style.setProperty('--journey-tone-progress', '0');
+          fragment.append(letter);
+          characterIndex += 1;
+        });
+        textNode.replaceWith(fragment);
+      });
+    });
+    opening.classList.add('is-journey-tone-ready');
+
+    const letters = [...opening.querySelectorAll('.journey-tone-letter')];
+    const motion = matchMedia('(prefers-reduced-motion: reduce)');
+    if (motion.matches) {
+      letters.forEach(letter => letter.style.setProperty('--journey-tone-progress', '1'));
+      return;
+    }
+
+    const stage = opening.parentElement;
+    let frame = 0;
+    const renderToneProgress = () => {
+      frame = 0;
+      const bounds = stage.getBoundingClientRect();
+      const pinDistance = stage.offsetHeight - innerHeight;
+      const progress = pinDistance > 1
+        ? Math.max(0, Math.min(1, -bounds.top / pinDistance))
+        : Math.max(0, Math.min(1, (innerHeight * .76 - bounds.top) / (innerHeight * .62)));
+      const sweep = letters.length + 7;
+      letters.forEach((letter, index) => {
+        const letterProgress = Math.max(0, Math.min(1, (progress * sweep - index) / 7));
+        letter.style.setProperty('--journey-tone-progress', letterProgress.toFixed(3));
+      });
+    };
+    const queueToneProgress = () => {
+      if (!frame) frame = requestAnimationFrame(renderToneProgress);
+    };
+    addEventListener('scroll', queueToneProgress, { passive: true });
+    addEventListener('resize', queueToneProgress, { passive: true });
+    renderToneProgress();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initJourneyToneReveal, { once: true });
+  } else {
+    initJourneyToneReveal();
+  }
+})();
+
+// Portfolio progress navigation: move the heart with scroll and make each dot a section shortcut.
+(() => {
+  const initProgressNavigation = () => {
+    const container = document.querySelector('[data-scrollbar="container"]');
+    if (!container || container.dataset.progressNavigationReady === 'true') return;
+
+    const bar = container.querySelector('[data-scrollbar="bar"]');
+    const points = [...container.querySelectorAll('[data-progress-target]')];
+    const sections = points
+      .map(point => ({ point, section: document.getElementById(point.dataset.progressTarget) }))
+      .filter(item => item.section);
+    if (!bar || !sections.length) return;
+
+    container.dataset.progressNavigationReady = 'true';
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    let frame = 0;
+
+    const render = () => {
+      frame = 0;
+      const root = document.documentElement;
+      const scrollRange = Math.max(1, root.scrollHeight - innerHeight);
+      const progress = Math.max(0, Math.min(1, scrollY / scrollRange));
+      const trackProgress = 2 + progress * 96;
+      bar.style.setProperty('--page-progress', `${trackProgress}%`);
+
+      const markerLine = scrollY + innerHeight * .36;
+      let current = sections[0];
+      sections.forEach(item => {
+        if (item.section.offsetTop <= markerLine) current = item;
+      });
+      sections.forEach(item => {
+        const active = item === current;
+        item.point.classList.toggle('is-current', active);
+        if (active) item.point.setAttribute('aria-current', 'location');
+        else item.point.removeAttribute('aria-current');
+      });
+    };
+
+    const requestRender = () => {
+      if (!frame) frame = requestAnimationFrame(render);
+    };
+
+    sections.forEach(({ point, section }) => {
+      point.addEventListener('click', () => {
+        section.scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'start' });
+      });
+    });
+
+    addEventListener('scroll', requestRender, { passive: true });
+    addEventListener('resize', requestRender, { passive: true });
+    addEventListener('load', requestRender, { once: true });
+    render();
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initProgressNavigation, { once: true });
+  else initProgressNavigation();
+})();
+
+// Move the floating controls outside animated footer ancestors so positioning uses the viewport.
+(() => {
+  const mountFloatingTopButton = () => {
+    const button = document.querySelector('.footer .page-top');
+    const chatbot = document.querySelector('.footer .hana-chatbot');
+    if (!button || button.classList.contains('is-floating-top')) return;
+    button.classList.add('is-floating-top');
+    const actions = document.createElement('div');
+    actions.className = 'hana-floating-actions';
+    if (chatbot) actions.append(chatbot);
+    actions.append(button);
+    document.body.append(actions);
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountFloatingTopButton, { once: true });
+  else mountFloatingTopButton();
+})();
+
+// Compact portfolio chatbot attached to the floating HANA avatar.
+(() => {
+  const initHanaChatbot = () => {
+    const chatbot = document.querySelector('[data-hana-chatbot]');
+    if (!chatbot) return;
+
+    const launcher = chatbot.querySelector('.hana-chatbot-launcher');
+    const panel = chatbot.querySelector('.hana-chatbot-panel');
+    const closeButton = chatbot.querySelector('.hana-chatbot-close');
+    const form = chatbot.querySelector('.hana-chatbot-form');
+    const input = chatbot.querySelector('#hana-chatbot-input');
+    const body = chatbot.querySelector('.hana-chatbot-body');
+    const topicButtons = chatbot.querySelectorAll('.hana-chatbot-topics button');
+    const answers = {
+      '자기소개': '안녕하세요, 웹디자인과 인터랙션을 배우며 차근차근 성장하고 있는 HANA입니다.',
+      '사무직 경험': '사무직에서 쌓은 꼼꼼함과 정보 정리 경험을 화면의 구조와 사용성을 설계하는 데 활용하고 있어요.',
+      '디자인을 시작한 이유': '정보를 더 편하고 매력적으로 전달하는 화면에 관심이 생겨 웹디자인을 시작했습니다.',
+      '자라 프로젝트': 'ZARA의 브랜드 무드를 웹 인터랙션으로 풀어낸 개인 프로젝트입니다.',
+      '담당 역할': '기획, 화면 구성, 비주얼 디자인, 퍼블리싱과 인터랙션 구현을 담당했습니다.',
+      '개인 작업': '브랜드의 인상을 화면과 움직임으로 표현한 개인 웹 프로젝트들을 소개하고 있어요.',
+      '클론 코딩': '기존 사이트의 구조와 표현을 분석한 뒤 직접 구현하며 레이아웃과 반응형 감각을 익혔습니다.',
+      '사용 기술': 'HTML, CSS, JavaScript와 GSAP을 중심으로 디자인을 실제 웹 화면으로 구현합니다.',
+      '연락처': '이메일 cogksk001@gmail.com 으로 편하게 연락해주세요.'
+    };
+
+    const setOpen = (open) => {
+      chatbot.classList.toggle('is-open', open);
+      launcher.setAttribute('aria-expanded', String(open));
+      panel.setAttribute('aria-hidden', String(!open));
+      if (open) window.setTimeout(() => input.focus({ preventScroll: true }), 220);
+    };
+
+    const addMessage = (text, kind = 'answer') => {
+      const message = document.createElement('div');
+      message.className = `hana-chatbot-message is-${kind}`;
+      message.textContent = text;
+      body.append(message);
+      body.scrollTop = body.scrollHeight;
+    };
+
+    launcher.addEventListener('click', () => setOpen(!chatbot.classList.contains('is-open')));
+    closeButton.addEventListener('click', () => setOpen(false));
+    topicButtons.forEach((button) => button.addEventListener('click', () => {
+      addMessage(button.textContent.trim(), 'question');
+      addMessage(answers[button.textContent.trim()] || '해당 내용은 포트폴리오에서 자세히 확인하실 수 있어요.');
+    }));
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const question = input.value.trim();
+      if (!question) return;
+      addMessage(question, 'question');
+      addMessage('질문 감사합니다! 현재는 포트폴리오 안내용 챗봇이며, 더 자세한 문의는 cogksk001@gmail.com 으로 보내주세요.');
+      input.value = '';
+    });
+    document.addEventListener('pointerdown', (event) => {
+      if (chatbot.classList.contains('is-open') && !chatbot.contains(event.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && chatbot.classList.contains('is-open')) {
+        setOpen(false);
+        launcher.focus();
+      }
+    });
+
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      let nudgeClearTimer = 0;
+      const nudgeTimer = window.setInterval(() => {
+        if (chatbot.classList.contains('is-open') || launcher.matches(':hover')) return;
+        chatbot.classList.remove('is-auto-nudging');
+        void chatbot.offsetWidth;
+        chatbot.classList.add('is-auto-nudging');
+        clearTimeout(nudgeClearTimer);
+        nudgeClearTimer = window.setTimeout(() => chatbot.classList.remove('is-auto-nudging'), 1100);
+      }, 3000);
+      addEventListener('pagehide', () => {
+        clearInterval(nudgeTimer);
+        clearTimeout(nudgeClearTimer);
+      }, { once: true });
+    }
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initHanaChatbot, { once: true });
+  else initHanaChatbot();
+})();
+
+// Re-arm legacy entrance classes whenever their section leaves and re-enters the viewport.
+(() => {
+  const initReplayableEntrances = () => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+
+    const targets = new Set(document.querySelectorAll([
+      '[data-global="admissions"]',
+      '[data-global="movie"]',
+      '[data-global="more-information"]',
+      '[data-global="official-account"]',
+      '[data-global="admissions"] [data-item*="panel-"]',
+      '[data-global="admissions"] [data-item*="button"]',
+      '[data-global="movie"] [data-item*="panel-"]',
+      '[data-global="movie"] [data-item*="button"]',
+      '[data-global="movie"] [data-css-anime]',
+      '[data-global="messages"] [data-css-anime]'
+    ].join(',')));
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.intersectionRatio >= .12) entry.target.classList.add('is-action');
+        else if (!entry.isIntersecting) entry.target.classList.remove('is-action');
+      });
+    }, { threshold: [0, .12], rootMargin: '0px 0px -6% 0px' });
+
+    targets.forEach(target => observer.observe(target));
+  };
+
+  if (document.readyState === 'complete') initReplayableEntrances();
+  else addEventListener('load', initReplayableEntrances, { once: true });
+})();
+
+// Briefly hold each primary section heading while its entrance interaction plays.
+(() => {
+  const initInteractionPins = () => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!window.ScrollTrigger || document.documentElement.dataset.interactionPinsReady === 'true') return;
+    document.documentElement.dataset.interactionPinsReady = 'true';
+
+    let holdTimer = 0;
+    let isHolding = false;
+    const blockedKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ']);
+    const blockScroll = event => {
+      if (event.type !== 'keydown' || blockedKeys.has(event.key)) event.preventDefault();
+    };
+    const releaseScroll = () => {
+      if (!isHolding) return;
+      isHolding = false;
+      clearTimeout(holdTimer);
+      window.removeEventListener('wheel', blockScroll, { capture: true });
+      window.removeEventListener('touchmove', blockScroll, { capture: true });
+      window.removeEventListener('keydown', blockScroll, { capture: true });
+      document.documentElement.classList.remove('is-title-pin-holding');
+    };
+    const holdScrollForTitle = () => {
+      releaseScroll();
+      isHolding = true;
+      document.documentElement.classList.add('is-title-pin-holding');
+      window.addEventListener('wheel', blockScroll, { passive: false, capture: true });
+      window.addEventListener('touchmove', blockScroll, { passive: false, capture: true });
+      window.addEventListener('keydown', blockScroll, { capture: true });
+      holdTimer = window.setTimeout(releaseScroll, 1000);
+    };
+
+    const headings = [...document.querySelectorAll([
+      '.section-title-flight-host:not(.logo)',
+      '.movie-section-heading'
+    ].join(','))].filter(heading => !heading.closest('.journey-pin-stage'));
+
+    headings.forEach(heading => {
+      heading.classList.add('has-brief-scroll-pin');
+      let replayFrame = 0;
+      let hasLeftViewport = true;
+      const rearmObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) hasLeftViewport = true;
+        });
+      }, { threshold: 0 });
+      rearmObserver.observe(heading);
+      const replayTitle = () => {
+        hasLeftViewport = false;
+        cancelAnimationFrame(replayFrame);
+        heading.classList.remove('is-title-arrived');
+        // Commit the reset before starting the stagger again at the pin point.
+        void heading.offsetWidth;
+        replayFrame = requestAnimationFrame(() => heading.classList.add('is-title-arrived'));
+        holdScrollForTitle();
+      };
+      window.ScrollTrigger.create({
+        trigger: heading,
+        start: 'top 18%',
+        // The time-based input hold owns the pause; only a tiny pin runway is needed.
+        end: '+=2',
+        pin: true,
+        pinSpacing: true,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        onEnter: replayTitle,
+        onEnterBack: () => {
+          if (hasLeftViewport) replayTitle();
+        },
+        onLeave: () => heading.classList.add('is-title-arrived'),
+        // The IntersectionObserver resets the title only after it is fully off-screen.
+        onLeaveBack: () => heading.classList.add('is-title-arrived')
+      });
+    });
+    window.ScrollTrigger.refresh();
+    addEventListener('pagehide', releaseScroll, { once: true });
+  };
+
+  if (document.readyState === 'complete') requestAnimationFrame(initInteractionPins);
+  else addEventListener('load', () => requestAnimationFrame(initInteractionPins), { once: true });
 })();
 
 // A shallow pointer-responsive tilt on selected primary surfaces only.

@@ -31,13 +31,13 @@
 
 
 <meta name="robots" content="noindex,nofollow">
-<link rel="stylesheet" href="./styles.css?v=portfolio-cleanup-1">
-<script defer src="./script.js?v=portfolio-cleanup-1"></script>
+<link rel="stylesheet" href="./styles.css?v=portfolio-cleanup-4">
+<script defer src="./script.js?v=portfolio-cleanup-7"></script>
 <link rel="stylesheet" href="./zara-story.css">
 <script defer src="./zara-story.js"></script>
 <link rel="stylesheet" href="./all-projects.css">
-<link rel="stylesheet" href="./page-flow.css?v=portfolio-cleanup-1">
-<script defer src="./all-projects.js"></script>
+<link rel="stylesheet" href="./page-flow.css?v=portfolio-cleanup-2">
+<script defer src="./all-projects.js?v=portfolio-cleanup-2"></script>
 </head>
 
 <body class="page-home">
@@ -219,7 +219,6 @@
 
   </defs>
 </svg>
-  <div class="lookbook-bg-star"></div>
   <div class="loader" data-loader></div>
   <div data-layout="page-home" data-global="layout page-home">
     <div class="wrapper" data-global="wrapper">
@@ -242,7 +241,7 @@
 
 <div class="hero-creative-scene">
   <div class="hero-introduction" lang="ko"><span class="hero-creative-kicker">UX/UI DESIGN · FRONTEND · MOTION</span><h1 class="hero-personal-title"><span class="hero-title-name">HANA<span class="hero-title-diamond" aria-hidden="true">◆</span><span class="hero-title-s">S</span></span><span class="hero-title-portfolio">PORTFOLIO</span></h1><p>일상의 경험에서 시작해,<br>사람을 위한 화면을 만듭니다.</p><a class="hero-about-link" href="#lookbook">ABOUT ME <span aria-hidden="true">→</span></a></div>
-  <div class="hero-art-world"><img class="hero-ideas-art hero-art-base" src="./assets/img/portfolio/hero-ideas-curated.png" alt="아이디어와 화면 구성을 그려보는 디자이너의 평면 일러스트" width="1536" height="1024" fetchpriority="high"></div>
+  <div class="hero-art-world"><img class="hero-ideas-art hero-art-base" src="./assets/img/portfolio/hero-ideas-hana-glasses-v3.png" alt="안경을 쓰고 아이디어와 화면 구성을 그려보는 디자이너의 평면 일러스트" width="1536" height="1024" fetchpriority="high"></div>
 <div class="hero-figma-window" aria-hidden="true"><div class="figma-window-design">
 <div class="studio-toolbar"><span class="studio-dots"><i></i><i></i><i></i></span><span>hana.design / studio</span><span>↗</span></div>
 <div class="studio-canvas"><div class="studio-nav"><b>H.</b><span>WORK &nbsp; ABOUT &nbsp; CONTACT</span></div><div class="studio-preview"><div class="studio-preview-copy"><small>DIGITAL EXPERIENCES</small><strong>Ideas into<br>meaningful<br>experiences.</strong><span class="studio-preview-button">EXPLORE WORK ↗</span></div><div class="studio-sculpture"><i></i><i></i><i></i></div></div><div class="studio-bottom"><span>01 — SELECTED WORK</span><span>DESIGNED WITH INTENTION</span></div></div>
@@ -1771,7 +1770,7 @@
 </section>
             </div>
           </div>
-<section class="section-messages" data-global="messages" data-scrollbar="messages">
+<section class="section-messages" id="messages" data-global="messages" data-scrollbar="messages">
             <div class="bg-green sm" data-global="bg-green-2"></div>
 
             <div class="deco deco-human-loupe-body" data-human-body>
@@ -2276,11 +2275,11 @@
                 <p class="balloon" data-scrollbar="balloon"><span data-scrollbar="label"></span></p>
               </div>
             </div>
-            <span class="point point-1" data-scrollbar="point-1"></span>
-            <span class="point point-2" data-scrollbar="point-2"></span>
-            <span class="point point-3" data-scrollbar="point-3"></span>
-            <span class="point point-4" data-scrollbar="point-4"></span>
-            <span class="point point-5" data-scrollbar="point-5"></span>
+            <button class="point point-1" type="button" data-scrollbar="point-1" data-progress-target="lookbook" aria-label="ABOUT ME 섹션으로 이동"></button>
+            <button class="point point-2" type="button" data-scrollbar="point-2" data-progress-target="projects" aria-label="PROJECTS 섹션으로 이동"></button>
+            <button class="point point-3" type="button" data-scrollbar="point-3" data-progress-target="clone-coding" aria-label="CLONE CODING 섹션으로 이동"></button>
+            <button class="point point-4" type="button" data-scrollbar="point-4" data-progress-target="messages" aria-label="LITTLE MOMENTS 섹션으로 이동"></button>
+            <button class="point point-5" type="button" data-scrollbar="point-5" data-progress-target="quick-qa" aria-label="Q&A 섹션으로 이동"></button>
             <span class="point-goal" data-scrollbar="point-goal"><picture>
   <source media="(min-width: 1401px)" srcset="./assets/img/home/md/scrollbar-flag@2x.webp" width="13" height="18">
   <source media="(min-width: 768px)" srcset="./assets/img/home/md/scrollbar-flag.webp, ./assets/img/home/md/scrollbar-flag@2x.webp 2x" width="13" height="18">
@@ -2497,14 +2496,34 @@
         <span class="btn-icon"><svg role="img" aria-hidden="true"><use href="#icon-blank"></use></svg></span>
       </div>
     </a>
-          <a href="#" class="page-top">
-      <div class="deco deco-deer md"><picture>
-  <source media="(min-width: 1401px)" srcset="./assets/img/footer/md/deco-deer@2x.webp" width="103" height="110">
-  <source media="(min-width: 768px)" srcset="./assets/img/footer/md/deco-deer.webp, ./assets/img/footer/md/deco-deer@2x.webp 2x" width="103" height="110">
-  <img src="./assets/img/footer/md/deco-deer.webp" alt width="103" height="110" loading="lazy">
-</picture></div>
-      <span class="btn-icon"><svg role="img" aria-hidden="true"><use href="#icon-arrow"></use></svg></span>
-      <span class="btn-text">PAGE TOP</span>
+          <div class="hana-chatbot" data-hana-chatbot>
+            <button class="hana-chatbot-launcher" type="button" aria-expanded="false" aria-controls="hana-chatbot-panel" aria-label="HANA 포트폴리오 챗봇 열기">
+              <span class="hana-chatbot-tooltip" role="tooltip"><img src="./assets/img/portfolio/hana-chatbot-tooltip-v2.png" alt="HANA에게 궁금한 점이 있나요?" width="2170" height="725"></span>
+              <span class="hana-chatbot-avatar" aria-hidden="true">
+                <img src="./assets/img/portfolio/hana-chatbot-icon.png" alt="" width="1254" height="1254">
+              </span>
+            </button>
+            <section class="hana-chatbot-panel" id="hana-chatbot-panel" aria-label="HANA 포트폴리오 챗봇" aria-hidden="true">
+              <header class="hana-chatbot-header">
+                <div><p><span>PORTFOLIO</span> chatbot</p><h2>HANA에게 궁금한 점이 있나요?</h2></div>
+                <button class="hana-chatbot-close" type="button" aria-label="챗봇 닫기"><span></span><span></span></button>
+              </header>
+              <div class="hana-chatbot-body" aria-live="polite">
+                <div class="hana-chatbot-message">안녕하세요! HANA의 포트폴리오 안내 챗봇입니다.<br>사무직 경험에서 디자인을 배우게 된 이야기와 작업을 소개해드릴게요.<br>궁금한 항목을 선택하거나 질문을 입력해주세요.</div>
+              </div>
+              <div class="hana-chatbot-topics" aria-label="추천 질문">
+                <button type="button">자기소개</button><button type="button">사무직 경험</button><button type="button">디자인을 시작한 이유</button><button type="button">자라 프로젝트</button><button type="button">담당 역할</button><button type="button">개인 작업</button><button type="button">클론 코딩</button><button type="button">사용 기술</button><button type="button">연락처</button>
+              </div>
+              <form class="hana-chatbot-form">
+                <label class="sr-only" for="hana-chatbot-input">궁금한 점 입력</label>
+                <input id="hana-chatbot-input" type="text" placeholder="궁금한 점을 물어보세요" autocomplete="off">
+                <button type="submit">SEND</button>
+              </form>
+            </section>
+          </div>
+          <a href="#" class="page-top" aria-label="페이지 맨 위로 이동">
+      <span class="btn-icon" aria-hidden="true">↑</span>
+      <span class="btn-text">TOP</span>
     </a>
           <p class="copyright">&copy; HANA. ALL RIGHTS RESERVED.</p>
         </div>

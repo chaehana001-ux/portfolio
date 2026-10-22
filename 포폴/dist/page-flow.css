@@ -7,6 +7,14 @@
   --page-shadow: 0 6px 18px rgb(64 55 82 / 5%);
 }
 body.page-home { background: var(--page-paper); }
+/* The hero completes its transformation early, then holds the ABOUT ME frame. */
+section.hero-creative { height: 250svh; }
+@media (max-width: 767px) {
+  section.hero-creative { height: 225svh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  section.hero-creative { height: 100svh; }
+}
 [data-layout="page-home"] .all-projects,
 [data-layout="page-home"] .portfolio-projects,
 [data-layout="page-home"] .personal-case,
@@ -46,6 +54,19 @@ body.page-home { background: var(--page-paper); }
 [data-layout="page-home"] .section-messages {
   margin-top: 0;
   padding-block: var(--page-space);
+  background:
+    radial-gradient(circle at 48% 16%, rgb(255 255 255 / 62%) 0, transparent 34%),
+    linear-gradient(
+      118deg,
+      color-mix(in srgb, var(--palette-ivory) 96%, white) 0%,
+      color-mix(in srgb, var(--palette-ivory) 92%, white) 34%,
+      color-mix(in srgb, var(--palette-lavender) 10%, var(--palette-ivory)) 68%,
+      color-mix(in srgb, var(--palette-lavender) 24%, var(--palette-ivory)) 100%
+    ) !important;
+}
+[data-layout="page-home"] .section-messages > .section-inner {
+  background: transparent !important;
+  padding-bottom: clamp(32px, 4vw, 64px);
 }
 [data-layout="page-home"] .information-container:has(.section-skills) {
   padding-block: var(--page-space);
@@ -104,6 +125,134 @@ body.page-home { background: var(--page-paper); }
   border-color: var(--page-line);
   transform: none;
   box-shadow: none;
+}
+
+/* Movie title: use the same hierarchy and letter-flight reveal as Personal Work. */
+[data-layout="page-home"] .section-movie .movie-section-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(88%, 1100px) !important;
+  max-width: 1100px;
+  height: auto !important;
+  margin: 0 auto clamp(38px, 4vw, 64px);
+  text-align: center;
+  color: var(--palette-navy);
+}
+[data-layout="page-home"] .section-movie .movie-heading-kicker {
+  font: 700 11px/1.6 var(--font-body);
+  letter-spacing: .14em;
+}
+[data-layout="page-home"] .section-movie .movie-heading-title {
+  display: block;
+  margin: 16px 0 22px;
+  font-family: 'Cherry Bomb One', sans-serif;
+  font-size: var(--page-heading);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -.025em;
+  color: var(--palette-navy);
+}
+[data-layout="page-home"] .section-movie .movie-heading-description {
+  display: block;
+  font: 400 clamp(14px, 1.1vw, 18px)/1.85 var(--font-body);
+  letter-spacing: -.02em;
+  color: rgb(64 55 82 / 85%);
+}
+[data-layout="page-home"] .movie-section-heading.is-flight-ready .movie-heading-kicker,
+[data-layout="page-home"] .movie-section-heading.is-flight-ready .movie-heading-description {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .5s ease .42s, transform .65s cubic-bezier(.2, .8, .2, 1) .42s;
+}
+[data-layout="page-home"] .movie-section-heading.is-flight-ready .movie-title-letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(var(--fly-x), var(--fly-y), 0) rotate(var(--fly-r));
+  transition:
+    opacity .42s ease var(--fly-delay),
+    transform .85s cubic-bezier(.16, 1, .3, 1) var(--fly-delay);
+  will-change: transform, opacity;
+}
+[data-layout="page-home"] .movie-section-heading.is-title-arrived .movie-heading-kicker,
+[data-layout="page-home"] .movie-section-heading.is-title-arrived .movie-heading-description,
+[data-layout="page-home"] .movie-section-heading.is-title-arrived .movie-title-letter {
+  opacity: 1;
+  transform: none;
+}
+@media (max-width: 767px) {
+  [data-layout="page-home"] .section-movie .movie-section-heading { width: 90% !important; }
+  [data-layout="page-home"] .section-movie .movie-heading-kicker { font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-layout="page-home"] .movie-section-heading.is-flight-ready .movie-heading-kicker,
+  [data-layout="page-home"] .movie-section-heading.is-flight-ready .movie-heading-description,
+  [data-layout="page-home"] .movie-section-heading.is-flight-ready .movie-title-letter {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Shared title flight used by every primary portfolio section. */
+.section-title-flight-host.is-flight-ready .section-flight-letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(var(--section-fly-x), var(--section-fly-y), 0) rotate(var(--section-fly-r));
+  transition:
+    opacity .42s ease var(--section-fly-delay),
+    transform .85s cubic-bezier(.16, 1, .3, 1) var(--section-fly-delay);
+  will-change: transform, opacity;
+}
+.section-title-flight-host.is-flight-ready .section-flight-space { width: .28em; }
+.section-title-flight-host.is-flight-ready:not(.logo) > span:not(.section-title-flight),
+.section-title-flight-host.is-flight-ready:not(.logo) > p {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .5s ease .52s, transform .65s cubic-bezier(.2, .8, .2, 1) .52s;
+}
+.section-title-flight-host.is-flight-ready.is-title-arrived .section-flight-letter {
+  opacity: 1;
+  transform: none;
+}
+.section-title-flight-host.is-flight-ready.is-title-arrived:not(.logo) > span:not(.section-title-flight),
+.section-title-flight-host.is-flight-ready.is-title-arrived:not(.logo) > p {
+  opacity: 1;
+  transform: none;
+}
+html.is-title-pin-holding {
+  overscroll-behavior: none;
+}
+html.is-about-pin-holding {
+  overscroll-behavior: none;
+}
+[data-layout="page-home"] .footer .logo.has-flight-title::after { display: none; }
+[data-layout="page-home"] .footer .footer-contact-flight-title {
+  display: block;
+  color: var(--palette-navy);
+  font: 400 clamp(46px, 5vw, 78px)/1 'Cherry Bomb One', sans-serif;
+  letter-spacing: -.025em;
+}
+[data-layout="page-home"] .footer .footer-hana-brand {
+  display: block;
+  width: clamp(142px, 12vw, 204px);
+  height: auto;
+  margin: clamp(14px, 1.4vw, 20px) auto 0;
+  object-fit: contain;
+  filter: drop-shadow(0 7px 12px rgb(64 55 82 / 10%));
+}
+@media (prefers-reduced-motion: reduce) {
+  .section-title-flight-host.is-flight-ready .section-flight-letter {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .section-title-flight-host.is-flight-ready:not(.logo) > span:not(.section-title-flight),
+  .section-title-flight-host.is-flight-ready:not(.logo) > p {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 /* Repeat the same soft edges rather than switching framing styles. */
@@ -169,6 +318,7 @@ body.page-home { background: var(--page-paper); }
   -webkit-mask-image: linear-gradient(to bottom, transparent, var(--palette-navy) clamp(48px, 7vw, 110px));
   mask-image: linear-gradient(to bottom, transparent, var(--palette-navy) clamp(48px, 7vw, 110px));
 }
+.footer .copyright::before { display: none; }
 
 /* Section navigation should not summon the reference site's bird mascot. */
 [data-layout="page-home"] [data-scrollbar="bird"],
