@@ -41,6 +41,36 @@
 .zara-story-role-list p { font-size: 12px; line-height: 1.65; word-break: keep-all; }
 .zara-story-visual .collaboration-photos { height: 100%; }
 .zara-story-visual .collaboration-photo img { width: 100%; height: 100%; object-fit: cover; background: transparent; }
+@media(prefers-reduced-motion:no-preference) {
+ .has-viewport-entrances .zara-story-panel > .zara-story-visual,
+ .has-viewport-entrances .zara-story-panel > .zara-story-copy,
+ .has-viewport-entrances .zara-story-panel--planet-work .planet-work-heading,
+ .has-viewport-entrances .zara-story-panel--planet-work .planet-work-card {
+   opacity: 0;
+   transform: translateY(28px);
+   transition: opacity .72s ease, transform .78s cubic-bezier(.2,.75,.25,1);
+ }
+ .has-viewport-entrances .zara-story-panel > .zara-story-copy { transition-delay: .14s; }
+ .has-viewport-entrances .zara-story-panel.is-current > .zara-story-visual,
+ .has-viewport-entrances .zara-story-panel.is-current > .zara-story-copy,
+ .has-viewport-entrances .zara-story-panel--planet-work.is-current .planet-work-heading,
+ .has-viewport-entrances .zara-story-panel--planet-work.is-current .planet-work-card {
+   opacity: 1;
+   transform: translateY(0);
+ }
+ .has-viewport-entrances .zara-story-panel--planet-work .planet-work-card:nth-of-type(1) { transition-delay: .1s; }
+ .has-viewport-entrances .zara-story-panel--planet-work .planet-work-card:nth-of-type(2) { transition-delay: .2s; }
+ .has-viewport-entrances .zara-story-panel--planet-work .planet-work-card:nth-of-type(3) { transition-delay: .3s; }
+ .has-viewport-entrances .zara-story-panel .collaboration-photo {
+   opacity: 0;
+   transition: opacity .55s ease, transform .72s cubic-bezier(.2,.75,.25,1);
+ }
+ .has-viewport-entrances .zara-story-panel .collaboration-photo-main { transform: translate(-24px,18px) rotate(-5deg); }
+ .has-viewport-entrances .zara-story-panel .collaboration-photo-sub { transform: translate(24px,20px) rotate(5deg); transition-delay: .18s; }
+ .has-viewport-entrances .zara-story-panel.is-current .collaboration-photo { opacity: 1; }
+ .has-viewport-entrances .zara-story-panel.is-current .collaboration-photo-main { transform: rotate(-2deg); }
+ .has-viewport-entrances .zara-story-panel.is-current .collaboration-photo-sub { transform: rotate(1.5deg); }
+}
 @media(min-width:901px) and (max-height:800px) {
  .zara-story-panel { padding: 26px 34px; min-height: 80svh; }
  .zara-story-copy h3 { margin: 16px 0; font-size: 30px; }

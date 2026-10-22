@@ -68,6 +68,7 @@
   ];
   const story = document.createElement('section');
   story.className = 'zara-story';
+  story.classList.add('has-viewport-entrances');
   story.setAttribute('aria-label', '딥티크 리디자인과 For The Planet 담당 작업');
   story.innerHTML = `<div class="zara-story-sticky"><div class="zara-story-viewport" tabindex="0" role="region" aria-label="딥티크 상세 가로 스크롤"><div class="zara-story-track">${slides.map((slide,index) => index === 4 ? `<section class="zara-story-panel zara-story-panel--planet-work" aria-labelledby="zara-story-title-${index}">${planetWorkShowcase(index)}</section>` : `<article class="zara-story-panel" aria-labelledby="zara-story-title-${index}"><div class="zara-story-visual">${slide.visual}</div><div class="zara-story-copy"><span class="zara-story-kicker">TEAM PROJECT · ${String(index+1).padStart(2,'0')} / 06</span><h3 id="zara-story-title-${index}">${slide.title}</h3><p class="zara-story-en" lang="en">${slide.en}</p>${slide.description ? `<p class="zara-story-description" lang="en">${slide.description}</p>` : ''}<p class="zara-story-ko">${slide.ko}</p>${slide.extra || ''}</div></article>`).join('')}</div></div><nav class="zara-story-nav" aria-label="딥티크 상세 이동"><button type="button" data-direction="-1" aria-label="이전 내용">←</button><span class="zara-story-status" aria-live="polite">01 / 06</span><span class="zara-story-hint">SCROLL TO EXPLORE →</span><button type="button" data-direction="1" aria-label="다음 내용">→</button></nav></div>`;
   research.before(story);
@@ -89,6 +90,7 @@
   const mode = matchMedia('(min-width: 901px) and (prefers-reduced-motion: no-preference)');
   let queued = false;
   let current = -1;
+  let storyInView = false;
   const usesScrollDrivenStory = () => mode.matches && !story.closest('[hidden]');
   const update = () => {
     queued = false;
@@ -104,10 +106,11 @@
       current=next;
       story.dataset.activeStory=String(current);
       story.querySelector('.zara-story-status').textContent=`${String(current+1).padStart(2,'0')} / 06`;
-      panels.forEach((panel,index)=>panel.classList.toggle('is-current',index===current));
       story.querySelector('[data-direction="-1"]').disabled=current===0;
       story.querySelector('[data-direction="1"]').disabled=current===panels.length-1;
     }
+    const settled = Math.abs(distance-next*stride) <= Math.max(8,stride*.1);
+    panels.forEach((panel,index)=>panel.classList.toggle('is-current',storyInView&&settled&&index===next));
   };
   const queue = () => {if(!queued){queued=true;requestAnimationFrame(update);}};
   const go = index => {
@@ -125,5 +128,15 @@
   viewport.addEventListener('scroll',queue,{passive:true});
   mode.addEventListener('change',()=>{viewport.scrollLeft=0;queue();});
   new ResizeObserver(queue).observe(viewport);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(entries => {
+      const entry = entries[0];
+      storyInView = entry.isIntersecting && entry.intersectionRatio >= .22;
+      if (!storyInView) panels.forEach(panel => panel.classList.remove('is-current'));
+      queue();
+    }, {threshold:[0,.22],rootMargin:'0px 0px -4% 0px'}).observe(viewport);
+  } else {
+    storyInView = true;
+  }
   update();
 })();

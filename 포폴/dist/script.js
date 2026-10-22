@@ -1739,7 +1739,7 @@
         chatbot.classList.add('is-auto-nudging');
         clearTimeout(nudgeClearTimer);
         nudgeClearTimer = window.setTimeout(() => chatbot.classList.remove('is-auto-nudging'), 1100);
-      }, 3000);
+      }, 5000);
       addEventListener('pagehide', () => {
         clearInterval(nudgeTimer);
         clearTimeout(nudgeClearTimer);
