@@ -1051,6 +1051,22 @@
       svg.append(document.createElementNS('http://www.w3.org/2000/svg','path'));
       panel.prepend(svg);
     });
+    const englishTextReveals=panels.map(panel=>{
+      const line=panel.querySelector('.case-step-english');
+      if(!line) return null;
+      const label=line.textContent;
+      line.setAttribute('aria-label',label);
+      line.textContent='';
+      const characters=Array.from(label,character=>{
+        const span=document.createElement('span');
+        span.className='case-step-tone-character';
+        span.setAttribute('aria-hidden','true');
+        span.textContent=character;
+        line.append(span);
+        return span;
+      });
+      return {characters,progress:-1};
+    });
     const horizontalMode=matchMedia('(min-width: 901px) and (prefers-reduced-motion: no-preference)');
     let horizontalFrame=0;
     let walkthroughHeld=false;
@@ -1109,9 +1125,19 @@
       walkthrough.style.height=horizontalMode.matches?sticky.offsetHeight+firstPanelHold+travel+'px':'';
       const walkthroughRect=walkthrough.getBoundingClientRect();
       const rawOffset=horizontalMode.matches?Math.max(0,Math.min(travel,-walkthroughRect.top-firstPanelHold)):viewport.scrollLeft;
-      const nextPanel=Math.min(panels.length-1,Math.floor((rawOffset+viewport.clientWidth*.08)/Math.max(1,viewport.clientWidth)));
+      const nextPanel=Math.min(panels.length-1,Math.floor(rawOffset/Math.max(1,viewport.clientWidth)));
       const hasReachedProjectWalkthrough = walkthroughRect.top <= -firstPanelHold;
-      if(horizontalMode.matches && hasReachedProjectWalkthrough && nextPanel>pausedPanel){
+      const panelPosition=rawOffset/Math.max(1,viewport.clientWidth);
+      englishTextReveals.forEach((reveal,index)=>{
+        if(!reveal) return;
+        const progress=index===0&&horizontalMode.matches
+          ? Math.max(0,Math.min(1,-walkthroughRect.top/Math.max(1,firstPanelHold)))
+          : Math.max(0,Math.min(1,(panelPosition-(index-.9))/.9));
+        const litCount=Math.round(progress*reveal.characters.length);
+        reveal.characters.forEach((character,characterIndex)=>character.classList.toggle('is-deep',characterIndex<litCount));
+        reveal.progress=progress;
+      });
+      if(horizontalMode.matches && document.documentElement.dataset.progressNavigating !== 'true' && hasReachedProjectWalkthrough && nextPanel>pausedPanel){
         const sectionTop=window.scrollY+walkthroughRect.top;
         const snapY=sectionTop+firstPanelHold+(nextPanel*viewport.clientWidth);
         pausedPanel=nextPanel;
@@ -1402,53 +1428,6 @@
   document.addEventListener('portfolio:sections-ready', () => requestAnimationFrame(initSectionTitleFlights));
 })();
 
-// Deepen the MONSTER title and summary one character at a time.
-(() => {
-  const initMonsterToneReveal = () => {
-    const description = document.querySelector('.monster-description');
-    if (!description || description.dataset.toneRevealReady === 'true') return;
-    const lines = [description.querySelector('h3'), description.querySelector('.monster-summary')].filter(Boolean);
-    if (!lines.length) return;
-    description.dataset.toneRevealReady = 'true';
-
-    let characterIndex = 0;
-    lines.forEach((line, lineIndex) => {
-      const label = line.textContent.trim();
-      line.setAttribute('aria-label', label);
-      line.textContent = '';
-      [...label].forEach(character => {
-        const letter = document.createElement('span');
-        letter.className = `monster-tone-letter${character === ' ' ? ' monster-tone-space' : ''}`;
-        letter.setAttribute('aria-hidden', 'true');
-        letter.textContent = character === ' ' ? '\u00a0' : character;
-        letter.style.setProperty('--tone-delay', `${characterIndex * 54 + lineIndex * 90}ms`);
-        line.append(letter);
-        characterIndex += 1;
-      });
-    });
-    description.classList.add('is-tone-ready');
-
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
-      description.classList.add('is-tone-visible');
-      return;
-    }
-
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.intersectionRatio >= .35) description.classList.add('is-tone-visible');
-        else if (!entry.isIntersecting) description.classList.remove('is-tone-visible');
-      });
-    }, { threshold: [0, .35], rootMargin: '0px 0px -8% 0px' });
-    observer.observe(description);
-  };
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMonsterToneReveal, { once: true });
-  } else {
-    initMonsterToneReveal();
-  }
-})();
-
 // Match the movie introduction to the shared portfolio heading system.
 (() => {
   const initMovieHeading = () => {
@@ -1598,28 +1577,46 @@
 
     const bar = container.querySelector('[data-scrollbar="bar"]');
     const points = [...container.querySelectorAll('[data-progress-target]')];
-    const sections = points
-      .map(point => ({ point, section: document.getElementById(point.dataset.progressTarget) }))
-      .filter(item => item.section);
-    if (!bar || !sections.length) return;
+    const sections = points.map(point => ({
+      point,
+      section: document.getElementById(point.dataset.progressTarget)
+    }));
+    // PROJECT is injected by all-projects.js. Never collapse/re-number the
+    // five milestones when that dynamic section is not ready yet.
+    if (!bar || points.length !== 5 || sections.some(item => !item.section)) return;
 
     container.dataset.progressNavigationReady = 'true';
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
     let frame = 0;
+    let navigationTarget = null;
+    let navigationTimer = 0;
+    const getDocumentTop = element => element.getBoundingClientRect().top + window.scrollY;
 
     const render = () => {
       frame = 0;
-      const root = document.documentElement;
-      const scrollRange = Math.max(1, root.scrollHeight - innerHeight);
-      const progress = Math.max(0, Math.min(1, scrollY / scrollRange));
-      const trackProgress = 2 + progress * 96;
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - innerHeight);
+      const anchors = sections.map((item, index) => index === 0
+        ? 0
+        : Math.max(0, Math.min(maxScroll, getDocumentTop(item.section) - innerHeight * .35)));
+      let positionIndex = navigationTarget ? sections.indexOf(navigationTarget) : 0;
+      if (!navigationTarget && scrollY > 0) {
+        positionIndex = sections.length - 1;
+        for (let index = 0; index < anchors.length - 1; index++) {
+          if (scrollY <= anchors[index + 1]) {
+            const distance = Math.max(1, anchors[index + 1] - anchors[index]);
+            const between = Math.max(0, Math.min(1, (scrollY - anchors[index]) / distance));
+            positionIndex = index + between;
+            break;
+          }
+        }
+      }
+      const currentIndex = Math.max(0, Math.min(sections.length - 1, Math.round(positionIndex)));
+      const current = sections[currentIndex];
+      const trackProgress = sections.length > 1
+        ? 2 + (positionIndex / (sections.length - 1)) * 96
+        : 2;
       bar.style.setProperty('--page-progress', `${trackProgress}%`);
 
-      const markerLine = scrollY + innerHeight * .36;
-      let current = sections[0];
-      sections.forEach(item => {
-        if (item.section.offsetTop <= markerLine) current = item;
-      });
       sections.forEach(item => {
         const active = item === current;
         item.point.classList.toggle('is-current', active);
@@ -1632,9 +1629,28 @@
       if (!frame) frame = requestAnimationFrame(render);
     };
 
-    sections.forEach(({ point, section }) => {
-      point.addEventListener('click', () => {
-        section.scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'start' });
+    const navigateTo = item => {
+      if (!item) return;
+      document.documentElement.dataset.progressNavigating = 'true';
+      navigationTarget = item;
+      clearTimeout(navigationTimer);
+      render();
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - innerHeight);
+      const top = item === sections[0]
+        ? 0
+        : Math.max(0, Math.min(maxScroll, getDocumentTop(item.section) - innerHeight * .35));
+      window.scrollTo({ top, behavior: 'auto' });
+      navigationTimer = setTimeout(() => {
+        delete document.documentElement.dataset.progressNavigating;
+        navigationTarget = null;
+        requestRender();
+      }, 120);
+    };
+
+    sections.forEach(item => {
+      item.point.addEventListener('click', event => {
+        event.preventDefault();
+        navigateTo(item);
       });
     });
 
@@ -1646,6 +1662,7 @@
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initProgressNavigation, { once: true });
   else initProgressNavigation();
+  document.addEventListener('portfolio:sections-ready', initProgressNavigation);
 })();
 
 // Move the floating controls outside animated footer ancestors so positioning uses the viewport.
@@ -1683,7 +1700,7 @@
       '자기소개': '안녕하세요, 웹디자인과 인터랙션을 배우며 차근차근 성장하고 있는 HANA입니다.',
       '사무직 경험': '사무직에서 쌓은 꼼꼼함과 정보 정리 경험을 화면의 구조와 사용성을 설계하는 데 활용하고 있어요.',
       '디자인을 시작한 이유': '정보를 더 편하고 매력적으로 전달하는 화면에 관심이 생겨 웹디자인을 시작했습니다.',
-      '자라 프로젝트': 'ZARA의 브랜드 무드를 웹 인터랙션으로 풀어낸 개인 프로젝트입니다.',
+      '딥티크 프로젝트': '딥티크의 브랜드 정체성과 향에 담긴 이야기를 온라인 경험으로 풀어낸 팀 프로젝트입니다. 저는 For The Planet 페이지의 디자인과 인터랙션 구현을 담당했습니다.',
       '담당 역할': '기획, 화면 구성, 비주얼 디자인, 퍼블리싱과 인터랙션 구현을 담당했습니다.',
       '개인 작업': '브랜드의 인상을 화면과 움직임으로 표현한 개인 웹 프로젝트들을 소개하고 있어요.',
       '클론 코딩': '기존 사이트의 구조와 표현을 분석한 뒤 직접 구현하며 레이아웃과 반응형 감각을 익혔습니다.',
@@ -1706,7 +1723,20 @@
       body.scrollTop = body.scrollHeight;
     };
 
-    launcher.addEventListener('click', () => setOpen(!chatbot.classList.contains('is-open')));
+    let nudgeTimer = 0;
+    let nudgeClearTimer = 0;
+    let hasBeenOpened = false;
+    const stopAutoNudge = () => {
+      hasBeenOpened = true;
+      clearInterval(nudgeTimer);
+      clearTimeout(nudgeClearTimer);
+      chatbot.classList.remove('is-auto-nudging');
+    };
+
+    launcher.addEventListener('click', () => {
+      stopAutoNudge();
+      setOpen(!chatbot.classList.contains('is-open'));
+    });
     closeButton.addEventListener('click', () => setOpen(false));
     topicButtons.forEach((button) => button.addEventListener('click', () => {
       addMessage(button.textContent.trim(), 'question');
@@ -1731,9 +1761,8 @@
     });
 
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      let nudgeClearTimer = 0;
-      const nudgeTimer = window.setInterval(() => {
-        if (chatbot.classList.contains('is-open') || launcher.matches(':hover')) return;
+      nudgeTimer = window.setInterval(() => {
+        if (hasBeenOpened || chatbot.classList.contains('is-open') || launcher.matches(':hover')) return;
         chatbot.classList.remove('is-auto-nudging');
         void chatbot.offsetWidth;
         chatbot.classList.add('is-auto-nudging');
@@ -1822,6 +1851,9 @@
 
     headings.forEach(heading => {
       heading.classList.add('has-brief-scroll-pin');
+      const allProjectsSection = heading.closest('.all-projects');
+      const isPersonalWorkHeading = heading.matches('.team-personal-heading');
+      const pinTarget = allProjectsSection || heading;
       let replayFrame = 0;
       let hasLeftViewport = true;
       const rearmObserver = new IntersectionObserver(entries => {
@@ -1829,9 +1861,16 @@
           if (!entry.isIntersecting) hasLeftViewport = true;
         });
       }, { threshold: 0 });
-      rearmObserver.observe(heading);
-      const replayTitle = () => {
+      rearmObserver.observe(pinTarget);
+      const replayTitle = pinScrollTop => {
         hasLeftViewport = false;
+        if (document.documentElement.dataset.progressNavigating === 'true') {
+          heading.classList.add('is-title-arrived');
+          return;
+        }
+        if ((allProjectsSection || isPersonalWorkHeading) && Number.isFinite(pinScrollTop)) {
+          scrollTo({top:pinScrollTop,left:scrollX,behavior:'auto'});
+        }
         cancelAnimationFrame(replayFrame);
         heading.classList.remove('is-title-arrived');
         // Commit the reset before starting the stagger again at the pin point.
@@ -1840,17 +1879,17 @@
         holdScrollForTitle();
       };
       window.ScrollTrigger.create({
-        trigger: heading,
-        start: 'top 18%',
+        trigger: pinTarget,
+        start: allProjectsSection ? 'top 7%' : 'center center',
         // The time-based input hold owns the pause; only a tiny pin runway is needed.
         end: '+=2',
-        pin: true,
+        pin: pinTarget,
         pinSpacing: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        onEnter: replayTitle,
-        onEnterBack: () => {
-          if (hasLeftViewport) replayTitle();
+        onEnter: self => replayTitle(self.start),
+        onEnterBack: self => {
+          if (hasLeftViewport) replayTitle(self.start);
         },
         onLeave: () => heading.classList.add('is-title-arrived'),
         // The IntersectionObserver resets the title only after it is fully off-screen.

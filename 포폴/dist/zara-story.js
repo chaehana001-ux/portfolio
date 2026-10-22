@@ -68,7 +68,6 @@
   ];
   const story = document.createElement('section');
   story.className = 'zara-story';
-  story.classList.add('has-viewport-entrances');
   story.setAttribute('aria-label', '딥티크 리디자인과 For The Planet 담당 작업');
   story.innerHTML = `<div class="zara-story-sticky"><div class="zara-story-viewport" tabindex="0" role="region" aria-label="딥티크 상세 가로 스크롤"><div class="zara-story-track">${slides.map((slide,index) => index === 4 ? `<section class="zara-story-panel zara-story-panel--planet-work" aria-labelledby="zara-story-title-${index}">${planetWorkShowcase(index)}</section>` : `<article class="zara-story-panel" aria-labelledby="zara-story-title-${index}"><div class="zara-story-visual">${slide.visual}</div><div class="zara-story-copy"><span class="zara-story-kicker">TEAM PROJECT · ${String(index+1).padStart(2,'0')} / 06</span><h3 id="zara-story-title-${index}">${slide.title}</h3><p class="zara-story-en" lang="en">${slide.en}</p>${slide.description ? `<p class="zara-story-description" lang="en">${slide.description}</p>` : ''}<p class="zara-story-ko">${slide.ko}</p>${slide.extra || ''}</div></article>`).join('')}</div></div><nav class="zara-story-nav" aria-label="딥티크 상세 이동"><button type="button" data-direction="-1" aria-label="이전 내용">←</button><span class="zara-story-status" aria-live="polite">01 / 06</span><span class="zara-story-hint">SCROLL TO EXPLORE →</span><button type="button" data-direction="1" aria-label="다음 내용">→</button></nav></div>`;
   research.before(story);
@@ -88,9 +87,50 @@
   const track = story.querySelector('.zara-story-track');
   const panels = [...story.querySelectorAll('.zara-story-panel')];
   const mode = matchMedia('(min-width: 901px) and (prefers-reduced-motion: no-preference)');
+  const textReveals = panels.map(panel => {
+    const paragraph = panel.querySelector('.zara-story-ko, .planet-work-heading > p');
+    if (!paragraph) return null;
+    const label = paragraph.textContent;
+    paragraph.setAttribute('aria-label', label);
+    paragraph.textContent = '';
+    const characters = Array.from(label, character => {
+      const span = document.createElement('span');
+      span.className = 'zara-story-tone-character';
+      span.setAttribute('aria-hidden', 'true');
+      span.textContent = character;
+      paragraph.append(span);
+      return span;
+    });
+    return {paragraph, characters, progress: -1};
+  });
   let queued = false;
   let current = -1;
   let storyInView = false;
+  let textHoldTimer = 0;
+  let textHoldActive = false;
+  const completedTextHolds = new Set();
+  const holdKeys = new Set(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' ']);
+  const blockTextHoldScroll = event => {
+    if (event.type !== 'keydown' || holdKeys.has(event.key)) event.preventDefault();
+  };
+  const releaseTextHold = () => {
+    if (!textHoldActive) return;
+    textHoldActive = false;
+    clearTimeout(textHoldTimer);
+    removeEventListener('wheel',blockTextHoldScroll,{capture:true});
+    removeEventListener('touchmove',blockTextHoldScroll,{capture:true});
+    removeEventListener('keydown',blockTextHoldScroll,{capture:true});
+  };
+  const holdAtTextEnd = (index,centerScrollTop) => {
+    if (document.documentElement.dataset.progressNavigating === 'true' || textHoldActive || completedTextHolds.has(index) || !usesScrollDrivenStory()) return;
+    completedTextHolds.add(index);
+    textHoldActive = true;
+    scrollTo({top:centerScrollTop,left:scrollX,behavior:'auto'});
+    addEventListener('wheel',blockTextHoldScroll,{passive:false,capture:true});
+    addEventListener('touchmove',blockTextHoldScroll,{passive:false,capture:true});
+    addEventListener('keydown',blockTextHoldScroll,{capture:true});
+    textHoldTimer = setTimeout(releaseTextHold,500);
+  };
   const usesScrollDrivenStory = () => mode.matches && !story.closest('[hidden]');
   const update = () => {
     queued = false;
@@ -101,6 +141,20 @@
     story.style.height = scrollDriven ? `${innerHeight+travel}px` : '';
     const distance = scrollDriven ? Math.max(0,Math.min(travel,-story.getBoundingClientRect().top)) : viewport.scrollLeft;
     track.style.transform = scrollDriven ? `translate3d(${-distance}px,0,0)` : '';
+    const position = stride ? distance/stride : 0;
+    const storyTop = story.getBoundingClientRect().top;
+    textReveals.forEach((reveal,index) => {
+      if (!reveal) return;
+      const progress = index === 0 && scrollDriven
+        ? Math.max(0,Math.min(1,(innerHeight*.3-storyTop)/(innerHeight*.3)))
+        : Math.max(0,Math.min(1,(position-(index-.42))/.42));
+      const litCount = Math.round(progress*reveal.characters.length);
+      reveal.characters.forEach((character,characterIndex) => character.classList.toggle('is-deep',characterIndex<litCount));
+      if (storyInView && progress >= .999 && reveal.progress < .999) {
+        holdAtTextEnd(index,scrollY+storyTop+index*stride);
+      }
+      reveal.progress = progress;
+    });
     const next = Math.max(0,Math.min(panels.length-1,Math.round(distance/stride)));
     if(next!==current){
       current=next;
@@ -132,11 +186,17 @@
     new IntersectionObserver(entries => {
       const entry = entries[0];
       storyInView = entry.isIntersecting && entry.intersectionRatio >= .22;
-      if (!storyInView) panels.forEach(panel => panel.classList.remove('is-current'));
+      if (!storyInView) {
+        panels.forEach(panel => panel.classList.remove('is-current'));
+        completedTextHolds.clear();
+        textReveals.forEach(reveal => { if (reveal) reveal.progress = -1; });
+        releaseTextHold();
+      }
       queue();
     }, {threshold:[0,.22],rootMargin:'0px 0px -4% 0px'}).observe(viewport);
   } else {
     storyInView = true;
   }
+  addEventListener('pagehide',releaseTextHold,{once:true});
   update();
 })();

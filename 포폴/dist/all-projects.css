@@ -1,7 +1,16 @@
 /* Keep the original palette and rounded display type; simplify navigation. */
 .has-project-tabs .section-mejiro-data { display: none !important; }
 .has-project-tabs .all-project-panel[hidden] { display: none !important; }
-.all-projects { position: relative; z-index: 4; padding: clamp(72px,7vw,112px) 6vw 56px; color: var(--palette-navy); background: var(--palette-ivory); scroll-margin-top: 40px; }
+.all-projects { position: relative; z-index: 4; min-height: 100svh; box-sizing: border-box; padding: clamp(72px,7vw,112px) 6vw 56px; color: var(--palette-navy); background: var(--palette-ivory); scroll-margin-top: 40px; }
+@media (min-width: 901px) {
+ .all-projects {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: clamp(52px,6svh,78px);
+  padding-bottom: clamp(52px,6svh,78px);
+ }
+}
 .all-projects-heading { text-align: center; }
 .all-projects-heading > span { font: 600 11px/1.5 var(--font-body); letter-spacing: .14em; }
 .all-projects-heading h2 { margin: 12px 0 18px; font: 400 clamp(48px,7vw,112px)/1.1 'Cherry Bomb One',sans-serif; letter-spacing: -.03em; }
