@@ -69,7 +69,7 @@
     const handwritingEpoch = performance.now();
     const syncHandwriting = () => {
       const phase = Math.floor((performance.now() - handwritingEpoch) / 1000) % 2;
-      albumList.dataset.inkPhase = phase === 0 ? 'odd' : 'even';
+      albumList.dataset.inkPhase = phase === 0 ? 'a' : 'b';
     };
     syncHandwriting();
     setInterval(syncHandwriting, 1000);
@@ -624,41 +624,53 @@
         section.querySelector('.case-step-description').textContent = '';
         const labels = ['인터뷰 원문','인터뷰 질문','응답 요약','어피니티 다이어그램'];
         const files = ['interview-full.jpg','interview-questions.png','interview-summary.jpg','interview-affinity.jpg'];
-        const stage = document.createElement('div');
-        stage.className = 'case-interview-material';
-        const preview = document.createElement('button');
-        preview.type = 'button';
-        preview.className = 'case-interview-preview';
-        const image = document.createElement('img');
-        image.loading = 'lazy';
-        preview.append(image);
-        stage.append(preview);
+        const deck = document.createElement('div');
+        deck.className = 'case-analysis-deck case-interview-deck';
+        files.forEach((file,index) => {
+          const figure = document.createElement('figure');
+          figure.className = 'case-analysis-card';
+          figure.dataset.interviewCard = String(index);
+          const image = document.createElement('img');
+          image.src = './assets/img/portfolio/' + file;
+          image.alt = labels[index] + ' 원본 자료';
+          image.loading = index === 0 ? 'eager' : 'lazy';
+          const figureCaption = document.createElement('figcaption');
+          figureCaption.textContent = labels[index];
+          figure.append(image,figureCaption);
+          deck.append(figure);
+        });
         const caption = section.querySelector('.case-enlarge');
         caption.disabled = false;
         let selected = 0;
         const openMaterial = () => {
           const full = document.createElement('img');
-          full.src = image.src;
+          full.src = deck.querySelector('.case-analysis-card.is-active img').src;
           full.alt = labels[selected];
           full.style.cssText = 'display:block;width:100%;height:auto;';
           dialog.querySelector('.case-dialog-content').replaceChildren(full);
           dialog.querySelector('#case-dialog-title').textContent = labels[selected];
           dialog.showModal();
         };
-        preview.addEventListener('click',openMaterial);
+        deck.addEventListener('click',event => {
+          if (event.target.closest('.case-analysis-card.is-active')) openMaterial();
+        });
         caption.addEventListener('click',openMaterial);
         const selectMaterial = index => {
           selected = index;
-          image.src = './assets/img/portfolio/' + files[index];
-          image.alt = labels[index] + ' 원본 자료';
-          preview.setAttribute('aria-label',labels[index] + ' 크게 보기');
+          deck.querySelectorAll('.case-analysis-card').forEach((card,cardIndex) => {
+            const relative = (cardIndex - index + files.length) % files.length;
+            card.style.setProperty('--stack-order',String(relative));
+            card.classList.toggle('is-active',cardIndex === index);
+            card.setAttribute('aria-hidden',String(cardIndex !== index));
+          });
+          deck.setAttribute('aria-label',labels[index] + ' 크게 보기');
           caption.replaceChildren(document.createTextNode(labels[index]));
           const hint = document.createElement('span');
           hint.textContent = '클릭하여 크게 보기 ↗';
           caption.append(hint);
           section.querySelectorAll('.case-tabs button').forEach((button,i) => button.setAttribute('aria-pressed',String(i === index)));
         };
-        documentPanel.replaceWith(stage);
+        documentPanel.replaceWith(deck);
         section.querySelector('.case-step-description').textContent = '딥티크 제품 구매와 웹사이트 이용 경험을 바탕으로 인터뷰를 진행하고, 응답을 주제별로 정리해 핵심 문제를 도출했습니다.';
         const tabs = section.querySelector('.case-tabs');
         tabs.replaceChildren(...labels.map((label,index) => {

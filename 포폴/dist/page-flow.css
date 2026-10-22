@@ -3,8 +3,8 @@
   --page-space: clamp(64px, 7vw, 112px);
   --page-heading: clamp(42px, 5.8vw, 88px);
   --page-paper: var(--palette-ivory);
-  --page-line: rgb(64 52 76 / 24%);
-  --page-shadow: 0 6px 18px rgb(64 52 76 / 5%);
+  --page-line: rgb(64 55 82 / 24%);
+  --page-shadow: 0 6px 18px rgb(64 55 82 / 5%);
 }
 body.page-home { background: var(--page-paper); }
 [data-layout="page-home"] .all-projects,
@@ -96,7 +96,7 @@ body.page-home { background: var(--page-paper); }
 .clone-intro > p {
   font: 400 clamp(14px, 1.1vw, 18px)/1.85 var(--font-body);
   letter-spacing: -.02em;
-  color: rgb(64 52 76 / 85%);
+  color: rgb(64 55 82 / 85%);
 }
 .clone-eyebrow,
 .portfolio-qa-eyebrow {
@@ -114,11 +114,11 @@ body.page-home { background: var(--page-paper); }
   border-radius: 24px;
   box-shadow: var(--page-shadow);
 }
-.team-personal-card { background: #fff8f8; }
+.team-personal-card { background: var(--palette-ivory); }
 [data-layout="page-home"] .section-skills .skills-tool-column {
-  background: #f2ecf4;
+  background: transparent;
   border-color: var(--page-line);
-  box-shadow: var(--page-shadow);
+  box-shadow: none;
 }
 .portfolio-qa { padding-top: calc(var(--page-space) * .65); }
 @media (max-width: 767px) {
@@ -166,8 +166,8 @@ body.page-home { background: var(--page-paper); }
 }
 /* The illustrated contact landscape fades in from the same paper surface. */
 .footer {
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 clamp(48px, 7vw, 110px));
-  mask-image: linear-gradient(to bottom, transparent, #000 clamp(48px, 7vw, 110px));
+  -webkit-mask-image: linear-gradient(to bottom, transparent, var(--palette-navy) clamp(48px, 7vw, 110px));
+  mask-image: linear-gradient(to bottom, transparent, var(--palette-navy) clamp(48px, 7vw, 110px));
 }
 
 /* Section navigation should not summon the reference site's bird mascot. */

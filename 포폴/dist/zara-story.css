@@ -4,19 +4,19 @@
 .zara-story-viewport { width: 100%; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: var(--palette-gold) transparent; }
 .zara-story.is-pinned .zara-story-viewport { overflow: hidden; }
 .zara-story-track { display: flex; width: 100%; gap: 30px; }
-.zara-story-panel { display: grid; flex: 0 0 100%; width: 100%; min-width: 0; box-sizing: border-box; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: clamp(28px,4vw,70px); align-items: center; padding: clamp(32px,4vw,65px); min-height: min(760px,84svh); scroll-snap-align: start; border: 1px solid rgb(64 52 76 / 24%); border-radius: 36px; background: var(--palette-lavender); }
+.zara-story-panel { display: grid; flex: 0 0 100%; width: 100%; min-width: 0; box-sizing: border-box; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: clamp(28px,4vw,70px); align-items: center; padding: clamp(32px,4vw,65px); min-height: min(760px,84svh); scroll-snap-align: start; border: 1px solid rgb(64 55 82 / 24%); border-radius: 36px; background: var(--palette-lavender); }
 .zara-story-panel:nth-child(3n+2) { background: var(--palette-gold); }
 .zara-story-panel:nth-child(3n) { background: var(--palette-ivory); }
 .zara-story-copy,.zara-story-visual { min-width: 0; }
 .zara-story-visual { display: grid; align-items: center; height: min(52svh,520px); }
-.zara-story-visual img { display: block; width: 100%; height: 100%; object-fit: contain; background: #fff; }
+.zara-story-visual img { display: block; width: 100%; height: 100%; object-fit: contain; background: var(--palette-ivory); }
 .zara-story-visual .case-macbook { position: relative; z-index: 2; }
 .zara-story-kicker { display: inline-block; padding: 9px 15px; border: 1px solid var(--palette-navy); border-radius: 999px; background: var(--palette-ivory); font: 600 10px/1.3 var(--font-body); letter-spacing: .06em; }
 .zara-story-copy h3 { margin: 24px 0; font: 400 clamp(27px,3vw,50px)/1.2 'Cherry Bomb One',sans-serif; overflow-wrap: anywhere; }
 .zara-story-copy h3 em { font: 500 1.05em/1 var(--font-body); }
 .zara-story-en { font: 500 clamp(17px,1.7vw,28px)/1.5 var(--font-body); letter-spacing: -.03em; }
 .zara-story-en em { font-style: italic; font-weight: 400; }
-.zara-story-description { margin: 16px 0 0; padding-top: 16px; border-top: 1px solid rgb(64 52 76 / 22%); font-size: clamp(12px,.9vw,15px); line-height: 1.65; }
+.zara-story-description { margin: 16px 0 0; padding-top: 16px; border-top: 1px solid rgb(64 55 82 / 22%); font-size: clamp(12px,.9vw,15px); line-height: 1.65; }
 .zara-story-description + .zara-story-ko { margin-top: 10px; }
 .zara-story-ko { margin-top: 22px; font-size: clamp(12px,1vw,17px); line-height: 1.8; word-break: keep-all; }
 .zara-story-nav { display: none; }
@@ -100,7 +100,7 @@
 .team-preview-screen { overflow: hidden; position: relative; }
 .team-device-preview { position: absolute; left: 0; top: 0; border: 0; max-width: none; transform: scale(var(--device-scale, .3)); transform-origin: top left; pointer-events: none; background: #f7f6f4; }
 .team-desktop-device .team-device-preview { width: 1440px; height: 930px; }
-.team-iphone { position: absolute; right: -3%; bottom: 0; width: 24%; aspect-ratio: 402 / 874; padding: 5px; box-sizing: border-box; border: 2px solid #b9bec8; border-radius: clamp(15px, 2vw, 30px); background: #111318; box-shadow: 3px 7px 12px rgb(64 52 76 / 20%); z-index: 4; }
+.team-iphone { position: absolute; right: -3%; bottom: 0; width: 24%; aspect-ratio: 402 / 874; padding: 5px; box-sizing: border-box; border: 2px solid #b9bec8; border-radius: clamp(15px, 2vw, 30px); background: #111318; box-shadow: 3px 7px 12px rgb(64 55 82 / 20%); z-index: 4; }
 .team-iphone-screen { width: 100%; height: 100%; border-radius: clamp(11px, 1.7vw, 24px); background: #f7f6f4; }
 .team-iphone .team-device-preview { width: 402px; height: 874px; }
 .team-iphone-island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 29%; height: 8px; border-radius: 20px; background: #111318; }
@@ -124,6 +124,14 @@
   height: 100%;
   object-fit: cover;
   object-position: center top;
+}
+.zara-story-visual .team-device-stage--paired { padding: 18px 0 26px; }
+.zara-story-visual .team-device-stage--paired .story-unified-laptop { width: 86%; margin: 0; }
+.team-iphone--story { right: 0; bottom: 0; width: 23%; }
+@media(max-width:900px) {
+  .zara-story-visual .team-device-stage--paired { width: 100%; padding: 8px 0 20px; }
+  .zara-story-visual .team-device-stage--paired .story-unified-laptop { width: 84%; }
+  .team-iphone--story { right: 0; width: 25%; }
 }
 
 /* Three-part For The Planet contribution showcase. */
@@ -155,6 +163,8 @@
   box-shadow: none;
 }
 .planet-work-card:not(.planet-work-card--main) { align-self: center; }
+.planet-work-collage { width: 100%; margin: 0; }
+.planet-work-collage img { display: block; width: 100%; height: auto; object-fit: contain; }
 .planet-work-card--main {
   grid-row: 3 / 5;
   grid-template-columns: 1fr;
@@ -172,10 +182,10 @@
   border: 1px solid #67636b;
   border-radius: clamp(14px, 1.5vw, 25px);
   background: #1d1d1f;
-  box-shadow: 0 13px 24px rgb(64 52 76 / 18%), inset 0 0 0 1px rgb(255 255 255 / 22%);
+  box-shadow: 0 13px 24px rgb(64 55 82 / 18%), inset 0 0 0 1px rgb(255 255 255 / 22%);
 }
 .planet-work-preview { width: 100%; height: 100%; min-height: 0; border-radius: clamp(9px, 1vw, 17px); background: #f7f6f4; }
-.planet-work-preview::after { content: ''; position: absolute; inset: 0; border: 1px solid rgb(64 52 76 / 12%); pointer-events: none; }
+.planet-work-preview::after { content: ''; position: absolute; inset: 0; border: 1px solid rgb(64 55 82 / 12%); pointer-events: none; }
 .planet-ipad-camera { position: absolute; z-index: 3; top: 2px; left: 50%; width: 4px; height: 4px; border-radius: 50%; background: #303035; box-shadow: inset 0 0 0 1px #525866; transform: translateX(-50%); }
 .planet-studio-xdr { width: 100%; min-width: 0; padding: 10px 3% 0; box-sizing: border-box; align-self: end; }
 .planet-studio-xdr-shell {
@@ -194,8 +204,8 @@
 .planet-studio-camera { position: absolute; z-index: 3; top: 3px; left: 50%; width: 5px; height: 5px; border-radius: 50%; background: #07080a; box-shadow: 0 0 0 1px #30343a,inset 0 0 2px #6680a1; transform: translateX(-50%); }
 .planet-studio-stand { position: relative; z-index: 0; width: 44%; height: clamp(62px, 8.5vh, 96px); margin: -1px auto 0; }
 .planet-studio-stand::before { content: ''; position: absolute; top: 0; left: 50%; width: 34%; height: 90%; background: linear-gradient(90deg,#a5a6aa 0%,#d7d8da 26%,#ededee 50%,#c4c5c8 76%,#999a9e 100%); border-left: 1px solid rgb(80 80 84 / 22%); border-right: 1px solid rgb(80 80 84 / 22%); transform: translateX(-50%); clip-path: polygon(8% 0,92% 0,100% 100%,0 100%); }
-.planet-studio-stand::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 11%; border: 1px solid rgb(90 90 94 / 28%); border-radius: 50% 50% 5px 5px; background: linear-gradient(90deg,#919297,#dadbdd 48%,#8d8e92); box-shadow: 0 7px 11px rgb(64 52 76 / 17%); }
-.planet-work-copy { align-self: center; min-width: 0; max-width: 100%; padding: 8px 4px 8px 0; box-sizing: border-box; overflow: visible; color: #342a40; }
+.planet-studio-stand::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 11%; border: 1px solid rgb(90 90 94 / 28%); border-radius: 50% 50% 5px 5px; background: linear-gradient(90deg,#919297,#dadbdd 48%,#8d8e92); box-shadow: 0 7px 11px rgb(64 55 82 / 17%); }
+.planet-work-copy { align-self: center; min-width: 0; max-width: 100%; padding: 8px 4px 8px 0; box-sizing: border-box; overflow: visible; color: var(--palette-navy); }
 .planet-work-card--main .planet-work-copy { align-self: start; padding: 6px 2px 0; }
 .planet-work-copy h3 { margin: 0 0 9px; font: 750 clamp(17px, 1.16vw, 21px)/1.35 var(--font-body); letter-spacing: -.035em; word-break: keep-all; overflow-wrap: break-word; }
 .planet-work-copy p { margin: 0; font-size: clamp(12px, .78vw, 14px); font-weight: 500; line-height: 1.7; word-break: keep-all; overflow-wrap: break-word; }
@@ -220,3 +230,4 @@
   .planet-work-copy h3 { font-size: 17px; }
   .planet-work-copy p { font-size: 12px; }
 }
+

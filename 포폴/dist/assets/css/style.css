@@ -1,11 +1,16 @@
 @charset 'UTF-8';
-/* Color Hunt palette: blush surfaces, pink accents, lavender, and purple text. */
+/* Curated portfolio palette: warm ivory, ink plum, peach, lavender, and rose. */
 :root {
-  --palette-navy: #382B43;
-  --palette-ivory: #FBEFEF;
-  --palette-gold: #F5CBCB;
-  --palette-lavender: #C5B3D3;
-  --palette-ivory-shade: #FFE2E2;
+  --color-background: #FFF8F4;
+  --color-surface: #F6D7B0;
+  --color-accent-soft: #C9B9E8;
+  --color-accent: #EFA9B8;
+  --color-ink: #403752;
+  --palette-navy: #403752;
+  --palette-ivory: #FFF8F4;
+  --palette-gold: #F6D7B0;
+  --palette-lavender: #C9B9E8;
+  --palette-ivory-shade: #EFA9B8;
 }
 /**
  * Swiper 12.0.2

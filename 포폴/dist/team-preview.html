@@ -49,11 +49,13 @@
       const bottom=Math.max(0,document.documentElement.scrollHeight-innerHeight);
       let section=null;
       if(previewMode==='planet-squirrel') section=document.querySelector('.ftp-arch-scroll--first');
-      if(previewMode==='planet-arch') section=[...document.querySelectorAll('.ftp-arch-scroll')].find(node=>!node.classList.contains('ftp-arch-scroll--first'));
+      if(previewMode==='planet-arch') section=document.querySelector('.ftp-mobile-ambition');
       if(section){
         const top=section.getBoundingClientRect().top+scrollY;
-        startPoint=Math.max(0,Math.min(bottom,top+innerHeight*.05));
-        endPoint=Math.min(bottom,startPoint+innerHeight*(previewMode==='planet-squirrel'?1.55:1.8));
+        startPoint=Math.max(0,Math.min(bottom,previewMode==='planet-arch'?top:top+innerHeight*.05));
+        endPoint=previewMode==='planet-arch'
+          ? Math.min(bottom,Math.max(startPoint,top+section.offsetHeight-innerHeight))
+          : Math.min(bottom,startPoint+innerHeight*1.55);
       }else{
         startPoint=0;
         endPoint=partialPreview?Math.min(bottom,innerHeight*previewScreens):bottom;
