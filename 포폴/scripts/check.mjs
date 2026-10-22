@@ -5,8 +5,14 @@ const root = path.resolve(import.meta.dirname,'../dist');
 const html = fs.readFileSync(path.join(root,'index.html'),'utf8');
 const assets = new Set([...html.matchAll(/\.\/assets\/[^\s"'<>),]+/g)].map(m=>m[0].split(/[?#]/)[0]));
 for (const asset of assets) assert(fs.existsSync(path.join(root,asset)), `Missing asset: ${asset}`);
-for (const section of ['messages','mejiro-data','lookbook','admissions','movie']) assert(html.includes(`id="${section}"`),`Missing section: ${section}`);
+for (const section of ['messages','projects','lookbook','clone-coding','movie']) assert(html.includes(`id="${section}"`),`Missing section: ${section}`);
 assert(!html.includes('googletagmanager.com'), 'Original analytics must be removed');
+// Validate local page entry points as well as images.
+for (const match of html.matchAll(/(?:src|href)=["'](\.\/[^"']+)["']/g)) {
+  const reference = match[1].split(/[?#]/)[0];
+  assert(fs.existsSync(path.resolve(root, reference)), `Missing local entry: ${reference}`);
+}
+
 assert(!/<[^>]+data-menu="menu"/.test(html), 'Legacy expandable menu must not return');
 assert(!/<[^>]+class="(?:legacy-hero-scene|modal-messages|modal-movie|modal-short-movie)(?:[\s"])/.test(html), 'Unused original page UI must not return');
 

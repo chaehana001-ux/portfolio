@@ -3934,12 +3934,12 @@ th {
 [data-layout="page-home"] .section-admissions {
   margin-top: -37.5vw;
   padding-top: 30.142857142857142vw;
-  background: url("../img/home/md/admissions-bg.webp") center top no-repeat;
+  background: none center top no-repeat;
   background-size: 100% auto;
 }
 @media only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-width: 1401px) {
   [data-layout="page-home"] .section-admissions {
-    background: url("../img/home/md/admissions-bg@2x.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100% auto;
   }
 }
@@ -3947,7 +3947,7 @@ th {
   [data-layout="page-home"] .section-admissions {
     margin-top: -53.333333333333336vw;
     padding-top: 53.86666666666666vw;
-    background: url("../img/home/admissions-bg.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100% auto;
   }
 }
@@ -6234,7 +6234,7 @@ th {
 [data-layout="page-home"] .section-mejiro-data .snow-wrap {
   position: absolute;
   top: 13.071428571428573vw;
-  0: 0;
+  left: 0;
   overflow: hidden;
   height: 100%;
   width: 100%;
@@ -6247,15 +6247,15 @@ th {
 }
 @media only screen and (min-width: 768px) {
   [data-layout="page-home"] .section-mejiro-data .snow-wrap {
-    -webkit-mask-image: url("../img/home/md/mejiro-data-bg-snow-mask.webp");
-            mask-image: url("../img/home/md/mejiro-data-bg-snow-mask.webp");
+    -webkit-mask-image: none;
+            mask-image: none;
   }
 }
 @media only screen and (max-width: 767px) {
   [data-layout="page-home"] .section-mejiro-data .snow-wrap {
     top: 13.333333333333334vw;
-    -webkit-mask-image: url("../img/home/mejiro-data-bg-snow-mask.webp");
-            mask-image: url("../img/home/mejiro-data-bg-snow-mask.webp");
+    -webkit-mask-image: none;
+            mask-image: none;
     -webkit-mask-position: bottom;
             mask-position: bottom;
   }
@@ -6280,7 +6280,7 @@ th {
   top: 0;
   width: 98.14285714285714vw;
   animation: snow-fall 48s linear infinite;
-  background: url("../img/home/md/mejiro-data-bg-snow.webp") center top repeat-y;
+  background: none center top repeat-y;
   background-size: 100% auto;
 }
 [data-layout="page-home"] .section-mejiro-data .deco-bear-1 {
@@ -7802,34 +7802,34 @@ th {
   width: 100%;
 }
 [data-layout="page-home"] .modal-messages .messages-modal-slider .swiper-slide .container .contents .btn-movie .btn-bg {
-  background: url("../img/messages-modal/md/btn-movie-bg.webp") center top no-repeat;
+  background: none center top no-repeat;
   background-size: 100%;
 }
 @media only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-width: 1401px) {
   [data-layout="page-home"] .modal-messages .messages-modal-slider .swiper-slide .container .contents .btn-movie .btn-bg {
-    background: url("../img/messages-modal/md/btn-movie-bg@2x.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100%;
   }
 }
 @media only screen and (max-width: 767px) {
   [data-layout="page-home"] .modal-messages .messages-modal-slider .swiper-slide .container .contents .btn-movie .btn-bg {
-    background: url("../img/messages-modal/btn-movie-bg.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100%;
   }
 }
 [data-layout="page-home"] .modal-messages .messages-modal-slider .swiper-slide .container .contents .btn-movie .btn-bg-text {
-  background: url("../img/messages-modal/md/btn-movie-bg-text.webp") center top no-repeat;
+  background: none center top no-repeat;
   background-size: 100%;
 }
 @media only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-width: 1401px) {
   [data-layout="page-home"] .modal-messages .messages-modal-slider .swiper-slide .container .contents .btn-movie .btn-bg-text {
-    background: url("../img/messages-modal/md/btn-movie-bg-text@2x.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100%;
   }
 }
 @media only screen and (max-width: 767px) {
   [data-layout="page-home"] .modal-messages .messages-modal-slider .swiper-slide .container .contents .btn-movie .btn-bg-text {
-    background: url("../img/messages-modal/btn-movie-bg-text.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100%;
   }
 }
@@ -7846,11 +7846,11 @@ th {
     pointer-events: none;
   }
   [data-layout="page-home"] .modal-messages .messages-modal-slider .swiper-slide .container .contents .btn-movie .btn-bg-container::before {
-    background: url("../img/messages-modal/md/btn-movie-bg-on@2x.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100%;
   }
   [data-layout="page-home"] .modal-messages .messages-modal-slider .swiper-slide .container .contents .btn-movie .btn-bg-container::after {
-    background: url("../img/messages-modal/md/btn-movie-bg-text-on@2x.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100%;
   }
   [data-layout="page-home"] .modal-messages .messages-modal-slider .swiper-slide .container .contents .btn-movie .btn-bg,
@@ -7859,11 +7859,11 @@ th {
   }
   [data-layout="page-home"] .modal-messages .messages-modal-slider .swiper-slide .container .contents .btn-movie:hover .btn-bg {
     transform: scale(1.1);
-    background: url("../img/messages-modal/md/btn-movie-bg-on@2x.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100%;
   }
   [data-layout="page-home"] .modal-messages .messages-modal-slider .swiper-slide .container .contents .btn-movie:hover .btn-bg-text {
-    background: url("../img/messages-modal/md/btn-movie-bg-text-on@2x.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100%;
   }
 }
@@ -12705,12 +12705,12 @@ th {
 [data-layout="page-home"] .section-movie .section-inner {
   padding-top: 18.142857142857142vw;
   padding-bottom: 2.142857142857143vw;
-  background: url("../img/home/md/movie-bg.webp") center top no-repeat;
+  background: none center top no-repeat;
   background-size: 100% auto;
 }
 @media only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-width: 1401px) {
   [data-layout="page-home"] .section-movie .section-inner {
-    background: url("../img/home/md/movie-bg@2x.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100% auto;
   }
 }
@@ -12718,7 +12718,7 @@ th {
   [data-layout="page-home"] .section-movie .section-inner {
     padding-top: 40.53333333333333vw;
     padding-bottom: 10vw;
-    background: url("../img/home/movie-bg.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100% auto;
   }
 }
@@ -12997,12 +12997,12 @@ th {
   animation: short-movie-text-flowing-pc 32s linear infinite;
   height: 10vw;
   width: 100%;
-  background: url("../img/home/short-movie-deco-text.webp") left top repeat-x;
+  background: none left top repeat-x;
   background-size: 118.07142857142856vw 10vw;
 }
 @media only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-width: 1401px) {
   [data-layout="page-home"] .section-short-movie .deco-text {
-    background: url("../img/home/short-movie-deco-text@2x.webp") left top repeat-x;
+    background: none left top repeat-x;
     background-size: 118.07142857142856vw 10vw;
   }
 }
@@ -13011,7 +13011,7 @@ th {
     animation-name: short-movie-text-flowing-sp;
     bottom: 18.666666666666668vw;
     height: 18.666666666666668vw;
-    background: url("../img/home/short-movie-deco-text.webp") left top repeat-x;
+    background: none left top repeat-x;
     background-size: 220.4vw 18.666666666666668vw;
   }
 }
@@ -13285,12 +13285,12 @@ th {
   content: '';
   height: 0.428571428571429vw;
   width: 0.714285714285714vw;
-  background: url("../img/home/md/scrollbar-balloon.webp") center top no-repeat;
+  background: none center top no-repeat;
   background-size: 100% auto;
 }
 @media only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-width: 1401px) {
   [data-layout="page-home"] .scrollbar-container .scrollbar-drag .scrollbar-drag-icon .balloon span::before {
-    background: url("../img/home/md/scrollbar-balloon@2x.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100% auto;
   }
 }
@@ -13300,7 +13300,7 @@ th {
     left: 4vw;
     height: 1.6vw;
     width: 2.4vw;
-    background: url("../img/home/scrollbar-balloon.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100% auto;
   }
 }
@@ -14766,7 +14766,7 @@ th {
   left: 0;
   height: calc(100% - 21.785714285714285vw);
   width: 100%;
-  background: url("../img/lookbook/md/bg-road-1.webp") center top no-repeat var(--palette-lavender);
+  background: none center top no-repeat var(--palette-lavender);
   background-size: 100% auto;
 }
 [data-layout~="page-lookbook"] .section-style01 .bg-road::after {
@@ -14785,7 +14785,7 @@ th {
 }
 @media only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-width: 1401px) {
   [data-layout~="page-lookbook"] .section-style01 .bg-road {
-    background: url("../img/lookbook/md/bg-road-1@2x.webp") center top no-repeat var(--palette-lavender);
+    background: none center top no-repeat var(--palette-lavender);
     background-size: 100% auto;
   }
 }
@@ -14793,7 +14793,7 @@ th {
   [data-layout~="page-lookbook"] .section-style01 .bg-road {
     height: calc(100% - 46.93333333333333vw);
     top: 46.93333333333333vw;
-    background: url("../img/lookbook/bg-road-1.webp") center top no-repeat var(--palette-lavender);
+    background: none center top no-repeat var(--palette-lavender);
     background-size: 100% auto;
   }
 }
@@ -14804,12 +14804,12 @@ th {
   animation: lookbook-story01-flowing-pc 16s linear infinite;
   height: 10vw;
   width: 100%;
-  background: url("../img/lookbook/story01-deco-text.webp") left top repeat-x;
+  background: none left top repeat-x;
   background-size: 65.92857142857143vw 10vw;
 }
 @media only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-width: 1401px) {
   [data-layout~="page-lookbook"] .section-style01 .deco-text {
-    background: url("../img/lookbook/story01-deco-text@2x.webp") left top repeat-x;
+    background: none left top repeat-x;
     background-size: 65.92857142857143vw 10vw;
   }
 }
@@ -14818,7 +14818,7 @@ th {
     animation-name: lookbook-story01-flowing-sp;
     top: 13.066666666666665vw;
     height: 18.666666666666668vw;
-    background: url("../img/lookbook/story01-deco-text.webp") left top repeat-x;
+    background: none left top repeat-x;
     background-size: 123.06666666666666vw 18.666666666666668vw;
   }
 }
@@ -14874,7 +14874,7 @@ th {
   left: 0;
   height: 100%;
   width: 100%;
-  background: url("../img/lookbook/md/bg-nami-1.webp") center top no-repeat;
+  background: none center top no-repeat;
   background-size: 100% auto;
 }
 [data-layout~="page-lookbook"] .section-style02 .bg-nami::after {
@@ -14893,14 +14893,14 @@ th {
 }
 @media only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-width: 1401px) {
   [data-layout~="page-lookbook"] .section-style02 .bg-nami {
-    background: url("../img/lookbook/md/bg-nami-1@2x.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100% auto;
   }
 }
 @media only screen and (max-width: 767px) {
   [data-layout~="page-lookbook"] .section-style02 .bg-nami {
     top: -25.866666666666667vw;
-    background: url("../img/lookbook/bg-nami-1.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100% auto;
   }
 }
@@ -14910,7 +14910,7 @@ th {
   left: 0;
   height: calc(100% - 21.428571428571427vw);
   width: 100%;
-  background: url("../img/lookbook/md/bg-road-2.webp") center top no-repeat var(--palette-lavender);
+  background: none center top no-repeat var(--palette-lavender);
   background-size: 100% auto;
 }
 [data-layout~="page-lookbook"] .section-style02 .bg-road::after {
@@ -14929,7 +14929,7 @@ th {
 }
 @media only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-width: 1401px) {
   [data-layout~="page-lookbook"] .section-style02 .bg-road {
-    background: url("../img/lookbook/md/bg-road-2@2x.webp") center top no-repeat var(--palette-lavender);
+    background: none center top no-repeat var(--palette-lavender);
     background-size: 100% auto;
   }
 }
@@ -14937,7 +14937,7 @@ th {
   [data-layout~="page-lookbook"] .section-style02 .bg-road {
     height: calc(100% - 78.66666666666666vw);
     top: 78.66666666666666vw;
-    background: url("../img/lookbook/bg-road-2.webp") center top no-repeat var(--palette-lavender);
+    background: none center top no-repeat var(--palette-lavender);
     background-size: 100% auto;
   }
 }
@@ -15000,12 +15000,12 @@ th {
   animation: lookbook-story02-flowing-pc 16s linear infinite;
   height: 10vw;
   width: 100%;
-  background: url("../img/lookbook/story02-deco-text.webp") left top repeat-x;
+  background: none left top repeat-x;
   background-size: 66.42857142857143vw 10vw;
 }
 @media only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-width: 1401px) {
   [data-layout~="page-lookbook"] .section-style02 .deco-text {
-    background: url("../img/lookbook/story02-deco-text@2x.webp") left top repeat-x;
+    background: none left top repeat-x;
     background-size: 66.42857142857143vw 10vw;
   }
 }
@@ -15014,7 +15014,7 @@ th {
     animation-name: lookbook-story02-flowing-sp;
     top: 13.066666666666665vw;
     height: 18.666666666666668vw;
-    background: url("../img/lookbook/story02-deco-text.webp") left top repeat-x;
+    background: none left top repeat-x;
     background-size: 124vw 18.666666666666668vw;
   }
 }
@@ -15033,7 +15033,7 @@ th {
   left: 0;
   height: 100%;
   width: 100%;
-  background: url("../img/lookbook/md/bg-nami-2.webp") center top no-repeat;
+  background: none center top no-repeat;
   background-size: 100% auto;
 }
 [data-layout~="page-lookbook"] .section-style03 .bg-nami::after {
@@ -15052,14 +15052,14 @@ th {
 }
 @media only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-width: 1401px) {
   [data-layout~="page-lookbook"] .section-style03 .bg-nami {
-    background: url("../img/lookbook/md/bg-nami-2@2x.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100% auto;
   }
 }
 @media only screen and (max-width: 767px) {
   [data-layout~="page-lookbook"] .section-style03 .bg-nami {
     top: -25.866666666666667vw;
-    background: url("../img/lookbook/bg-nami-2.webp") center top no-repeat;
+    background: none center top no-repeat;
     background-size: 100% auto;
   }
 }
@@ -15069,7 +15069,7 @@ th {
   left: 0;
   height: calc(100% - 21.428571428571427vw);
   width: 100%;
-  background: url("../img/lookbook/md/bg-road-1.webp") center top no-repeat var(--palette-lavender);
+  background: none center top no-repeat var(--palette-lavender);
   background-size: 100% auto;
 }
 [data-layout~="page-lookbook"] .section-style03 .bg-road::after {
@@ -15083,7 +15083,7 @@ th {
 }
 @media only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-width: 1401px) {
   [data-layout~="page-lookbook"] .section-style03 .bg-road {
-    background: url("../img/lookbook/md/bg-road-1@2x.webp") center top no-repeat var(--palette-lavender);
+    background: none center top no-repeat var(--palette-lavender);
     background-size: 100% auto;
   }
 }
@@ -15091,7 +15091,7 @@ th {
   [data-layout~="page-lookbook"] .section-style03 .bg-road {
     height: calc(100% - 46.666666666666664vw);
     top: 46.666666666666664vw;
-    background: url("../img/lookbook/bg-road-1.webp") center top no-repeat var(--palette-lavender);
+    background: none center top no-repeat var(--palette-lavender);
     background-size: 100% auto;
   }
 }
@@ -15102,12 +15102,12 @@ th {
   animation: lookbook-story03-flowing-pc 16s linear infinite;
   height: 10vw;
   width: 100%;
-  background: url("../img/lookbook/story03-deco-text.webp") left top repeat-x;
+  background: none left top repeat-x;
   background-size: 65.57142857142857vw 10vw;
 }
 @media only screen and (min-width: 768px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-width: 1401px) {
   [data-layout~="page-lookbook"] .section-style03 .deco-text {
-    background: url("../img/lookbook/story03-deco-text@2x.webp") left top repeat-x;
+    background: none left top repeat-x;
     background-size: 65.57142857142857vw 10vw;
   }
 }
@@ -15116,7 +15116,7 @@ th {
     animation-name: lookbook-story03-flowing-sp;
     top: 13.066666666666665vw;
     height: 18.666666666666668vw;
-    background: url("../img/lookbook/story03-deco-text.webp") left top repeat-x;
+    background: none left top repeat-x;
     background-size: 122.39999999999999vw 18.666666666666668vw;
   }
 }
@@ -21597,7 +21597,7 @@ th {
   width: 100%;
   z-index: 0;
   animation: lookbook-star-pc 20s linear infinite;
-  background: url("../img/pattern-star.webp") left top repeat var(--palette-lavender);
+  background: none left top repeat var(--palette-lavender);
   background-size: 64.28571428571429vw 64.28571428571429vw;
 }
 @media only screen and (max-width: 767px) {

@@ -12,7 +12,7 @@ const groups = {
 };
 const palette = { navy: '#403752', ivory: '#FFF8F4', gold: '#F6D7B0', lavender: '#C9B9E8', 'ivory-shade': '#EFA9B8' };
 const map = new Map(Object.entries(groups).flatMap(([name, colors]) => colors.map(color => [color, name])));
-for (const file of ['assets/css/style.css', 'styles.css', 'all-projects.css', 'zara-story.css', 'page-flow.css', 'index.html', 'assets/capabilities-divider.svg', 'assets/clone-section-wave.svg', 'assets/img/portfolio/value-clarity.svg', 'assets/img/portfolio/value-growth.svg', 'assets/img/portfolio/value-together.svg', 'assets/img/portfolio/cursor-plum.svg', 'assets/img/portfolio/cursor-pointer.svg']) {
+for (const file of ['assets/css/style.css', 'styles.css', 'all-projects.css', 'diptyque-story.css', 'page-flow.css', 'index.html', 'assets/capabilities-divider.svg', 'assets/clone-section-wave.svg', 'assets/img/portfolio/value-clarity.svg', 'assets/img/portfolio/value-growth.svg', 'assets/img/portfolio/value-together.svg', 'assets/img/portfolio/cursor-plum.svg', 'assets/img/portfolio/cursor-pointer.svg']) {
   const fullPath = path.join(root, file);
   let source = fs.readFileSync(fullPath, 'utf8');
   if (file === 'assets/css/style.css') source = source.replaceAll('/univ/mejinavi2026/assets/img/', '../img/');

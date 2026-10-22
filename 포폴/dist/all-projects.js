@@ -13,28 +13,24 @@
   hub.className = 'all-projects';
   hub.id = 'all-projects';
   hub.setAttribute('aria-labelledby','all-projects-title');
-  hub.innerHTML = `<div class="all-projects-heading"><span>SELECTED WORK</span><h2 id="all-projects-title">ALL PROJECT</h2><p>궁금한 작업을 선택해 살펴보세요.</p></div><div class="project-category-tabs" role="tablist" aria-label="프로젝트 종류">${categories.map((category,index)=>`<div class="project-category"><button type="button" class="project-category-tab" role="tab" id="project-tab-${category.key}" data-project-tab="${category.key}" aria-selected="${index===0}" tabindex="${index===0?0:-1}" aria-describedby="project-tab-description-${category.key}"><span class="project-category-number">0${index+1}</span><svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${category.icon}</svg><strong>${category.label.replace(' PROJECT','<br>PROJECT')}</strong><span class="project-category-arrow" aria-hidden="true">↘</span></button><p id="project-tab-description-${category.key}">${category.description}</p></div>`).join('')}</div>`;
+  hub.innerHTML = `<div class="all-projects-heading"><span>SELECTED WORK</span><h2 id="all-projects-title">ALL PROJECT</h2><p>스크롤로 모든 작업을 살펴보거나 원하는 작업으로 바로 이동하세요.</p></div><div class="project-category-tabs" role="navigation" aria-label="프로젝트 종류">${categories.map((category,index)=>`<div class="project-category"><button type="button" class="project-category-tab"  id="project-tab-${category.key}" data-project-tab="${category.key}" aria-describedby="project-tab-description-${category.key}"><span class="project-category-number">0${index+1}</span><svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${category.icon}</svg><strong>${category.label.replace(' PROJECT','<br>PROJECT')}</strong></button><p id="project-tab-description-${category.key}">${category.description}</p></div>`).join('')}</div>`;
   team.before(hub);
-  const personalOverview = document.createElement('section');
-  personalOverview.className = 'team-personal-overview';
-  personalOverview.id = 'personal-work';
-  personalOverview.setAttribute('aria-labelledby','team-personal-overview-title');
-  personalOverview.innerHTML = `<header class="team-personal-heading"><span>PERSONAL WORK · 02 PROJECTS</span><h3 id="team-personal-overview-title">PERSONAL WORK</h3><p>브랜드의 인상을 화면과 인터랙션으로 풀어낸 두 개의 개인 웹 프로젝트입니다.</p></header><div class="team-personal-grid"><article class="team-personal-card"><a class="team-personal-visual" href="https://website1-tau-six.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="CULITA 웹사이트 새 창에서 보기"><img src="./assets/img/portfolio/personal-culita-live.png" alt="큰 CULITA 워드마크와 콜라보 프로모션으로 구성된 마우스워시 브랜드 웹사이트 메인 화면" loading="lazy"></a><div class="team-personal-copy"><span>01 · PERSONAL PROJECT</span><h4>CULITA <em>WEB DESIGN</em></h4><p>‘상쾌함에도 취향이 있으니까’라는 메시지를 큰 워드마크, 제품 비주얼, 콜라보 콘텐츠와 스크롤 인터랙션으로 풀어낸 마우스워시 브랜드 웹사이트입니다.</p><div class="team-personal-tags"><span>UI DESIGN</span><span>FRONTEND</span><span>INTERACTION</span></div><div class="team-personal-links"><a href="https://website1-tau-six.vercel.app/" target="_blank" rel="noopener noreferrer">WEBSITE ↗</a><a href="#personal-luma">자세히 보기 ↓</a></div></div></article><article class="team-personal-card"><a class="team-personal-visual" href="https://personal2-bice.vercel.app/pages/personal-02.html" target="_blank" rel="noopener noreferrer" aria-label="ONDA 웹사이트 새 창에서 보기"><img src="./assets/img/portfolio/personal-onda-screen.png" alt="ONDA 차 브랜드 웹사이트 화면" loading="lazy"></a><div class="team-personal-copy"><span>02 · PERSONAL PROJECT</span><h4>ONDA <em>WEB DESIGN</em></h4><p>차 이미지와 일상의 이야기를 연결하고 여백 중심의 화면 구성으로 차분한 브랜드 분위기를 표현했습니다.</p><div class="team-personal-tags"><span>BRANDING</span><span>RESPONSIVE</span><span>FRONTEND</span></div><div class="team-personal-links"><a href="https://personal2-bice.vercel.app/pages/personal-02.html" target="_blank" rel="noopener noreferrer">WEBSITE ↗</a><a href="#personal-onda">자세히 보기 ↓</a></div></div></article></div>`;
-  const movieSection = document.querySelector('.section-movie');
-  if (movieSection) movieSection.before(personalOverview);
   const personalItems = [...document.querySelectorAll('.personal-case')];
   const personal = document.createElement('div');
   personal.id = 'personal-projects';
   if (personalItems[0]) personalItems[0].before(personal);
   personalItems.forEach(item=>personal.append(item));
+  const personalHeading = document.createElement('header');
+  personalHeading.className = 'team-personal-heading personal-details-heading';
+  personalHeading.innerHTML = '<div class="team-intro-eyebrow personal-project-eyebrow project-sparkle-label"><span class="gallery-label-sparkle project-label-sparkle" aria-hidden="true"><svg viewBox="0 0 90 90" aria-hidden="true" focusable="false"><path d="M45 15Q48 43 75 46Q48 49 45 77Q42 49 15 46Q42 43 45 15Z" fill="#f9ecf0" stroke="#c5b0de" stroke-width="3"/><path d="M17 2Q18 15 30 17Q18 19 17 32Q15 19 3 17Q15 15 17 2Z" fill="#e7d7f6" stroke="#c5b0de" stroke-width="1.5"/><circle cx="76" cy="72" r="5" fill="#e2cdef"/><circle cx="85" cy="84" r="2.5" fill="#f4dfce"/></svg></span><span class="project-label-number">02</span><span class="project-label-name">PERSONAL PROJECT <span lang="ko">개인 프로젝트</span></span><span class="gallery-label-sparkle project-label-sparkle gallery-label-sparkle-right" aria-hidden="true"><svg viewBox="0 0 90 90" aria-hidden="true" focusable="false"><path d="M45 15Q48 43 75 46Q48 49 45 77Q42 49 15 46Q42 43 45 15Z" fill="#f9ecf0" stroke="#c5b0de" stroke-width="3"/><path d="M17 2Q18 15 30 17Q18 19 17 32Q15 19 3 17Q15 15 17 2Z" fill="#e7d7f6" stroke="#c5b0de" stroke-width="1.5"/><circle cx="76" cy="72" r="5" fill="#e2cdef"/><circle cx="85" cy="84" r="2.5" fill="#f4dfce"/></svg></span></div><h3 id="personal-details-title">PERSONAL PROJECT</h3><p>브랜드의 인상을 화면과 인터랙션으로 풀어낸 두 개의 개인 웹 프로젝트입니다.</p>';
+  personal.prepend(personalHeading);
   const movie = document.querySelector('.section-movie');
-  const clone = document.querySelector('.section-admissions');
-  clone.id = 'clone-projects';
+  const clone = document.querySelector('#clone-coding');
   const panels = {team, personal, movie, clone};
-  const buttons = [...hub.querySelectorAll('[role="tab"]')];
+  const buttons = [...hub.querySelectorAll('[data-project-tab]')];
   Object.entries(panels).forEach(([key,panel])=>{
     panel.classList.add('all-project-panel');
-    panel.setAttribute('role','tabpanel');
+    panel.setAttribute('role','region');
     panel.setAttribute('aria-labelledby','project-tab-'+key);
     panel.setAttribute('tabindex','0');
     hub.querySelector('[data-project-tab="'+key+'"]').setAttribute('aria-controls',panel.id);
@@ -47,17 +43,18 @@
     window.ScrollTrigger?.refresh();
   };
   const select = (key, userAction=false) => {
-    Object.entries(panels).forEach(([name,panel])=>{ panel.hidden=name!=='movie' && name!==key; });
+    Object.values(panels).forEach(panel=>{ panel.hidden=false; });
     const cloneIntro = document.querySelector('.clone-studies');
     if (cloneIntro) cloneIntro.hidden = false;
     buttons.forEach(button=>{
       const selected=button.dataset.projectTab===key;
-      button.setAttribute('aria-selected',String(selected));
-      button.tabIndex=selected?0:-1;
+      if (selected) button.setAttribute('aria-current','location');
+      else button.removeAttribute('aria-current');
+      button.tabIndex=0;
     });
     document.body.dataset.projectCategory=key;
-    if (userAction && hub.getBoundingClientRect().top < -hub.offsetHeight/2) {
-      hub.scrollIntoView({behavior:'instant',block:'start'});
+    if (userAction) {
+      panels[key].scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
     }
     requestAnimationFrame(()=>{refresh();requestAnimationFrame(refresh);});
   };
@@ -73,9 +70,9 @@
       event.preventDefault();buttons[next].focus();select(buttons[next].dataset.projectTab);
     });
   });
-  // Existing navigation links also select the right category before scrolling.
+  // Keep every project visible when using section navigation.
   const hashCategory = hash => {
-    if (['#projects','#all-projects','#mejiro-data'].includes(hash)) return 'team';
+    if (['#projects','#all-projects'].includes(hash)) return 'team';
     if (['#personal-projects','#personal-luma','#personal-onda'].includes(hash)) return 'personal';
     if (hash==='#movie') return 'movie';
     if (['#admissions','#clone-projects','#clone-coding'].includes(hash)) return 'clone';
@@ -87,9 +84,8 @@
     const key=hashCategory(link.getAttribute('href'));
     if (!key) return;
     select(key);
-    if (link.hash==='#mejiro-data') { event.preventDefault(); hub.scrollIntoView({behavior:'smooth'}); }
   },true);
-  // The research slides remain available without consuming six screens of scroll.
+  // All project categories are visible from the initial page load.
   select(hashCategory(location.hash)||'team');
   document.dispatchEvent(new CustomEvent('portfolio:sections-ready'));
   addEventListener('load',refresh,{once:true});

@@ -213,19 +213,6 @@
     });
     card.addEventListener('pointerleave',()=>{pointer=null;if(!frame)frame=requestAnimationFrame(render);});
   });
-  document.querySelectorAll('.culita-preview').forEach(preview=>{
-    const screen=preview.closest('.culita-preview-screen');
-    const width=Number(screen.dataset.previewWidth);
-    let visible=false;
-    const sync=()=>preview.contentWindow?.postMessage({type:'culita-preview-visibility',visible:visible&&!document.hidden},location.origin);
-    new ResizeObserver(()=>screen.style.setProperty('--culita-scale',String(screen.clientWidth/width))).observe(screen);
-    new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;sync();},{threshold:.1}).observe(screen);
-    preview.addEventListener('load',sync);
-    addEventListener('message',event=>{
-      if(event.origin===location.origin&&event.source===preview.contentWindow&&event.data?.type==='culita-preview-ready') sync();
-    });
-    document.addEventListener('visibilitychange',sync);
-  });
   const brandHeader = document.querySelector('.header');
   if (brandHeader?.querySelector('.hana-brand-logo')) {
     let brandFrame = 0;
@@ -328,8 +315,10 @@
       window.removeEventListener('keydown', blockAboutScroll, { capture: true });
       document.documentElement.classList.remove('is-about-pin-holding');
     };
+    document.addEventListener('portfolio:navigate', releaseAboutScroll);
     const holdAboutScroll = () => {
       releaseAboutScroll();
+      if (document.documentElement.dataset.progressNavigating === 'true') return;
       document.documentElement.classList.add('is-about-pin-holding');
       window.addEventListener('wheel', blockAboutScroll, { passive: false, capture: true });
       window.addEventListener('touchmove', blockAboutScroll, { passive: false, capture: true });
@@ -477,122 +466,6 @@
       new ResizeObserver(queue).observe(values);
       update();
     }
-  }
-  const cloneSection = document.querySelector('.section-admissions');
-  if (cloneSection) {
-    const heading = cloneSection.querySelector('.portfolio-capabilities-heading');
-    cloneSection.classList.add('is-clone-projects');
-    if (heading) heading.innerHTML = '<span>PERSONAL STUDY · 02 PROJECTS</span><h2>CLONE CODING</h2><p>사이트의 개성을 관찰하고 코드로 구현하는 클론코딩 작업입니다.<br>레이아웃부터 인터랙션까지, 두 개의 프로젝트를 소개합니다.</p>';
-    const cloneCards = [
-      {title:"Whittaker’s<br>Chocolate",label:'CHOCOLATE BRAND WEBSITE',items:['초콜릿 브랜드의 비주얼과 콘텐츠 레이아웃','제품 소개 화면과 스크롤 인터랙션'],tag:'BRAND · VISUAL · INTERACTION',status:'프로젝트 소개 준비 중'},
-      {title:'LIFESTYLE<br>SELECT SHOP',label:'SAMPLE PROJECT · 추후 교체 예정',items:['라이프스타일 제품을 소개하는 감각적인 화면','상품 그리드와 반응형 레이아웃'],tag:'LAYOUT · GRID · RESPONSIVE',status:'임시 콘텐츠 · 사이트 선정 예정'}
-    ];
-    cloneSection.querySelectorAll('.admissions-list .item').forEach((item,index) => {
-      const data = cloneCards[index];
-      if (!data) { item.hidden = true; return; }
-      const card = item.querySelector('.capability-card-content');
-      if (!card) return;
-      const link = card.closest('a');
-      link?.removeAttribute('href');
-      card.innerHTML = '<span class="capability-index">CLONE PROJECT '+String(index+1).padStart(2,'0')+'</span><div class="capability-title"><small>'+data.label+'</small><h3>'+data.title+'</h3></div><ul>'+data.items.map(text => '<li>'+text+'</li>').join('')+'</ul><span class="capability-tag">'+data.tag+'</span><p class="clone-project-status">'+data.status+'</p>';
-    });
-  }
-
-  const workDataSection = document.querySelector('.section-mejiro-data');
-  if (workDataSection) {
-    workDataSection.classList.add('is-retrospective');
-    const workSteps = [
-      {label:'OBSERVE',title:'관찰하고 발견하기',description:'사용자의 입장에서 문제와 필요한 정보를 찾아요.',icon:'<svg viewBox="0 0 160 150" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M24 34h78v92H24z"/><path d="M42 58h42M42 76h30M42 94h38"/><circle cx="108" cy="42" r="22"/><path d="m124 58 22 22"/><path d="M94 42h28M108 28v28"/></svg>'},
-      {label:'ORGANIZE',title:'정리하고 연결하기',description:'정보와 아이디어를 구조화해 명확한 방향을 잡아요.',icon:'<svg viewBox="0 0 160 150" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="19" y="20" width="122" height="32" rx="10"/><rect x="19" y="63" width="55" height="67" rx="10"/><rect x="86" y="63" width="55" height="67" rx="10"/><path d="M38 36h55M36 81h22M36 98h22M103 81h21M103 98h21"/></svg>'},
-      {label:'CREATE',title:'디자인하고 구현하기',description:'아이디어를 실제로 사용할 수 있는 화면으로 만들어요.',icon:'<svg viewBox="0 0 160 150" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="15" y="18" width="130" height="100" rx="12"/><path d="M15 43h130M36 30h1M51 30h1M66 30h1M49 65 32 80l17 15M111 65l17 15-17 15M91 58 69 102M59 134h42"/></svg>'},
-      {label:'REFINE',title:'확인하고 개선하기',description:'작은 부분까지 확인하며 더 나은 경험으로 다듬어요.',icon:'<svg viewBox="0 0 160 150" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="31" y="13" width="98" height="124" rx="12"/><path d="M55 44h51M55 70h30M55 98h51"/><path d="m91 70 9 9 24-28"/><circle cx="43" cy="44" r="2"/><circle cx="43" cy="70" r="2"/><circle cx="43" cy="98" r="2"/></svg>'}
-    ];
-    const retrospectiveSteps = [
-      {label:'LEARNED',title:'What I Learned',description:'사용자의 목적을 이해하고 정보를 정리하는 일이 디자인의 출발점이라는 것을 배웠습니다.'},
-      {label:'PRACTICED',title:'What I Practiced',description:'기획과 UI 디자인, 화면 구현을 연결하며 반응형 레이아웃과 인터랙션을 연습했습니다.'},
-      {label:'IMPROVE',title:'What I Want to Improve',description:'어떤 화면에서도 내용이 자연스럽게 이어지도록 콘텐츠와 컴포넌트 구조를 더 개선하고 싶습니다.'},
-      {label:'NEXT STEP',title:'My Next Step',description:'작은 시도와 반복을 이어가며, 피드백을 반영해 디자인과 구현 경험을 넓히겠습니다.'}
-    ];
-    retrospectiveSteps.splice(0,4,
-      {label:'DISCOVER & DEFINE',title:'UX 기획',description:'사용자 관점에서 문제와 목표를 정의하고, 정보 구조와 화면 흐름을 설계합니다.\nRESEARCH · IA · USER FLOW'},
-      {label:'DESIGN THE EXPERIENCE',title:'UI 디자인',description:'브랜드에 맞는 비주얼 시스템을 구성하고, Figma 기반 반응형 화면을 제작합니다.\nFIGMA · PROTOTYPE · RESPONSIVE'},
-      {label:'BUILD & INTERACT',title:'프론트엔드',description:'HTML·CSS·JavaScript 기반 구현과 React·GSAP 인터랙션을 제작합니다.\nHTML · CSS · JS · REACT'},
-      {label:'SHIP & IMPROVE',title:'협업과 개선',description:'Git 기반 협업과 배포를 경험하고, 피드백을 반영해 반복적으로 개선합니다.\nGIT · GITHUB · VERCEL'}
-    );
-    workSteps.forEach((step,index) => Object.assign(step,retrospectiveSteps[index]));
-    const mainTitle = workDataSection.querySelector('.section-heading .text-main');
-    const subTitle = workDataSection.querySelector('.section-heading .text-sub');
-    if (mainTitle) mainTitle.innerHTML = '<span class="work-data-title">RETROSPECTIVE</span>';
-    if (subTitle) subTitle.textContent = '아이디어를 결과물로 만드는 나만의 방식';
-    const guideItems = workDataSection.querySelectorAll('.icon-guide li');
-    if (guideItems[0]) guideItems[0].innerHTML = '<div class="icon-shinjuku">思</div><p class="icon-text">문제를 이해하는 과정</p>';
-    if (guideItems[1]) guideItems[1].innerHTML = '<div class="icon-iwatsuki">作</div><p class="icon-text">화면으로 만드는 과정</p>';
-    if (subTitle) subTitle.textContent = '배운 점과 다음 작업에서 발전시키고 싶은 방향';
-    if (guideItems[0]) guideItems[0].innerHTML = '<div class="icon-shinjuku">学</div><p class="icon-text">프로젝트에서 배운 점</p>';
-    if (guideItems[1]) guideItems[1].innerHTML = '<div class="icon-iwatsuki">次</div><p class="icon-text">다음 작업의 방향</p>';
-    if (mainTitle) mainTitle.innerHTML = '<span class="work-data-title">CAPABILITIES</span>';
-    if (subTitle) subTitle.textContent = '아이디어를 구조화하고, 화면으로 설계해, 실제 웹 경험으로 완성합니다.';
-    if (guideItems[0]) guideItems[0].innerHTML = '<div class="icon-shinjuku">01</div><p class="icon-text">기획과 디자인</p>';
-    if (guideItems[1]) guideItems[1].innerHTML = '<div class="icon-iwatsuki">02</div><p class="icon-text">구현과 개선</p>';
-    const capabilityGuide = workDataSection.querySelector('.icon-guide');
-    if (capabilityGuide) {
-      capabilityGuide.classList.add('capability-overview');
-      capabilityGuide.setAttribute('aria-label','네 가지 핵심 역량');
-      capabilityGuide.innerHTML = ['UX 기획','UI 디자인','프론트엔드','협업과 개선'].map(title => '<li><span>'+title+'</span></li>').join('');
-    }
-    document.querySelector('.work-retrospective')?.remove();
-    const imageSlides = [...workDataSection.querySelectorAll('.img-slider .swiper-wrapper > .swiper-slide')];
-    const textSlides = [...workDataSection.querySelectorAll('.text-slider .swiper-wrapper > .swiper-slide')];
-    imageSlides.slice(4).forEach(slide => slide.remove());
-    textSlides.slice(4).forEach(slide => slide.remove());
-    imageSlides.slice(0,4).forEach((slide,index) => {
-      const step = workSteps[index];
-      const image = slide.querySelector('.img-container .img');
-      const icons = slide.querySelector('.icon-container');
-      const heading = slide.querySelector('.heading');
-      const number = slide.querySelector('.num-container');
-      if (image) image.innerHTML = '<div class="work-data-illustration">'+step.icon+'</div>';
-      if (icons) icons.innerHTML = '<div class="icon-shinjuku">'+String(index+1).padStart(2,'0')+'</div><div class="icon-iwatsuki">STEP</div>';
-      if (heading) heading.textContent = step.title;
-      if (heading) {
-        const summary = document.createElement('p');
-        summary.className = 'retro-summary';
-        summary.textContent = step.description;
-        heading.after(summary);
-      }
-      if (number) number.innerHTML = '<span class="num">'+String(index+1).padStart(2,'0')+'</span><span class="num-text">/ 04</span>';
-      slide.querySelector('.btn-container')?.remove();
-      slide.querySelectorAll('.visually-hidden,.notes').forEach(item => item.remove());
-    });
-    textSlides.slice(0,4).forEach((slide,index) => {
-      const text = slide.querySelector('.text p');
-      if (text) text.textContent = workSteps[index].description;
-      slide.querySelector('.notes')?.remove();
-    });
-    // Centered, auto-width Swiper needs enough slides to loop across wide screens.
-    ['.img-slider','.text-slider'].forEach(selector => {
-      const wrapper = workDataSection.querySelector(selector+' .swiper-wrapper');
-      if (!wrapper) return;
-      const originals = [...wrapper.children];
-      for (let repeat=0;repeat<2;repeat++) {
-        originals.forEach(slide => wrapper.append(slide.cloneNode(true)));
-      }
-    });
-    workDataSection.querySelectorAll('.slider-btn-next,.slider-btn-prev').forEach(button => {
-      button.addEventListener('click',event => {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        const swiper = workDataSection.querySelector('.img-slider')?.swiper;
-        if (!swiper || swiper.animating) return;
-        swiper.autoplay?.stop();
-        if (button.classList.contains('slider-btn-next')) swiper.slideNext(500);
-        else swiper.slidePrev(500);
-      },true);
-    });
-    const bullets = workDataSection.querySelector('.slider-pagination-bullets');
-    if (bullets) bullets.innerHTML = '<span class="slider-pagination-bullet slider-pagination-bullet-active"></span>'.repeat(1)+'<span class="slider-pagination-bullet"></span>'.repeat(3);
-    // Start at the middle copy of 01 in the Swiper options so 04 is
-    // already visible on the left. Physical slideTo(0) breaks loop ordering.
   }
   const projectCase = document.querySelector('.portfolio-projects .project-case');
   if (projectCase) {
@@ -831,7 +704,7 @@
             image.src = './assets/img/portfolio/' + file;
             image.alt = group.label + ' ' + (index+1) + ' 원본 자료';
             const label = document.createElement('span');
-            label.textContent = group.label + ' ' + (index+1) + ' ↗';
+            label.textContent = group.label + ' ' + (index+1);
             card.append(image,label);
             card.addEventListener('click',() => openImages(group,index));
             return card;
@@ -1322,7 +1195,7 @@
   });
 })();
 
-// Reveal the three design-value cards upward in sequence as the section enters.
+// Reveal whole design-value cards after their title crosses the viewport midpoint.
 (() => {
   const initDesignValuesReveal = () => {
     const values = document.querySelector('.design-values-content');
@@ -1334,14 +1207,26 @@
       return;
     }
 
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.intersectionRatio >= .18) values.classList.add('is-values-revealed');
-        else if (!entry.isIntersecting) values.classList.remove('is-values-revealed');
-      });
-    }, { threshold: [0, .18], rootMargin: '0px 0px -8% 0px' });
-
-    observer.observe(values);
+    const heading = values.closest('section')?.querySelector('.clone-intro .section-heading');
+    if (!heading) {
+      values.classList.add('is-values-revealed');
+      return;
+    }
+    let frame = 0;
+    const checkTitle = () => {
+      frame = 0;
+      const bounds = heading.getBoundingClientRect();
+      if (bounds.top + bounds.height / 2 > window.innerHeight / 2) return;
+      values.classList.add('is-values-revealed');
+      window.removeEventListener('scroll', queueCheck, true);
+      window.removeEventListener('resize', queueCheck);
+    };
+    const queueCheck = () => {
+      if (!frame) frame = requestAnimationFrame(checkTitle);
+    };
+    window.addEventListener('scroll', queueCheck, { passive: true, capture: true });
+    window.addEventListener('resize', queueCheck);
+    queueCheck();
   };
 
   if (document.readyState === 'loading') {
@@ -1438,7 +1323,7 @@
     heading.removeAttribute('data-anime');
     heading.classList.add('movie-section-heading');
     heading.innerHTML = `
-      <span class="movie-heading-kicker">VISUAL STORY · 03 FILMS</span>
+      <span class="movie-heading-kicker team-intro-eyebrow movie-project-eyebrow project-sparkle-label"><span class="gallery-label-sparkle project-label-sparkle" aria-hidden="true"><svg viewBox="0 0 90 90" aria-hidden="true" focusable="false"><path d="M45 15Q48 43 75 46Q48 49 45 77Q42 49 15 46Q42 43 45 15Z" fill="#f9ecf0" stroke="#c5b0de" stroke-width="3"/><path d="M17 2Q18 15 30 17Q18 19 17 32Q15 19 3 17Q15 15 17 2Z" fill="#e7d7f6" stroke="#c5b0de" stroke-width="1.5"/><circle cx="76" cy="72" r="5" fill="#e2cdef"/><circle cx="85" cy="84" r="2.5" fill="#f4dfce"/></svg></span><span class="project-label-number">03</span><span class="project-label-name">MOVIE <span lang="ko">영상</span></span><span class="gallery-label-sparkle project-label-sparkle gallery-label-sparkle-right" aria-hidden="true"><svg viewBox="0 0 90 90" aria-hidden="true" focusable="false"><path d="M45 15Q48 43 75 46Q48 49 45 77Q42 49 15 46Q42 43 45 15Z" fill="#f9ecf0" stroke="#c5b0de" stroke-width="3"/><path d="M17 2Q18 15 30 17Q18 19 17 32Q15 19 3 17Q15 15 17 2Z" fill="#e7d7f6" stroke="#c5b0de" stroke-width="1.5"/><circle cx="76" cy="72" r="5" fill="#e2cdef"/><circle cx="85" cy="84" r="2.5" fill="#f4dfce"/></svg></span></span>
       <span class="movie-heading-title" aria-label="MOVIE"></span>
       <span class="movie-heading-description">감각과 이야기를 움직임으로 담아낸 영상 작업입니다.</span>
     `;
@@ -1581,12 +1466,10 @@
       point,
       section: document.getElementById(point.dataset.progressTarget)
     }));
-    // PROJECT is injected by all-projects.js. Never collapse/re-number the
-    // five milestones when that dynamic section is not ready yet.
-    if (!bar || points.length !== 5 || sections.some(item => !item.section)) return;
+    // Wait for the personal projects wrapper inserted by all-projects.js.
+    if (!bar || points.length !== 6 || sections.some(item => !item.section)) return;
 
     container.dataset.progressNavigationReady = 'true';
-    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
     let frame = 0;
     let navigationTarget = null;
     let navigationTimer = 0;
@@ -1597,7 +1480,7 @@
       const maxScroll = Math.max(0, document.documentElement.scrollHeight - innerHeight);
       const anchors = sections.map((item, index) => index === 0
         ? 0
-        : Math.max(0, Math.min(maxScroll, getDocumentTop(item.section) - innerHeight * .35)));
+        : Math.max(0, Math.min(maxScroll, getDocumentTop(item.section) - 80)));
       let positionIndex = navigationTarget ? sections.indexOf(navigationTarget) : 0;
       if (!navigationTarget && scrollY > 0) {
         positionIndex = sections.length - 1;
@@ -1638,7 +1521,7 @@
       const maxScroll = Math.max(0, document.documentElement.scrollHeight - innerHeight);
       const top = item === sections[0]
         ? 0
-        : Math.max(0, Math.min(maxScroll, getDocumentTop(item.section) - innerHeight * .35));
+        : Math.max(0, Math.min(maxScroll, getDocumentTop(item.section) - 80));
       window.scrollTo({ top, behavior: 'auto' });
       navigationTimer = setTimeout(() => {
         delete document.documentElement.dataset.progressNavigating;
@@ -1657,6 +1540,9 @@
     addEventListener('scroll', requestRender, { passive: true });
     addEventListener('resize', requestRender, { passive: true });
     addEventListener('load', requestRender, { once: true });
+    const layoutObserver = new ResizeObserver(requestRender);
+    layoutObserver.observe(document.body);
+    sections.forEach(item => layoutObserver.observe(item.section));
     render();
   };
 
@@ -1834,6 +1720,7 @@
       window.removeEventListener('keydown', blockScroll, { capture: true });
       document.documentElement.classList.remove('is-title-pin-holding');
     };
+    document.addEventListener('portfolio:navigate', releaseScroll);
     const holdScrollForTitle = () => {
       releaseScroll();
       isHolding = true;
@@ -1907,7 +1794,7 @@
 // A shallow pointer-responsive tilt on selected primary surfaces only.
 (() => {
   const motion = matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
-  const initDepth = () => document.querySelectorAll('.clone-value-card, .personal-case-images, .case-macbook, .project-category-tab, .retrospective-card, .project-details:not(.team-intro-copy), .case-scroll-card, .zara-story-panel, .section-admissions .admissions-list .item > a, .portfolio-film-frame, .monster-film-frame').forEach(surface => {
+  const initDepth = () => document.querySelectorAll('.clone-value-card, .personal-case-images, .case-macbook, .project-category-tab, .retrospective-card, .project-details:not(.team-intro-copy), .case-scroll-card, .diptyque-story-panel, .section-admissions .admissions-list .item > a, .portfolio-film-frame, .monster-film-frame').forEach(surface => {
     if (surface.hasAttribute('data-depth-surface') || surface.parentElement.closest('[data-depth-surface]')) return;
     surface.dataset.depthSurface = '';
     let frame = 0;
@@ -1938,4 +1825,56 @@
   initDepth();
   // Project tabs are constructed by the next deferred script.
   if (document.readyState !== 'complete') addEventListener('load', initDepth, { once: true });
+})();
+
+// Reveal navigation as soon as the reader scrolls upward.
+(() => {
+  const header = document.querySelector('header.header');
+  if (!header) return;
+  header.classList.add('has-scroll-navigation');
+  let previousY = Math.max(0, scrollY);
+  let downwardTravel = 0;
+  const update = () => {
+    const currentY = Math.max(0, scrollY);
+    const delta = currentY - previousY;
+    if (currentY <= 40 || delta <= -2) {
+      header.classList.remove('is-scroll-hidden');
+      downwardTravel = 0;
+    } else if (delta > 0) {
+      downwardTravel += delta;
+      if (currentY > 120 && downwardTravel > 18 && !header.contains(document.activeElement)) {
+        header.classList.add('is-scroll-hidden');
+      }
+    }
+    previousY = currentY;
+  };
+  addEventListener('scroll', update, { passive: true });
+  header.addEventListener('focusin', () => header.classList.remove('is-scroll-hidden'));
+  update();
+})();
+
+// Header links bypass the reference runtime's anchor scrolling and title holds.
+(() => {
+  let navigationTimer = 0;
+  window.addEventListener('click', event => {
+    const link = event.target.closest?.('header.header a[href^="#"]');
+    if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const target = document.getElementById(link.hash.slice(1));
+    if (!target) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    clearTimeout(navigationTimer);
+    document.documentElement.dataset.progressNavigating = 'true';
+    document.dispatchEvent(new Event('portfolio:navigate'));
+    window.ScrollTrigger?.refresh();
+    requestAnimationFrame(() => {
+      const headerHeight = document.querySelector('header.header').getBoundingClientRect().height;
+      const top = Math.max(0, target.getBoundingClientRect().top + scrollY - headerHeight - 16);
+      window.scrollTo({ top, behavior: 'instant' });
+      history.replaceState(null, '', link.hash);
+      navigationTimer = setTimeout(() => {
+        delete document.documentElement.dataset.progressNavigating;
+      }, 300);
+    });
+  }, true);
 })();

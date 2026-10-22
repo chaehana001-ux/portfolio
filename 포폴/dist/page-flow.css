@@ -235,7 +235,7 @@ html.is-about-pin-holding {
 }
 [data-layout="page-home"] .footer .footer-hana-brand {
   display: block;
-  width: clamp(142px, 12vw, 204px);
+  width: clamp(149.1px, 12.6vw, 214.2px);
   height: auto;
   margin: clamp(14px, 1.4vw, 20px) auto 0;
   object-fit: contain;
@@ -309,7 +309,7 @@ html.is-about-pin-holding {
   opacity: .45;
   filter: none;
 }
-.zara-story .zara-story-panel {
+.diptyque-story .diptyque-story-panel {
   background: var(--page-paper);
   border-color: var(--page-line);
 }
@@ -352,4 +352,290 @@ html.is-about-pin-holding {
   .hero-creative-scene > .hero-introduction { left: 8%; top: 24%; max-width: 44%; }
   .hero-creative .hero-art-world { width: 70%; right: -3%; bottom: 8%; }
   .hero-introduction .hero-creative-kicker { font-size: 8px; letter-spacing: .08em; }
+}
+
+/* Repeat the personal work introduction above the detailed case studies. */
+.personal-details-heading { padding-top: var(--page-space); }
+
+/* Place the scroll cue beneath the hero introduction. */
+.hero-introduction > .hero-scroll-cue {
+  position: static;
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: clamp(24px, 2.3vw, 36px);
+}
+@media (max-width: 767px) {
+  .hero-introduction > .hero-scroll-cue { margin-top: 16px; }
+}
+
+/* Keep the about invitation arrow next to its text. */
+.hero-creative .about-intro-next {
+  justify-content: flex-start;
+  gap: 12px;
+}
+.hero-creative .about-intro-next > span { flex-shrink: 0; }
+
+/* Use the same numbered label for team and personal projects. */
+.personal-project-eyebrow { justify-content: center; }
+.personal-project-eyebrow > span:first-child { font-weight: 700; }
+
+/* Match the numbered project labels in the movie heading. */
+[data-layout="page-home"] .section-movie .movie-project-eyebrow {
+  display: flex;
+  justify-content: center;
+  font: 700 clamp(12px, 1.1vw, 17px)/1.5 var(--font-body);
+  letter-spacing: .025em;
+}
+.movie-project-eyebrow > span:first-child { font-weight: 700; }
+
+/* Match the numbered project labels in the clone coding heading. */
+.clone-project-eyebrow { justify-content: center; margin-bottom: 16px; }
+.clone-project-eyebrow > span:first-child { font-weight: 700; }
+
+
+/* Quiet numbering for the Q&A list. */
+.portfolio-qa-no {
+  width: 32px;
+  border-color: rgb(64 55 82 / 20%);
+  background: color-mix(in srgb, var(--palette-lavender) 24%, var(--page-paper));
+  color: rgb(64 55 82 / 72%);
+  font: 500 10px/1 var(--font-body);
+}
+.portfolio-qa-item:nth-child(even) .portfolio-qa-no {
+  background: color-mix(in srgb, var(--palette-gold) 24%, var(--page-paper));
+}
+@media (max-width: 767px) {
+  .portfolio-qa-no { width: 28px; }
+}
+
+/* Soft, borderless controls for the Q&A accordion. */
+.portfolio-qa-toggle {
+  width: 40px;
+  justify-self: end;
+  border: 0;
+  background: color-mix(in srgb, var(--palette-lavender) 32%, var(--page-paper));
+  box-shadow: none;
+}
+.portfolio-qa-toggle::before,
+.portfolio-qa-toggle::after {
+  width: 14px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: var(--palette-navy);
+}
+.portfolio-qa-item[open] .portfolio-qa-toggle {
+  background: color-mix(in srgb, var(--palette-gold) 45%, var(--page-paper));
+}
+@media (any-hover: hover) {
+  .portfolio-qa-item summary:hover .portfolio-qa-toggle {
+    background: color-mix(in srgb, var(--palette-lavender) 55%, var(--page-paper));
+  }
+}
+.portfolio-qa-item summary:focus-visible {
+  outline: 2px solid var(--palette-lavender);
+  outline-offset: 4px;
+}
+@media (max-width: 767px) {
+  .portfolio-qa-toggle { width: 34px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-qa-toggle { transition: none; }
+}
+
+/* Six milestones share the same track coordinates as the moving heart. */
+[data-layout="page-home"] .scrollbar-container .point-1 { left: 2%; }
+[data-layout="page-home"] .scrollbar-container .point-2 { left: 21.2%; }
+[data-layout="page-home"] .scrollbar-container .point-3 { left: 40.4%; }
+[data-layout="page-home"] .scrollbar-container .point-4 { left: 59.6%; }
+[data-layout="page-home"] .scrollbar-container .point-5 { left: 78.8%; }
+[data-layout="page-home"] .scrollbar-container .point-6 { left: 98%; }
+
+/* Keep navigation available on a small upward scroll across every section. */
+html body header.header.has-scroll-navigation {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  background: color-mix(in srgb, var(--page-paper) 94%, transparent);
+  backdrop-filter: blur(12px);
+  padding-bottom: 12px;
+  transition: transform .2s ease, visibility .2s;
+}
+html body header.header.has-scroll-navigation .header-inner {
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+html body header.header.has-scroll-navigation.is-scroll-hidden {
+  transform: translateY(-110%) !important;
+  visibility: hidden !important;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html body header.header.has-scroll-navigation { transition: none; }
+}
+
+/* Center the complete movie heading and keep its numbered label on one row. */
+[data-layout="page-home"] .section-movie .section-heading.movie-section-heading {
+  box-sizing: border-box;
+  align-self: center;
+  margin-inline: auto !important;
+  padding-inline: 0;
+  left: auto;
+  right: auto;
+  text-align: center;
+}
+[data-layout="page-home"] .section-movie .section-heading.movie-section-heading > .movie-project-eyebrow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: fit-content;
+  margin-inline: auto;
+}
+[data-layout="page-home"] .section-movie .section-heading.movie-section-heading > .movie-heading-title {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+[data-layout="page-home"] .section-movie .section-heading.movie-section-heading .movie-title-letter {
+  display: inline-block;
+}
+[data-layout="page-home"] .section-movie .section-heading.movie-section-heading > .movie-heading-description {
+  width: 100%;
+  text-align: center;
+}
+
+
+
+/* Gallery label with pastel sparkles and the existing page typography. */
+.gallery-heading .gallery-sparkle-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1vw, 14px);
+  max-width: 100%;
+  margin: 0 auto 12px;
+  font: 700 clamp(13px, 1.5vw, 21px)/1.5 var(--font-body);
+  color: var(--palette-navy);
+}
+.gallery-label-text { letter-spacing: .3em; padding-left: .3em; }
+.gallery-label-sparkle {
+  display: block;
+  flex: 0 0 auto;
+  width: 1.6em;
+  filter: drop-shadow(0 2px 3px rgb(169 144 196 / 16%));
+}
+.gallery-label-sparkle > svg { display: block; width: 100%; height: auto; }
+.gallery-label-sparkle-right { transform: scaleX(-1); }
+
+/* Match the small gallery sparkles in the About Me label. */
+.hero-creative .about-me-pill.about-sparkle-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--palette-navy);
+}
+
+.hero-creative .about-sparkle-label > span:nth-child(2) {
+  font-size: 1.1em;
+  letter-spacing: calc(.08em + 3px);
+}
+
+/* Plain team number with a small sparkle between number and title. */
+.team-intro-eyebrow.team-sparkle-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.team-sparkle-eyebrow > .team-label-number {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.team-sparkle-eyebrow > .team-label-sparkle { width: 1.6em; }
+.team-sparkle-eyebrow > .team-label-name { font-weight: 700; }
+.team-label-name > span { font-weight: 500; }
+
+.team-intro-eyebrow.team-sparkle-eyebrow > .team-label-number:first-child {
+  display: inline;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+/* Sparkles frame the complete team label, like the gallery label. */
+.team-intro-eyebrow.team-sparkle-eyebrow > .team-label-sparkle {
+  display: block;
+  width: 1.6em;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.team-intro-eyebrow.team-sparkle-eyebrow > .team-label-number {
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 0;
+}
+
+/* All four project labels use plain numbers framed by small sparkles. */
+.team-intro-eyebrow.project-sparkle-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.team-intro-eyebrow.project-sparkle-label > span {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  font-weight: 700;
+}
+.team-intro-eyebrow.project-sparkle-label > .project-label-sparkle {
+  display: block;
+  width: 1.6em;
+  height: auto;
+  flex: 0 0 auto;
+}
+
+/* Static hero captures inside the CULITA device mockups. */
+.culita-preview-screen > .culita-hero-capture {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+.culita-phone .culita-preview-screen > .culita-hero-capture {
+  position: absolute;
+  inset: 0;
+  object-position: 50% top;
 }

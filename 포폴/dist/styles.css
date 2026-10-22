@@ -106,7 +106,6 @@ body {
 .personal-case-detail img { aspect-ratio: 1.6; object-fit: contain; background: var(--palette-ivory); }
 .personal-case-images.culita-devices { padding: 20px 22% 70px 0; }
 .culita-preview-screen { position: relative; width: 100%; aspect-ratio: 1440/900; overflow: hidden; background: var(--palette-ivory); }
-.culita-preview { display: block; position: absolute; top: 0; left: 0; border: 0; max-width: none; transform: scale(var(--culita-scale,.3)); transform-origin: top left; pointer-events: none; }
 .personal-case-images .culita-phone { position: absolute; z-index: 2; right: 0; bottom: 0; width: 27%; padding: 7px; box-sizing: border-box; border: 2px solid #797a80; border-radius: 28px; background: #131417; transform: rotate(4deg); box-shadow: 6px 9px 0 rgb(64 55 82 / 15%); }
 .culita-phone .culita-preview-screen { aspect-ratio: 390/844; border-radius: 21px; }
 .culita-phone figcaption { padding: 8px 0 2px; text-align: center; color: var(--palette-navy); font-size: 8px; }
@@ -508,7 +507,7 @@ body {
 .section-mejiro-data .img-slider .icon-container .icon-iwatsuki { width: auto !important; min-width: 2.4285714286vw; padding: 0 .55vw; border-radius: 999px !important; font-size: .72vw !important; }
 .section-mejiro-data .img-slider .num-container { justify-content: center; gap: .7vw; }
 .section-mejiro-data .img-slider .num-container .num-text { padding-bottom: 1.05vw; font: 700 clamp(12px,1vw,18px)/1 var(--font-body); }
-.work-retrospective { position: relative; width: min(1500px,88%); min-height: 860px; margin: 150px auto 0; padding: 90px clamp(28px,6vw,100px); box-sizing: border-box; overflow: hidden; border: 1.5px solid var(--palette-navy); border-radius: 56px; color: var(--palette-navy); background: var(--palette-lavender) url('./assets/img/pattern-star.webp') repeat; }
+.work-retrospective { position: relative; width: min(1500px,88%); min-height: 860px; margin: 150px auto 0; padding: 90px clamp(28px,6vw,100px); box-sizing: border-box; overflow: hidden; border: 1.5px solid var(--palette-navy); border-radius: 56px; color: var(--palette-navy); background: var(--palette-lavender) none repeat; }
 .retrospective-heading { position: relative; z-index: 2; text-align: center; }
 .retrospective-heading > span { display: inline-block; padding: 9px 18px; border-radius: 30px; color: var(--palette-navy); background: var(--palette-gold); font: 700 10px/1.4 var(--font-body); letter-spacing: .12em; transform: rotate(-3deg); }
 .retrospective-heading h3 { margin: 18px 0 12px; color: var(--palette-navy); font: 400 clamp(48px,6vw,96px)/1 'Cherry Bomb One',sans-serif; letter-spacing: -.035em; }
@@ -1001,9 +1000,6 @@ section.hero-creative { height: 220svh; }
 .header.hana-header-on-hero .nav { visibility: visible !important; opacity: 1 !important; }
 .header .hana-brand-logo .text-main { position: relative; width: 162px; height: 54px; }
 .header .hana-brand-image { display: block; width: 100%; height: 100%; object-fit: contain; filter: none; }
-.header .hana-brand-light { position: absolute; inset: 0; opacity: 0; }
-.header.hana-brand-dark-surface .hana-brand-image:not(.hana-brand-light) { opacity: 0; }
-.header.hana-brand-dark-surface .hana-brand-light { opacity: 1; }
 .header.hana-brand-dark-surface .hana-brand-logo .text-sub { color: var(--palette-navy); }
 .header .hana-brand-logo .text-sub { font: 700 8px/1.4 var(--font-body); letter-spacing: .06em; margin-top: 1px; }
 @media(max-width:767px) { .header .hana-brand-logo { margin-top: 14px; } .header .hana-brand-logo .text-main { width: 105px; height: 35px; } .header .hana-brand-logo .text-sub { font-size: 6px; } }
@@ -1829,17 +1825,17 @@ img[src*="-bg"],
   filter: url("#portfolio-illustration");
 }
 [data-layout="page-home"] .section-admissions::after {
-  background-image: url("./assets/img/home/md/admissions-bg@2x.webp");
+  background-image: none;
 }
 [data-layout="page-home"] .section-movie .section-inner::after {
-  background-image: url("./assets/img/home/md/movie-bg@2x.webp");
+  background-image: none;
 }
 @media (max-width: 767px) {
   [data-layout="page-home"] .section-admissions::after {
-    background-image: url("./assets/img/home/admissions-bg.webp");
+    background-image: none;
   }
   [data-layout="page-home"] .section-movie .section-inner::after {
-    background-image: url("./assets/img/home/movie-bg.webp");
+    background-image: none;
   }
 }
 
@@ -2528,7 +2524,7 @@ img[src*="-bg"],
   background: var(--palette-ivory); color: var(--palette-navy);
   box-shadow: 5px 7px 0 rgb(64 55 82 / 10%);
 }
-[data-layout="page-home"] .design-values-content .clone-value-card .slider-slide-inner {
+[data-layout="page-home"] .design-values-content .clone-value-card {
   opacity: 0;
   transform: translateY(72px);
   transition:
@@ -2536,15 +2532,15 @@ img[src*="-bg"],
     transform .72s cubic-bezier(.2,.78,.25,1) var(--value-reveal-delay, 0ms);
   will-change: opacity, transform;
 }
-[data-layout="page-home"] .design-values-content .clone-value-card:nth-child(1) { --value-reveal-delay: 440ms; }
+[data-layout="page-home"] .design-values-content .clone-value-card:nth-child(1) { --value-reveal-delay: 0ms; }
 [data-layout="page-home"] .design-values-content .clone-value-card:nth-child(2) { --value-reveal-delay: 220ms; }
-[data-layout="page-home"] .design-values-content .clone-value-card:nth-child(3) { --value-reveal-delay: 0ms; }
-[data-layout="page-home"] .design-values-content.is-values-revealed .clone-value-card .slider-slide-inner {
+[data-layout="page-home"] .design-values-content .clone-value-card:nth-child(3) { --value-reveal-delay: 440ms; }
+[data-layout="page-home"] .design-values-content.is-values-revealed .clone-value-card {
   opacity: 1;
   transform: translateY(0);
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-layout="page-home"] .design-values-content .clone-value-card .slider-slide-inner {
+  [data-layout="page-home"] .design-values-content .clone-value-card {
     opacity: 1;
     transform: none;
     transition: none;
@@ -2655,7 +2651,7 @@ em { font-style: normal; }
 .project-details h3 em,
 .personal-case h2 em,
 .portfolio-projects .project-details h3 em,
-.zara-story-copy h3 em { font-family: var(--font-body); font-style: normal; font-weight: 500; letter-spacing: -.025em; }
+.diptyque-story-copy h3 em { font-family: var(--font-body); font-style: normal; font-weight: 500; letter-spacing: -.025em; }
 .case-step-english { font-size: clamp(19px, 1.8vw, 29px); font-weight: 500; letter-spacing: -.02em; line-height: 1.5; }
 .case-step-tone-character { color: color-mix(in srgb,var(--palette-navy) 18%,transparent); transition: color .12s linear; }
 .case-step-tone-character.is-deep { color: var(--palette-navy); }
@@ -3210,11 +3206,11 @@ em { font-style: normal; }
 .hero-creative .hero-figma-window {
   filter: drop-shadow(0 20px 25px rgb(64 55 82 / 15%));
 }
-.case-macbook-display, .zara-story-monitor-screen, .team-iphone {
+.case-macbook-display, .diptyque-story-monitor-screen, .team-iphone {
   box-shadow: inset 0 1px 2px rgb(255 255 255 / 40%), 0 18px 36px rgb(64 55 82 / 16%);
 }
 .clone-value-card, .personal-case-images figure, .case-document,
-.project-category-tab, .zara-story-panel {
+.project-category-tab, .diptyque-story-panel {
   box-shadow: var(--depth-edge), var(--depth-shadow);
 }
 .clone-value-card {
@@ -3234,7 +3230,7 @@ em { font-style: normal; }
   }
 }
 @media (max-width: 767px) {
-  .clone-value-card, .personal-case-images figure, .case-document, .zara-story-panel {
+  .clone-value-card, .personal-case-images figure, .case-document, .diptyque-story-panel {
     box-shadow: var(--depth-edge), 0 10px 24px rgb(64 55 82 / 10%);
   }
 }
@@ -3489,7 +3485,7 @@ em { font-style: normal; }
   --depth-card: var(--depth-rim), 0 5px 0 rgb(201 185 232 / 55%), 0 18px 36px rgb(64 55 82 / 12%);
 }
 .clone-value-card, .retrospective-card, .project-details, .case-scroll-card,
-.zara-story-panel, .section-admissions .admissions-list .item > a {
+.diptyque-story-panel, .section-admissions .admissions-list .item > a {
   box-shadow: var(--depth-card);
   background-image: linear-gradient(140deg, rgb(255 255 255 / 32%), transparent 50%, rgb(64 55 82 / 4%));
 }
@@ -3511,7 +3507,7 @@ em { font-style: normal; }
 }
 @media (max-width: 767px) {
   .clone-value-card, .retrospective-card, .project-details, .case-scroll-card,
-  .zara-story-panel, .section-admissions .admissions-list .item > a,
+  .diptyque-story-panel, .section-admissions .admissions-list .item > a,
   .about-hana .about-value article {
     box-shadow: var(--depth-rim), 0 3px 0 rgb(201 185 232 / 40%), 0 12px 24px rgb(64 55 82 / 10%);
   }
@@ -4190,11 +4186,11 @@ em { font-style: normal; }
 [data-layout="page-home"] .footer .footer-hana-brand {
   margin-top: clamp(14px, 1.4vw, 20px);
   transform-origin: center;
-  animation: footer-hana-pulse 10s ease-in-out infinite;
+  animation: footer-hana-pulse 2s ease-in-out infinite;
 }
 @keyframes footer-hana-pulse {
-  0%, 4%, 14%, 100% { transform: scale(1); }
-  9% { transform: scale(1.1); }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 [data-layout="page-home"] .footer .contact-heading { margin-bottom: 18px; }
 [data-layout="page-home"] .footer .contact-github { margin-top: 14px; }
@@ -4265,7 +4261,7 @@ html body .hana-floating-actions .page-top.is-floating-top:focus-visible {
 /* HANA chatbot: stacked 15.5% larger than the floating TOP control. */
 .hana-floating-actions {
   --floating-top-size: clamp(48px, 3.15vw, 61px);
-  --floating-chat-size: clamp(55.44px, 3.63825vw, 70.455px);
+  --floating-chat-size: clamp(58.212px, 3.8201625vw, 73.97775px);
   position: fixed;
   right: 52px;
   bottom: calc(clamp(18px, 2vw, 34px) + 30px);
@@ -4407,7 +4403,7 @@ html body .hana-floating-actions .page-top.is-floating-top {
 .hana-chatbot-form input:focus { box-shadow: 0 0 0 3px rgb(197 169 232 / 22%); }
 .hana-chatbot-form button { min-width: 60px; padding: 0 12px; border: 1px solid #ddb9dc; border-radius: 9px; color: #3f498d; background: linear-gradient(135deg, #fbe7ef, #f4dcf0); font: 800 10px/1 'Noto Sans KR', sans-serif; cursor: pointer; }
 @media (max-width: 767px) {
-  .hana-floating-actions { --floating-top-size: 48px; --floating-chat-size: 55.44px; right: 10px; bottom: 44px; }
+  .hana-floating-actions { --floating-top-size: 48px; --floating-chat-size: 58.212px; right: 10px; bottom: 44px; }
   .hana-chatbot-panel { top: 10px; right: 10px; bottom: auto; width: calc(100vw - 20px); height: calc(100svh - 20px); transform: translateY(14px) scale(.97); transform-origin: right bottom; }
   .hana-chatbot.is-open .hana-chatbot-panel { transform: none; }
   .hana-chatbot-tooltip { display: none; }
@@ -4497,20 +4493,20 @@ html body .hana-floating-actions .page-top.is-floating-top {
 [data-layout="page-home"] .footer > .deco-cloud {
   opacity: 1;
   background: color-mix(in srgb, var(--palette-lavender) 12%, var(--palette-ivory));
-  -webkit-mask: url('./assets/img/footer/md/deco-cloud-l@2x.webp') center / 100% 100% no-repeat;
-  mask: url('./assets/img/footer/md/deco-cloud-l@2x.webp') center / 100% 100% no-repeat;
+  -webkit-mask: none center / 100% 100% no-repeat;
+  mask: none center / 100% 100% no-repeat;
   filter: drop-shadow(0 16px 28px color-mix(in srgb, var(--palette-lavender) 8%, transparent));
 }
 [data-layout="page-home"] .footer > .deco-cloud.deco-cloud-s {
-  -webkit-mask-image: url('./assets/img/footer/md/deco-cloud-s@2x.webp');
-  mask-image: url('./assets/img/footer/md/deco-cloud-s@2x.webp');
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 [data-layout="page-home"] .footer > .deco-cloud picture { visibility: hidden; }
 [data-layout="page-home"] .footer > .deco-hill {
   opacity: 1;
   background: color-mix(in srgb, var(--palette-rose) 7%, var(--palette-ivory));
-  -webkit-mask: url('./assets/img/footer/md/deco-hill@2x.webp') center bottom / 100% 100% no-repeat;
-  mask: url('./assets/img/footer/md/deco-hill@2x.webp') center bottom / 100% 100% no-repeat;
+  -webkit-mask: none center bottom / 100% 100% no-repeat;
+  mask: none center bottom / 100% 100% no-repeat;
   filter: none;
 }
 [data-layout="page-home"] .footer > .deco-hill picture { visibility: hidden; }
