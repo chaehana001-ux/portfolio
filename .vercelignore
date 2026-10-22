@@ -1,0 +1,6 @@
+.git
+.preview
+**/.preview
+node_modules
+**/node_modules
+*.log
