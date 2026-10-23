@@ -13,5 +13,10 @@ try {
  await send('Runtime.evaluate',{expression:`document.querySelector('#shop').scrollIntoView({behavior:'instant'})`});
  await new Promise(r=>setTimeout(r,2500));
  await fs.writeFile(new URL('../dist/assets/img/portfolio/personal-culita-detail.png',import.meta.url),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
- console.log('Saved actual CULITA homepage and shop screenshots');
+ await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true,screenWidth:390,screenHeight:844});
+ await send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:5});
+ await send('Page.navigate',{url:'https://website1-tau-six.vercel.app/'});
+ await new Promise(r=>setTimeout(r,8000));
+ await fs.writeFile(new URL('../dist/assets/img/portfolio/personal-culita-mobile.png',import.meta.url),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+ console.log('Saved actual CULITA desktop, mobile, and shop screenshots');
 } finally {ws.close();}

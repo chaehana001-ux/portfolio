@@ -491,7 +491,7 @@ html body header.header.has-scroll-navigation.is-scroll-hidden {
   text-align: center;
 }
 [data-layout="page-home"] .section-movie .section-heading.movie-section-heading > .movie-project-eyebrow {
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
@@ -499,6 +499,18 @@ html body header.header.has-scroll-navigation.is-scroll-hidden {
   gap: 12px;
   width: fit-content;
   margin-inline: auto;
+  white-space: nowrap;
+}
+[data-layout="page-home"] .section-movie .movie-project-eyebrow > .project-label-name {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: .45em;
+  white-space: nowrap;
+}
+[data-layout="page-home"] .section-movie .movie-project-eyebrow > .project-label-number,
+[data-layout="page-home"] .section-movie .movie-project-eyebrow > .project-label-sparkle {
+  flex: 0 0 auto;
 }
 [data-layout="page-home"] .section-movie .section-heading.movie-section-heading > .movie-heading-title {
   display: flex;

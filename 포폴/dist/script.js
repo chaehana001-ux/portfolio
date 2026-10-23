@@ -149,7 +149,9 @@
             }
           }
         }
-        const alpha=connected?Math.max(0,Math.min(255,(differenceMap[index]-10)*6)):0;
+        // Give every gallery annotation the same visual stroke weight and opacity.
+        // The source lettering shape and per-card ink colour remain untouched.
+        const alpha=connected?(stableCore[index]===1?232:156):0;
         marked.data[pixel]=inkColor[0];
         marked.data[pixel+1]=inkColor[1];
         marked.data[pixel+2]=inkColor[2];
@@ -176,21 +178,30 @@
     const surface=document.createElement('div');surface.className='gallery-photo-surface';
     const photo=document.createElement('img');
     photo.className='gallery-photo-original';
-    photo.src=`./assets/img/portfolio/gallery/${asset[0]}-clean.png`;
+    photo.src=index===1
+      ? './assets/img/portfolio/gallery/photo-02-clean-v2.png'
+      : index===2
+        ? './assets/img/portfolio/gallery/photo-03-clean-v4.png'
+        : `./assets/img/portfolio/gallery/${asset[0]}-clean.png`;
     photo.alt=asset[1];
     photo.loading='lazy';
     const writing=document.createElement('img');
     writing.className='gallery-photo-writing';
-    writing.src=index===2 ? './assets/img/portfolio/gallery/photo-03-diary.png' : `./assets/img/portfolio/gallery/${asset[0]}-writing.png`;
+    writing.src=index===0
+      ? './assets/img/portfolio/gallery/photo-01-writing-v2.png'
+      : index===1
+        ? './assets/img/portfolio/gallery/photo-02-writing-v2.png'
+      : index===2
+        ? './assets/img/portfolio/gallery/photo-03-writing-v4.png'
+        : `./assets/img/portfolio/gallery/${asset[0]}-writing.png`;
     writing.alt='';
     writing.setAttribute('aria-hidden','true');
     writing.loading='lazy';
     surface.append(photo,writing);
     contents.replaceChildren(surface);
     if(index===2){
-      // Restrict extraction to the actual doodles, keeping faces out of the mask.
-      const regions=[[0,0,1,.079],[.16,.079,.27,.112],[.74,.11,.81,.14],[0,.49,.079,.58],[.945,.72,1,.79],[0,.915,1,1]];
-      isolateGalleryWriting(photo,writing,true,[83,54,79],regions);
+      photo.alt='숙소 거울 앞에서 친구들과 함께 찍은 사진';
+      isolateGalleryWriting(photo,writing,false,[255,255,255]);
     }else{
       isolateGalleryWriting(photo,writing,false,index===4?[64,38,31]:[255,255,255]);
     }
@@ -1201,31 +1212,54 @@
     const values = document.querySelector('.design-values-content');
     if (!values || values.dataset.revealReady === 'true') return;
     values.dataset.revealReady = 'true';
+    const cards = [...values.querySelectorAll('.clone-value-card')];
+    let revealTimers = [];
+    let sectionVisible = false;
+
+    const revealCards = (immediate = false) => {
+      if (values.classList.contains('is-values-revealed')) return;
+      values.classList.add('is-values-revealed');
+      cards.forEach((card, index) => {
+        if (immediate) card.classList.add('is-value-revealed');
+        else revealTimers.push(window.setTimeout(() => card.classList.add('is-value-revealed'), index * 320));
+      });
+    };
+    const resetCards = () => {
+      revealTimers.forEach(timer => window.clearTimeout(timer));
+      revealTimers = [];
+      values.classList.remove('is-values-revealed');
+      cards.forEach(card => card.classList.remove('is-value-revealed'));
+    };
 
     if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
-      values.classList.add('is-values-revealed');
+      revealCards(true);
       return;
     }
 
     const heading = values.closest('section')?.querySelector('.clone-intro .section-heading');
     if (!heading) {
-      values.classList.add('is-values-revealed');
+      revealCards(true);
       return;
     }
     let frame = 0;
     const checkTitle = () => {
       frame = 0;
+      if (!sectionVisible) return;
       const bounds = heading.getBoundingClientRect();
       if (bounds.top + bounds.height / 2 > window.innerHeight / 2) return;
-      values.classList.add('is-values-revealed');
-      window.removeEventListener('scroll', queueCheck, true);
-      window.removeEventListener('resize', queueCheck);
+      revealCards();
     };
     const queueCheck = () => {
       if (!frame) frame = requestAnimationFrame(checkTitle);
     };
     window.addEventListener('scroll', queueCheck, { passive: true, capture: true });
     window.addEventListener('resize', queueCheck);
+    new IntersectionObserver(entries => {
+      const entry = entries[0];
+      sectionVisible = entry.isIntersecting;
+      if (sectionVisible) queueCheck();
+      else resetCards();
+    }, { threshold: 0 }).observe(values);
     queueCheck();
   };
 
@@ -1583,11 +1617,12 @@
     const body = chatbot.querySelector('.hana-chatbot-body');
     const topicButtons = chatbot.querySelectorAll('.hana-chatbot-topics button');
     const answers = {
-      '자기소개': '안녕하세요, 웹디자인과 인터랙션을 배우며 차근차근 성장하고 있는 HANA입니다.',
-      '사무직 경험': '사무직에서 쌓은 꼼꼼함과 정보 정리 경험을 화면의 구조와 사용성을 설계하는 데 활용하고 있어요.',
-      '디자인을 시작한 이유': '정보를 더 편하고 매력적으로 전달하는 화면에 관심이 생겨 웹디자인을 시작했습니다.',
-      '딥티크 프로젝트': '딥티크의 브랜드 정체성과 향에 담긴 이야기를 온라인 경험으로 풀어낸 팀 프로젝트입니다. 저는 For The Planet 페이지의 디자인과 인터랙션 구현을 담당했습니다.',
-      '담당 역할': '기획, 화면 구성, 비주얼 디자인, 퍼블리싱과 인터랙션 구현을 담당했습니다.',
+      '자기소개': '안녕하세요. 사무직 경험을 바탕으로 웹디자인과 코딩을 배우며 성장하고 있는 HANA입니다. 사용자가 편리하게 이용할 수 있는 화면을 만들기 위해 작은 부분까지 꼼꼼하게 살피고 있습니다.',
+      '사무직 경험': '여러 업무를 경험하며 정보를 꼼꼼하게 정리하고 일정에 맞춰 작업하는 습관을 길렀습니다. 업무 방식이 바뀌었을 때 다른 사람도 쉽게 이해할 수 있도록 인수인계 자료를 직접 만든 경험도 있습니다. 이를 바탕으로 사용자 입장에서 정보를 이해하기 쉽게 구성하려고 합니다.',
+      '디자인을 시작한 이유': '기존 업무를 하며 앞으로의 성장 방향을 고민하던 중, 새로운 기술을 배우고 직접 결과물을 만드는 일에 관심이 생겨 웹디자인을 공부하기 시작했습니다. 생각했던 디자인이 실제 화면으로 구현될 때 가장 큰 재미와 보람을 느낍니다.',
+      '딥티크 프로젝트': '가장 기억에 남는 작업은 딥티크 웹사이트 리뉴얼 팀 프로젝트입니다. 브랜드의 분위기를 화면에 담기 위해 시안을 만들고 피드백을 반영하며 완성도를 높였고, 팀원들과 하나의 결과물을 함께 만들었다는 점에서 특히 기억에 남습니다.',
+      '담당 역할': '딥티크 팀 프로젝트에서 ‘For The Planet’ 페이지를 중심으로 일부 서브페이지 디자인과 발표를 담당했습니다.',
+      '성장 방향': '보기 좋은 디자인을 넘어 사용자가 편리하게 이용할 수 있는 화면을 만들고 싶습니다. 디자인과 코딩 경험을 꾸준히 쌓으며 작은 부분도 놓치지 않는 디자이너로 성장하는 것이 목표입니다.',
       '개인 작업': '브랜드의 인상을 화면과 움직임으로 표현한 개인 웹 프로젝트들을 소개하고 있어요.',
       '클론 코딩': '기존 사이트의 구조와 표현을 분석한 뒤 직접 구현하며 레이아웃과 반응형 감각을 익혔습니다.',
       '사용 기술': 'HTML, CSS, JavaScript와 GSAP을 중심으로 디자인을 실제 웹 화면으로 구현합니다.',
@@ -1633,7 +1668,23 @@
       const question = input.value.trim();
       if (!question) return;
       addMessage(question, 'question');
-      addMessage('질문 감사합니다! 현재는 포트폴리오 안내용 챗봇이며, 더 자세한 문의는 cogksk001@gmail.com 으로 보내주세요.');
+      const normalized = question.replace(/\s+/g, '').toLowerCase();
+      const topicKeywords = {
+        '자기소개': ['자기소개', '누구', '소개'],
+        '사무직 경험': ['사무직', '직장경험', '강점', '인수인계'],
+        '디자인을 시작한 이유': ['시작', '전환', '이유', '웹디자인'],
+        '딥티크 프로젝트': ['딥티크', '프로젝트', '기억'],
+        '담당 역할': ['담당', '역할', '포더플래닛'],
+        '성장 방향': ['성장', '목표', '디자이너'],
+        '개인 작업': ['개인작업', '온다'],
+        '클론 코딩': ['클론', '코딩'],
+        '사용 기술': ['기술', 'html', 'css', 'javascript', 'gsap'],
+        '연락처': ['연락', '이메일', '메일']
+      };
+      const matchedTopic = Object.keys(answers).find((topic) =>
+        (topicKeywords[topic] || [topic]).some((keyword) => normalized.includes(keyword.replace(/\s+/g, '').toLowerCase()))
+      );
+      addMessage(matchedTopic ? answers[matchedTopic] : '질문 감사합니다! 현재는 포트폴리오 안내용 챗봇이며, 더 자세한 문의는 cogksk001@gmail.com 으로 보내주세요.');
       input.value = '';
     });
     document.addEventListener('pointerdown', (event) => {
@@ -1794,7 +1845,7 @@
 // A shallow pointer-responsive tilt on selected primary surfaces only.
 (() => {
   const motion = matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
-  const initDepth = () => document.querySelectorAll('.clone-value-card, .personal-case-images, .case-macbook, .project-category-tab, .retrospective-card, .project-details:not(.team-intro-copy), .case-scroll-card, .diptyque-story-panel, .section-admissions .admissions-list .item > a, .portfolio-film-frame, .monster-film-frame').forEach(surface => {
+  const initDepth = () => document.querySelectorAll('.clone-value-card, .case-macbook, .project-category-tab, .retrospective-card, .project-details:not(.team-intro-copy), .case-scroll-card, .diptyque-story-panel, .section-admissions .admissions-list .item > a, .portfolio-film-frame, .monster-film-frame').forEach(surface => {
     if (surface.hasAttribute('data-depth-surface') || surface.parentElement.closest('[data-depth-surface]')) return;
     surface.dataset.depthSurface = '';
     let frame = 0;

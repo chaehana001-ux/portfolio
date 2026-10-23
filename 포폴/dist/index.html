@@ -39,10 +39,12 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="./styles.css?v=portfolio-cleanup-23">
 <script defer src="./script.js?v=portfolio-cleanup-28"></script>
-<link rel="stylesheet" href="./diptyque-story.css?v=scroll-text-5">
+<link rel="stylesheet" href="./diptyque-story.css?v=scroll-text-5" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="./diptyque-story.css?v=scroll-text-5"></noscript>
 <script defer src="./diptyque-story.js?v=scroll-text-8"></script>
-<link rel="stylesheet" href="./all-projects.css?v=portfolio-cleanup-4">
-<link rel="stylesheet" href="./page-flow.css?v=portfolio-cleanup-2">
+<link rel="stylesheet" href="./all-projects.css?v=portfolio-cleanup-4" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="./page-flow.css?v=portfolio-cleanup-2" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="./all-projects.css?v=portfolio-cleanup-4"><link rel="stylesheet" href="./page-flow.css?v=portfolio-cleanup-2"></noscript>
 <script defer src="./all-projects.js?v=portfolio-cleanup-2"></script>
 </head>
 
@@ -225,7 +227,6 @@
 
   </defs>
 </svg>
-  <div class="loader" data-loader></div>
   <div data-layout="page-home" data-global="layout page-home">
     <div class="wrapper" data-global="wrapper">
       <header class="header">
@@ -256,7 +257,7 @@
   <span class="hero-orbit-star hero-orbit-star-one" aria-hidden="true">✦</span><span class="hero-orbit-star hero-orbit-star-two" aria-hidden="true">✧</span>
   <div class="hero-design-portal"><div class="hero-window-bar"><i></i><i></i><i></i></div><div class="hero-window-wireframe"><span></span><div><i></i><i></i><i></i></div></div><div class="hero-portal-copy">
   <div class="about-intro-heading"><span class="about-me-pill about-sparkle-label"><span class="gallery-label-sparkle" aria-hidden="true"><svg viewBox="0 0 90 90" aria-hidden="true" focusable="false"><path d="M45 15Q48 43 75 46Q48 49 45 77Q42 49 15 46Q42 43 45 15Z" fill="#f9ecf0" stroke="#c5b0de" stroke-width="3"/><path d="M17 2Q18 15 30 17Q18 19 17 32Q15 19 3 17Q15 15 17 2Z" fill="#e7d7f6" stroke="#c5b0de" stroke-width="1.5"/><circle cx="76" cy="72" r="5" fill="#e2cdef"/><circle cx="85" cy="84" r="2.5" fill="#f4dfce"/></svg></span><span>ABOUT ME</span><span class="gallery-label-sparkle gallery-label-sparkle-right" aria-hidden="true"><svg viewBox="0 0 90 90" aria-hidden="true" focusable="false"><path d="M45 15Q48 43 75 46Q48 49 45 77Q42 49 15 46Q42 43 45 15Z" fill="#f9ecf0" stroke="#c5b0de" stroke-width="3"/><path d="M17 2Q18 15 30 17Q18 19 17 32Q15 19 3 17Q15 15 17 2Z" fill="#e7d7f6" stroke="#c5b0de" stroke-width="1.5"/><circle cx="76" cy="72" r="5" fill="#e2cdef"/><circle cx="85" cy="84" r="2.5" fill="#f4dfce"/></svg></span></span></div>
-  <div class="about-intro-portrait"><img src="./assets/img/portfolio/about-drawing-girl-hero-palette.png" alt="구름 위에서 아이디어를 스케치하는 디자이너의 평면 일러스트" width="1280" height="1280"></div>
+  <div class="about-intro-portrait"><img src="./assets/img/portfolio/about-drawing-girl-hero-palette.png" alt="구름 위에서 아이디어를 스케치하는 디자이너의 평면 일러스트" width="1280" height="1280" loading="lazy" decoding="async" fetchpriority="low"></div>
   <div class="about-intro-message" lang="ko">
     <span class="about-intro-label">HELLO, I'M HANA</span>
     <h2>신중하게 고민하고,<br>하나씩 완성해 갑니다.</h2>
@@ -380,7 +381,7 @@
     </div>
     <div class="personal-case-images culita-devices" aria-label="CULITA 데스크톱·모바일 자동 재생">
       <figure class="personal-case-main culita-desktop"><div class="personal-case-bar"><span>● ● ●</span><span>CULITA · DESKTOP</span></div><div class="culita-preview-screen" data-preview-width="1440"><img class="culita-hero-capture" src="./assets/img/portfolio/personal-culita-screen.png" alt="CULITA 사이트 히어로 화면 — 큰 워드마크와 마우스워시 제품" width="1440" height="900" loading="lazy"></div><figcaption>01 · DESKTOP INTERACTION</figcaption></figure>
-      <figure class="culita-phone"><div class="culita-phone-camera" aria-hidden="true"></div><div class="culita-preview-screen" data-preview-width="390"><img class="culita-hero-capture" src="./assets/img/portfolio/personal-culita-screen.png" alt="CULITA 사이트 히어로 화면 — 큰 워드마크와 마우스워시 제품" width="1440" height="900" loading="lazy"></div><figcaption>02 · MOBILE</figcaption></figure>
+      <figure class="culita-phone"><div class="culita-phone-camera" aria-hidden="true"></div><div class="culita-preview-screen" data-preview-width="390"><img class="culita-hero-capture" src="./assets/img/portfolio/personal-culita-mobile.png" alt="CULITA 모바일 사이트 히어로 화면 — 큰 워드마크와 마우스워시 제품" width="390" height="844" loading="lazy"></div><figcaption>02 · MOBILE</figcaption></figure>
     </div>
   </div>
 </section>
@@ -550,7 +551,7 @@
               <ul class="movie-list portfolio-movies" data-item="trigger" lang="ko">
 <li class="item item-monster" id="monster-film">
   <div class="item-inner portfolio-film-frame monster-film-frame">
-    <video class="monster-video" controls playsinline preload="metadata" poster="./assets/video/monster-poster.jpg" aria-label="MONSTER — 15초 세로형 숏폼 영상">
+    <video class="monster-video" controls playsinline preload="none" poster="./assets/video/monster-poster.jpg" aria-label="MONSTER — 15초 세로형 숏폼 영상">
       <source src="./assets/video/monster-shortform.mp4" type="video/mp4">
       브라우저에서 영상을 재생할 수 없습니다. <a href="./assets/video/monster-shortform.mp4">영상 다운로드</a>
     </video>
@@ -643,14 +644,12 @@
               <div class="clone-intro"><div class="team-intro-eyebrow clone-project-eyebrow project-sparkle-label"><span class="gallery-label-sparkle project-label-sparkle" aria-hidden="true"><svg viewBox="0 0 90 90" aria-hidden="true" focusable="false"><path d="M45 15Q48 43 75 46Q48 49 45 77Q42 49 15 46Q42 43 45 15Z" fill="#f9ecf0" stroke="#c5b0de" stroke-width="3"/><path d="M17 2Q18 15 30 17Q18 19 17 32Q15 19 3 17Q15 15 17 2Z" fill="#e7d7f6" stroke="#c5b0de" stroke-width="1.5"/><circle cx="76" cy="72" r="5" fill="#e2cdef"/><circle cx="85" cy="84" r="2.5" fill="#f4dfce"/></svg></span><span class="project-label-number">04</span><span class="project-label-name">CLONE CODING <span lang="ko">클론코딩</span></span><span class="gallery-label-sparkle project-label-sparkle gallery-label-sparkle-right" aria-hidden="true"><svg viewBox="0 0 90 90" aria-hidden="true" focusable="false"><path d="M45 15Q48 43 75 46Q48 49 45 77Q42 49 15 46Q42 43 45 15Z" fill="#f9ecf0" stroke="#c5b0de" stroke-width="3"/><path d="M17 2Q18 15 30 17Q18 19 17 32Q15 19 3 17Q15 15 17 2Z" fill="#e7d7f6" stroke="#c5b0de" stroke-width="1.5"/><circle cx="76" cy="72" r="5" fill="#e2cdef"/><circle cx="85" cy="84" r="2.5" fill="#f4dfce"/></svg></span></div><h2 class="section-heading">CLONE CODING</h2><p>웹사이트의 구조와 표현을 살펴보고,<br>직접 구현하며 배운 클론코딩 작업을 소개합니다.</p></div>
               <div class="clone-project-list" aria-label="클론코딩 프로젝트 목록">
                 <article class="clone-project-card clone-project-mode">
-                  <a class="clone-project-visual" href="https://clone-coding5-pi26y2d51-cogksk001-6277s-projects.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="MODE 클론코딩 사이트 새 창에서 보기">
-                    <div class="clone-mode-preview" aria-hidden="true">
-                      <span class="clone-preview-logo">MODE</span><span class="clone-preview-nav">OUR STORY　 COLLECTION　 PORTFOLIO ↗</span>
-                      <div class="clone-preview-copy"><small>COLLECTION / 2026</small><strong>A NEW<br><em>perspective.</em></strong><p>가벼운 소재와 유연한 실루엣, 당신의 일상에 새로운 장면을 더하세요.</p><b>DISCOVER MORE ↗</b></div>
-                      <span class="clone-preview-index">←　 01 / 02　 →</span>
+                  <a class="clone-project-visual" href="https://clone-coding5.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Whittaker’s Chocolate 클론코딩 사이트 새 창에서 보기">
+                    <div class="clone-mode-preview">
+                      <img src="./assets/img/portfolio/clone-coding5-home.png" alt="Whittaker’s Chocolate 웹사이트의 Berry &amp; Biscuit 메인 화면">
                     </div>
                   </a>
-                  <div class="clone-project-copy"><span>PRACTICE 01 · MAIN PAGE</span><h3>MODE</h3><p>패션 메인 화면의 스크롤 흐름과 호버 인터랙션을 구현했습니다. 큰 이미지와 타이포그래피가 자연스럽게 이어지도록 구성했습니다.</p><ul><li>HTML</li><li>CSS</li><li>JavaScript</li><li>GSAP</li></ul><a href="https://clone-coding5-pi26y2d51-cogksk001-6277s-projects.vercel.app/" target="_blank" rel="noopener noreferrer">WEBSITE ↗</a></div>
+                  <div class="clone-project-copy"><span>PRACTICE 01 · BRAND WEBSITE</span><h3>WHITTAKER’S CHOCOLATE</h3><p>휘태커스 초콜릿 브랜드를 재해석해 영상 중심의 히어로, 제품 컬렉션, 브랜드 스토리와 후기 인터랙션이 이어지는 반응형 웹사이트로 구현했습니다.</p><ul><li>HTML</li><li>CSS</li><li>JavaScript</li><li>RESPONSIVE</li></ul><a href="https://clone-coding5.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Whittaker’s Chocolate 클론코딩 사이트 새 창에서 보기">WEBSITE ↗</a></div>
                 </article>
                 <article class="clone-project-card clone-project-form">
                   <div class="clone-project-visual" aria-label="FORM 반응형 클론코딩 미리보기">
@@ -1202,20 +1201,20 @@
           </header>
           <div class="portfolio-qa-list">
             <details class="portfolio-qa-item">
-              <summary><span class="portfolio-qa-no">01</span><strong>회사원에서 웹디자인으로 전환한 이유는 무엇인가요?</strong><span class="portfolio-qa-toggle" aria-hidden="true"></span></summary>
-              <div class="portfolio-qa-answer"><p>자료를 이해하기 쉽게 정리하는 일에 흥미를 느꼈습니다. 정보의 순서와 표현에 대한 관심을 웹 화면으로 확장하고 싶어 디자인과 퍼블리싱을 배우기 시작했습니다.</p></div>
+              <summary><span class="portfolio-qa-no">Q01</span><span class="portfolio-qa-question"><span class="portfolio-qa-topic">직무 전환</span><strong>Q. 오랫동안 사무직으로 일하다가 웹디자인을 시작한 이유는 무엇인가요?</strong></span><span class="portfolio-qa-toggle" aria-hidden="true"></span></summary>
+              <div class="portfolio-qa-answer"><span class="portfolio-qa-answer-label">ANSWER</span><p>기존 업무를 하면서 앞으로의 성장 방향에 대해 고민하게 되었습니다. 새로운 기술을 배우고 직접 결과물을 만들어내는 일에 관심이 생겨 웹디자인을 공부하기 시작했습니다. 아직 배울 점이 많지만, 생각했던 디자인이 실제 화면으로 구현될 때 가장 큰 재미와 보람을 느낍니다.</p></div>
             </details>
             <details class="portfolio-qa-item">
-              <summary><span class="portfolio-qa-no">02</span><strong>이전 업무에서 얻은 강점은 무엇인가요?</strong><span class="portfolio-qa-toggle" aria-hidden="true"></span></summary>
-              <div class="portfolio-qa-answer"><p>요청을 정리하고 일정을 관리하며 다른 사람과 소통했던 경험입니다. 프로젝트에서도 해야 할 일을 구분하고 작업 내용을 명확하게 공유하려고 합니다.</p></div>
+              <summary><span class="portfolio-qa-no">Q02</span><span class="portfolio-qa-question"><span class="portfolio-qa-topic">나의 강점</span><strong>Q. 이전 직장 경험이 웹디자인 업무에 어떤 도움이 될 수 있을까요?</strong></span><span class="portfolio-qa-toggle" aria-hidden="true"></span></summary>
+              <div class="portfolio-qa-answer"><span class="portfolio-qa-answer-label">ANSWER</span><p>여러 업무를 경험하면서 정보를 꼼꼼하게 정리하고 일정에 맞춰 작업하는 습관을 길렀습니다. 특히 업무 방식이 변경되었을 때 다른 사람도 쉽게 이해할 수 있도록 인수인계 자료를 직접 제작한 경험이 있습니다. 이러한 경험을 바탕으로 사용자 입장에서 정보를 이해하기 쉽게 구성하는 디자이너가 되고 싶습니다.</p></div>
             </details>
             <details class="portfolio-qa-item">
-              <summary><span class="portfolio-qa-no">03</span><strong>디자인할 때 무엇을 중요하게 생각하나요?</strong><span class="portfolio-qa-toggle" aria-hidden="true"></span></summary>
-              <div class="portfolio-qa-answer"><p>브랜드에 어울리는 표현과 읽기 쉬운 정보 배치를 중요하게 생각합니다. 이미지뿐 아니라 글자 크기와 간격, 버튼의 위치도 함께 살핍니다.</p></div>
+              <summary><span class="portfolio-qa-no">Q03</span><span class="portfolio-qa-question"><span class="portfolio-qa-topic">프로젝트 경험</span><strong>Q. 가장 기억에 남는 프로젝트는 무엇인가요?</strong></span><span class="portfolio-qa-toggle" aria-hidden="true"></span></summary>
+              <div class="portfolio-qa-answer"><span class="portfolio-qa-answer-label">ANSWER</span><p>딥티크 웹사이트 리뉴얼 팀 프로젝트입니다. 저는 ‘For The Planet’ 페이지를 중심으로 일부 서브페이지 디자인과 발표를 담당했습니다. 처음에는 브랜드의 분위기를 디자인에 담아내는 것이 어려웠지만, 시안을 만들고 피드백을 반영하며 조금씩 완성해 나갔습니다. 팀원들과 함께 하나의 결과물을 만들었다는 점에서 가장 기억에 남습니다.</p></div>
             </details>
             <details class="portfolio-qa-item">
-              <summary><span class="portfolio-qa-no">04</span><strong>어떤 디자이너로 성장하고 싶나요?</strong><span class="portfolio-qa-toggle" aria-hidden="true"></span></summary>
-              <div class="portfolio-qa-answer"><p>디자인의 이유를 설명하고 직접 화면으로 구현하며, 피드백을 통해 개선하는 웹디자이너로 성장하고 싶습니다.</p></div>
+              <summary><span class="portfolio-qa-no">Q04</span><span class="portfolio-qa-question"><span class="portfolio-qa-topic">성장 방향</span><strong>Q. 앞으로 어떤 디자이너가 되고 싶나요?</strong></span><span class="portfolio-qa-toggle" aria-hidden="true"></span></summary>
+              <div class="portfolio-qa-answer"><span class="portfolio-qa-answer-label">ANSWER</span><p>보기 좋은 디자인뿐만 아니라 사용자가 편리하게 이용할 수 있는 화면을 만들고 싶습니다. 아직 디자인과 코딩 모두 배우는 과정이지만, 다양한 작업을 경험하며 부족한 부분을 채워 나가고 있습니다. 작은 부분도 놓치지 않고 꾸준히 성장하는 디자이너가 되는 것이 목표입니다.</p></div>
             </details>
           </div>
         </div>
@@ -1358,6 +1357,7 @@
           <div class="logo" data-anime="headLine">
 
             <svg class="footer-contact-title" role="img" aria-label="CONTACT" viewBox="0 0 753 238" overflow="visible"><title>CONTACT</title><defs><path id="footer-contact-arc" d="M 34,180 Q 376.5,70 719,180"/></defs><g data-item="logoText" data-anime-item="char-md"><text text-anchor="middle" font-size="148" textLength="655" lengthAdjust="spacingAndGlyphs"><textPath href="#footer-contact-arc" startOffset="50%">CONTACT</textPath></text></g></svg>
+            <img class="footer-hana-brand" src="./assets/img/brand/hana-lavender.png" alt="HANA" width="2172" height="724" loading="lazy" decoding="async">
 
           </div>
           <div class="contact">
@@ -1366,6 +1366,11 @@
             <a class="contact-github" href="https://github.com/chaehana001-ux" target="_blank" rel="noopener noreferrer">GitHub · chaehana001-ux ↗</a>
           </div>
           <a href="#projects" class="btn-jyukensei">
+      <svg class="footer-soap-bg" viewBox="0 0 560 224" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <defs><linearGradient id="footer-soap-peach" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffdf9"/><stop offset=".58" stop-color="#fff8f3"/><stop offset="1" stop-color="#f9e5e3"/></linearGradient></defs>
+        <path d="M108 9C176 3 231 29 298 24C368 18 425 2 490 18C536 29 558 67 557 108C556 158 529 201 471 213C399 226 334 204 269 211C190 220 99 229 44 198C7 177-9 132 8 79C21 39 61 14 108 9Z" fill="url(#footer-soap-peach)" stroke="#edcfd5" stroke-width="2"/>
+        <path d="M54 55C77 27 112 20 151 21" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="9" opacity=".76"/>
+      </svg>
       <div class="btn-inner">
         <span class="campus">
           <span class="campus-text">HANA</span>
@@ -1382,6 +1387,11 @@
       </div>
     </a>
           <a href="#lookbook" class="btn-official">
+      <svg class="footer-soap-bg" viewBox="0 0 560 224" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <defs><linearGradient id="footer-soap-lavender" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fcf9ff"/><stop offset=".56" stop-color="#f5ecfb"/><stop offset="1" stop-color="#dfcef0"/></linearGradient></defs>
+        <path d="M70 19C137 2 198 22 262 25C330 28 386 4 458 9C515 12 550 43 557 86C566 138 543 184 493 207C431 230 361 205 295 211C220 219 139 229 76 207C23 188 1 151 5 105C8 64 27 34 70 19Z" fill="url(#footer-soap-lavender)" stroke="#d8c2e8" stroke-width="2"/>
+        <path d="M55 63C75 34 108 23 146 22" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="9" opacity=".72"/>
+      </svg>
       <div class="btn-inner">
         <span class="campus">
           <span class="campus-text">HANA</span>
@@ -1399,9 +1409,9 @@
     </a>
           <div class="hana-chatbot" data-hana-chatbot>
             <button class="hana-chatbot-launcher" type="button" aria-expanded="false" aria-controls="hana-chatbot-panel" aria-label="HANA 포트폴리오 챗봇 열기">
-              <span class="hana-chatbot-tooltip" role="tooltip"><img src="./assets/img/portfolio/hana-chatbot-tooltip-v2.png" alt="HANA에게 궁금한 점이 있나요?" width="2170" height="725"></span>
+              <span class="hana-chatbot-tooltip" role="tooltip"><img src="./assets/img/portfolio/hana-chatbot-tooltip-v2.png" alt="HANA에게 궁금한 점이 있나요?" width="2170" height="725" loading="lazy" decoding="async" fetchpriority="low"></span>
               <span class="hana-chatbot-avatar" aria-hidden="true">
-                <img src="./assets/img/portfolio/hana-chatbot-icon.png" alt="" width="1254" height="1254">
+                <img src="./assets/img/portfolio/hana-chatbot-icon.png" alt="" width="1254" height="1254" loading="lazy" decoding="async" fetchpriority="low">
               </span>
             </button>
             <section class="hana-chatbot-panel" id="hana-chatbot-panel" aria-label="HANA 포트폴리오 챗봇" aria-hidden="true">
@@ -1413,7 +1423,7 @@
                 <div class="hana-chatbot-message">안녕하세요! HANA의 포트폴리오 안내 챗봇입니다.<br>사무직 경험에서 디자인을 배우게 된 이야기와 작업을 소개해드릴게요.<br>궁금한 항목을 선택하거나 질문을 입력해주세요.</div>
               </div>
               <div class="hana-chatbot-topics" aria-label="추천 질문">
-                <button type="button">자기소개</button><button type="button">사무직 경험</button><button type="button">디자인을 시작한 이유</button><button type="button">딥티크 프로젝트</button><button type="button">담당 역할</button><button type="button">개인 작업</button><button type="button">클론 코딩</button><button type="button">사용 기술</button><button type="button">연락처</button>
+                <button type="button">자기소개</button><button type="button">사무직 경험</button><button type="button">디자인을 시작한 이유</button><button type="button">딥티크 프로젝트</button><button type="button">담당 역할</button><button type="button">성장 방향</button><button type="button">개인 작업</button><button type="button">클론 코딩</button><button type="button">사용 기술</button><button type="button">연락처</button>
               </div>
               <form class="hana-chatbot-form">
                 <label class="sr-only" for="hana-chatbot-input">궁금한 점 입력</label>

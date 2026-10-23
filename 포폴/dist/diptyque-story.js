@@ -14,7 +14,7 @@
     <span class="diptyque-story-kicker">TEAM PROJECT · ${String(index+1).padStart(2,'0')} / 06</span>
     <header class="planet-work-heading"><h2><strong>MY</strong> contribution</h2><p>딥티크 팀 프로젝트에서 제가 담당한 작업과 디자인 과정입니다.</p></header>
     <article class="planet-work-card planet-work-card--main" aria-labelledby="diptyque-story-title-${index}">
-      ${livePlanetDisplay('For The Planet 대표 화면 인터랙션', 'planet-main')}
+      ${livePlanetDisplay('다람쥐를 클릭하면 도토리가 떨어지는 인터랙션', 'planet-squirrel')}
       <div class="planet-work-copy"><h3 id="diptyque-story-title-${index}">For The Planet 서브페이지 디자인</h3><p>딥티크가 추구하는 지속가능성과 자연을 향한 가치를 브랜드의 감성에 맞게 표현하고자 했습니다.</p><p>자연 이미지와 제품을 조화롭게 배치하고, 브랜드의 철학이 시각적으로 전달될 수 있도록 페이지를 구성했습니다.</p></div>
     </article>
     <article class="planet-work-card">
