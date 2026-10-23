@@ -9,7 +9,7 @@
   const laptop = (alt, src = image) => `<div class="case-macbook story-unified-laptop"><div class="case-macbook-display"><div class="case-macbook-screen">${shot(alt, '', src)}</div></div><div class="case-macbook-base" aria-hidden="true"></div></div>`;
   const liveLaptop = (title, page = '', mode = 'full') => `<div class="team-device-stage team-device-stage--paired"><div class="case-macbook story-unified-laptop team-desktop-device"><div class="case-macbook-display"><div class="case-macbook-screen team-preview-screen" data-device-width="1440"><iframe class="team-device-preview" src="./team-preview.html${page ? `?page=${page}&mode=${mode}` : ''}" title="${title}" width="1440" height="930" loading="lazy" allow="autoplay"></iframe></div></div><div class="case-macbook-base" aria-hidden="true"></div></div><div class="team-iphone team-iphone--story" aria-label="모바일 미리보기"><div class="team-iphone-screen team-preview-screen" data-device-width="402"><iframe class="team-device-preview" src="./team-preview.html${page ? `?page=${page}&mode=${mode}` : ''}" title="${title} 모바일 화면" width="402" height="874" loading="lazy" allow="autoplay"></iframe></div><span class="team-iphone-island" aria-hidden="true"></span><span class="team-iphone-home" aria-hidden="true"></span></div></div>`;
   const livePlanetPanel = (title, mode) => `<div class="planet-ipad-pro" aria-label="M5 iPad Pro 가로형 목업"><div class="planet-work-preview team-preview-screen" data-device-width="1440"><iframe class="team-device-preview" src="./team-preview.html?page=planet&mode=${mode}" title="${title}" width="1440" height="930" loading="lazy" allow="autoplay"></iframe></div><span class="planet-ipad-camera" aria-hidden="true"></span></div>`;
-  const livePlanetDisplay = (title, mode) => `<div class="planet-studio-xdr" aria-label="2026 Studio Display XDR 목업"><div class="planet-studio-xdr-shell"><div class="planet-work-preview team-preview-screen" data-device-width="1440"><iframe class="team-device-preview" src="./team-preview.html?page=planet&mode=${mode}" title="${title}" width="1440" height="930" loading="lazy" allow="autoplay"></iframe></div><span class="planet-studio-camera" aria-hidden="true"></span></div><div class="planet-studio-stand" aria-hidden="true"><span></span></div></div>`;
+  const livePlanetDisplay = (title, mode) => `<div class="planet-studio-xdr" aria-label="Apple 디스플레이 목업"><div class="planet-studio-screen planet-work-preview team-preview-screen" data-device-width="1440"><iframe class="team-device-preview" src="./team-preview.html?page=planet&mode=${mode}" title="${title}" width="1440" height="930" loading="lazy" allow="autoplay"></iframe></div><img class="planet-studio-frame" src="./assets/img/portfolio/apple-display-frame.png" alt="" aria-hidden="true" loading="lazy"></div>`;
   const planetWorkShowcase = index => `<div class="planet-work-showcase">
     <span class="diptyque-story-kicker">TEAM PROJECT · ${String(index+1).padStart(2,'0')} / 06</span>
     <header class="planet-work-heading"><h2><strong>MY</strong> contribution</h2><p>딥티크 팀 프로젝트에서 제가 담당한 작업과 디자인 과정입니다.</p></header>
@@ -134,7 +134,7 @@
   const usesScrollDrivenStory = () => mode.matches && !story.closest('[hidden]');
   const update = () => {
     queued = false;
-    const stride = viewport.clientWidth + 30;
+    const stride = panels[0].getBoundingClientRect().width + 30;
     const travel = stride * (panels.length-1);
     const scrollDriven = usesScrollDrivenStory();
     story.classList.toggle('is-pinned',scrollDriven);
@@ -169,7 +169,7 @@
   const queue = () => {if(!queued){queued=true;requestAnimationFrame(update);}};
   const go = index => {
     const next=Math.max(0,Math.min(panels.length-1,index));
-    const stride = viewport.clientWidth + 30;
+    const stride = panels[0].getBoundingClientRect().width + 30;
     if(usesScrollDrivenStory()) scrollTo({top:scrollY+story.getBoundingClientRect().top+next*stride,behavior:'smooth'});
     else viewport.scrollTo({left:next*stride,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
   };

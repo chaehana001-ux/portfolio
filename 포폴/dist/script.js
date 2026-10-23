@@ -982,7 +982,9 @@
     };
     const updateHorizontal=()=>{
       horizontalFrame=0;
-      const travel=viewport.clientWidth*(panels.length-1);
+      const trackGap=parseFloat(getComputedStyle(track).columnGap)||0;
+      const stride=(panels[0]?.getBoundingClientRect().width||viewport.clientWidth)+trackGap;
+      const travel=stride*(panels.length-1);
       const firstPanelHold=horizontalMode.matches?innerHeight*.25:0;
       walkthrough.classList.toggle('case-horizontal-pinned',horizontalMode.matches);
       panels.forEach(panel=>{
@@ -1009,9 +1011,9 @@
       walkthrough.style.height=horizontalMode.matches?sticky.offsetHeight+firstPanelHold+travel+'px':'';
       const walkthroughRect=walkthrough.getBoundingClientRect();
       const rawOffset=horizontalMode.matches?Math.max(0,Math.min(travel,-walkthroughRect.top-firstPanelHold)):viewport.scrollLeft;
-      const nextPanel=Math.min(panels.length-1,Math.floor(rawOffset/Math.max(1,viewport.clientWidth)));
+      const nextPanel=Math.min(panels.length-1,Math.floor(rawOffset/Math.max(1,stride)));
       const hasReachedProjectWalkthrough = walkthroughRect.top <= -firstPanelHold;
-      const panelPosition=rawOffset/Math.max(1,viewport.clientWidth);
+      const panelPosition=rawOffset/Math.max(1,stride);
       englishTextReveals.forEach((reveal,index)=>{
         if(!reveal) return;
         const progress=index===0&&horizontalMode.matches
@@ -1023,7 +1025,7 @@
       });
       if(horizontalMode.matches && document.documentElement.dataset.progressNavigating !== 'true' && hasReachedProjectWalkthrough && nextPanel>pausedPanel){
         const sectionTop=window.scrollY+walkthroughRect.top;
-        const snapY=sectionTop+firstPanelHold+(nextPanel*viewport.clientWidth);
+        const snapY=sectionTop+firstPanelHold+(nextPanel*stride);
         pausedPanel=nextPanel;
         if(Math.abs(window.scrollY-snapY)>1) window.scrollTo({top:snapY,behavior:'smooth'});
         holdWalkthrough();
@@ -1037,9 +1039,9 @@
       }
       const offset=rawOffset;
       track.style.transform=horizontalMode.matches?'translate3d('+(-offset)+'px,0,0)':'none';
-      const active=Math.round(offset/Math.max(1,viewport.clientWidth));
+      const active=Math.round(offset/Math.max(1,stride));
       panels.forEach((panel,index)=>{
-        const distance=Math.min(1,Math.abs(index-offset/Math.max(1,viewport.clientWidth)));
+        const distance=Math.min(1,Math.abs(index-offset/Math.max(1,stride)));
         panel.style.setProperty('--scene-visibility',String(1-distance*.16));
         panel.style.setProperty('--scene-shift','0px');
         panel.style.setProperty('--scene-scale','1');

@@ -69,6 +69,20 @@
 .has-project-tabs .portfolio-projects { border-radius: 0; }
 @media (max-width: 767px) { .project-category-tab svg { height: 40px; } }
 
+/* Enlarge the four project navigation buttons by 30% on roomy screens. */
+@media (min-width: 768px) {
+  .project-category-tabs { max-width: 1456px; }
+  .project-category-tab { padding: 29px; }
+  .project-category-number { font-size: 13px; }
+  .project-category-tab svg {
+    width: 34%;
+    max-width: 94px;
+    height: clamp(52px, 6.5vw, 94px);
+    margin-block: 5px 10px;
+  }
+  .project-category-tab strong { font-size: clamp(17px, 1.75vw, 26px); }
+}
+
 
 /* Matching sculpted controls with a gentle hover lift. */
 .project-category-tabs .project-category-tab {

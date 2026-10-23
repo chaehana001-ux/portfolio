@@ -461,8 +461,8 @@ html body header.header.has-scroll-navigation {
   visibility: visible !important;
   opacity: 1 !important;
   transform: translateY(0) !important;
-  background: color-mix(in srgb, var(--page-paper) 94%, transparent);
-  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--page-paper) 30%, transparent);
+  backdrop-filter: none;
   padding-bottom: 12px;
   transition: transform .2s ease, visibility .2s;
 }
