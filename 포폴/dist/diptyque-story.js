@@ -70,7 +70,7 @@
   story.className = 'diptyque-story';
   story.setAttribute('aria-label', '딥티크 리디자인과 For The Planet 담당 작업');
   story.innerHTML = `<div class="diptyque-story-sticky"><div class="diptyque-story-viewport" tabindex="0" role="region" aria-label="딥티크 상세 가로 스크롤"><div class="diptyque-story-track">${slides.map((slide,index) => index === 4 ? `<section class="diptyque-story-panel diptyque-story-panel--planet-work" aria-labelledby="diptyque-story-title-${index}">${planetWorkShowcase(index)}</section>` : `<article class="diptyque-story-panel" aria-labelledby="diptyque-story-title-${index}"><div class="diptyque-story-visual">${slide.visual}</div><div class="diptyque-story-copy"><span class="diptyque-story-kicker">TEAM PROJECT · ${String(index+1).padStart(2,'0')} / 06</span><h3 id="diptyque-story-title-${index}">${slide.title}</h3><p class="diptyque-story-en" lang="en">${slide.en}</p>${slide.description ? `<p class="diptyque-story-description" lang="en">${slide.description}</p>` : ''}<p class="diptyque-story-ko">${slide.ko}</p>${slide.extra || ''}</div></article>`).join('')}</div></div><nav class="diptyque-story-nav" aria-label="딥티크 상세 이동"><button type="button" data-direction="-1" aria-label="이전 내용">←</button><span class="diptyque-story-status" aria-live="polite">01 / 06</span><span class="diptyque-story-hint">SCROLL TO EXPLORE →</span><button type="button" data-direction="1" aria-label="다음 내용">→</button></nav></div>`;
-  research.before(story);
+  research.after(story);
   story.querySelectorAll('.team-device-preview').forEach(preview => {
     const screen = preview.closest('.team-preview-screen');
     let visible = false;
@@ -125,10 +125,6 @@
     if (document.documentElement.dataset.progressNavigating === 'true' || textHoldActive || completedTextHolds.has(index) || !usesScrollDrivenStory()) return;
     completedTextHolds.add(index);
     textHoldActive = true;
-    scrollTo({top:centerScrollTop,left:scrollX,behavior:'auto'});
-    addEventListener('wheel',blockTextHoldScroll,{passive:false,capture:true});
-    addEventListener('touchmove',blockTextHoldScroll,{passive:false,capture:true});
-    addEventListener('keydown',blockTextHoldScroll,{capture:true});
     textHoldTimer = setTimeout(releaseTextHold,500);
   };
   const usesScrollDrivenStory = () => mode.matches && !story.closest('[hidden]');
@@ -138,6 +134,7 @@
     const travel = stride * (panels.length-1);
     const scrollDriven = usesScrollDrivenStory();
     story.classList.toggle('is-pinned',scrollDriven);
+    if (scrollDriven && viewport.scrollLeft !== 0) viewport.scrollLeft = 0;
     story.style.height = scrollDriven ? `${innerHeight+travel}px` : '';
     const distance = scrollDriven ? Math.max(0,Math.min(travel,-story.getBoundingClientRect().top)) : viewport.scrollLeft;
     track.style.transform = scrollDriven ? `translate3d(${-distance}px,0,0)` : '';

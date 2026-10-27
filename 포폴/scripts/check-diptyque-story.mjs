@@ -17,9 +17,9 @@ try{
   for(const index of [0,2,5]){
    await evaluate(`(()=>{const story=document.querySelector('.diptyque-story'),v=story.querySelector('.diptyque-story-viewport'),stride=v.clientWidth+30;if(innerWidth>900)scrollTo({top:scrollY+story.getBoundingClientRect().top+stride*${index},behavior:'instant'});else v.scrollTo({left:stride*${index},behavior:'instant'});})()`);
    await wait(1200);
-   const state=await evaluate(`(()=>{const story=document.querySelector('.diptyque-story'),v=story.querySelector('.diptyque-story-viewport'),p=story.querySelectorAll('.diptyque-story-panel')[${index}];return{active:story.dataset.activeStory,count:story.querySelectorAll('.diptyque-story-panel').length,left:p.getBoundingClientRect().left-v.getBoundingClientRect().left,researchAfter:!!(story.compareDocumentPosition(document.querySelector('.project-walkthrough'))&Node.DOCUMENT_POSITION_FOLLOWING),pageWidth:document.documentElement.scrollWidth}})()`);
+   const state=await evaluate(`(()=>{const story=document.querySelector('.diptyque-story'),v=story.querySelector('.diptyque-story-viewport'),p=story.querySelectorAll('.diptyque-story-panel')[${index}];return{active:story.dataset.activeStory,count:story.querySelectorAll('.diptyque-story-panel').length,left:p.getBoundingClientRect().left-v.getBoundingClientRect().left,researchBefore:!!(story.compareDocumentPosition(document.querySelector('.project-walkthrough'))&Node.DOCUMENT_POSITION_PRECEDING),pageWidth:document.documentElement.scrollWidth}})()`);
    console.log(width,index,state);
-   assert.equal(state.count,6);assert.equal(state.active,String(index));assert(Math.abs(state.left)<2);assert(state.researchAfter);assert(state.pageWidth<=width);
+   assert.equal(state.count,6);assert.equal(state.active,String(index));assert(Math.abs(state.left)<2);assert(state.researchBefore);assert(state.pageWidth<=width);
   }
   console.log(`PASS ${width}px: 6 panels, horizontal positions, research order, no page overflow`);
  }

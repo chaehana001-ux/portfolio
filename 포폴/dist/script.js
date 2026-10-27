@@ -1,6 +1,7 @@
 /** Small, editable enhancements layered over the reference animation runtime. */
 (() => {
   'use strict';
+  const lazyImage=()=>{const image=document.createElement('img');image.loading='lazy';image.decoding='async';return image;};
   // Place the clone-coding introduction directly after the movie section.
   const cloneIntroSection = document.querySelector('.clone-studies');
   const movieSection = document.querySelector('.section-movie');
@@ -82,8 +83,9 @@
   const isolateGalleryWriting=async(photo,writing,preserveDarkInk=false,inkColor=[255,255,255],inkRegions=null)=>{
     try{
       await Promise.all([photo.decode(),writing.decode()]);
-      const width=writing.naturalWidth;
-      const height=writing.naturalHeight;
+      const ratio=Math.min(1,1024/writing.naturalWidth);
+      const width=Math.round(writing.naturalWidth*ratio);
+      const height=Math.round(writing.naturalHeight*ratio);
       const canvas=document.createElement('canvas');
       canvas.width=width;
       canvas.height=height;
@@ -170,41 +172,61 @@
       console.warn('Gallery handwriting overlay could not be isolated.',error);
     }
   };
+  // Decode and process one nearby gallery card at a time, outside initial rendering.
+  const galleryJobs=[];
+  let galleryBusy=false;
+  const runGalleryJob=()=>{
+    if(galleryBusy||!galleryJobs.length)return;
+    galleryBusy=true;
+    const run=async()=>{
+      try{await galleryJobs.shift()();}
+      finally{galleryBusy=false;runGalleryJob();}
+    };
+    if('requestIdleCallback' in window) requestIdleCallback(run,{timeout:1500});
+    else setTimeout(run,32);
+  };
+  const galleryPreparation=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting)return;
+      galleryPreparation.unobserve(entry.target);
+      galleryJobs.push(entry.target.prepareHandwriting);
+      runGalleryJob();
+    });
+  },{rootMargin:'600px 0px'});
   albumCards.forEach((card,index)=>{
     const contents=card.querySelector('.item-contents');
     const asset=galleryPhotos[index];
     if(!contents||!asset)return;
     card.dataset.galleryIndex=String(index+1);
     const surface=document.createElement('div');surface.className='gallery-photo-surface';
-    const photo=document.createElement('img');
+    const photo=lazyImage();
     photo.className='gallery-photo-original';
     photo.src=index===1
-      ? './assets/img/portfolio/gallery/photo-02-clean-v2.png'
+      ? './assets/img/portfolio/gallery/photo-02-clean-v2-preview.jpg'
       : index===2
-        ? './assets/img/portfolio/gallery/photo-03-clean-v4.png'
-        : `./assets/img/portfolio/gallery/${asset[0]}-clean.png`;
+        ? './assets/img/portfolio/gallery/photo-03-clean-v4-preview.jpg'
+        : `./assets/img/portfolio/gallery/${asset[0]}-clean-preview.jpg`;
     photo.alt=asset[1];
     photo.loading='lazy';
-    const writing=document.createElement('img');
+    const writing=lazyImage();
     writing.className='gallery-photo-writing';
     writing.src=index===0
-      ? './assets/img/portfolio/gallery/photo-01-writing-v2.png'
+      ? './assets/img/portfolio/gallery/photo-01-writing-v2-preview.png'
       : index===1
-        ? './assets/img/portfolio/gallery/photo-02-writing-v2.png'
+        ? './assets/img/portfolio/gallery/photo-02-writing-v2-preview.png'
       : index===2
-        ? './assets/img/portfolio/gallery/photo-03-writing-v4.png'
-        : `./assets/img/portfolio/gallery/${asset[0]}-writing.png`;
+        ? './assets/img/portfolio/gallery/photo-03-writing-v4-preview.png'
+        : `./assets/img/portfolio/gallery/${asset[0]}-writing-preview.png`;
     writing.alt='';
     writing.setAttribute('aria-hidden','true');
     writing.loading='lazy';
     surface.append(photo,writing);
     contents.replaceChildren(surface);
-    if(index===2){
-      photo.alt='숙소 거울 앞에서 친구들과 함께 찍은 사진';
-      isolateGalleryWriting(photo,writing,false,[255,255,255]);
-    }else{
-      isolateGalleryWriting(photo,writing,false,index===4?[64,38,31]:[255,255,255]);
-    }
+    photo.decoding='async';
+    writing.decoding='async';
+    if(index===2) photo.alt='숙소 거울 앞에서 친구들과 함께 찍은 사진';
+    card.prepareHandwriting=()=>isolateGalleryWriting(photo,writing,false,index===4?[64,38,31]:[255,255,255]);
+    galleryPreparation.observe(card);
     if(index===2) card.tabIndex=0;
     card.style.setProperty('--gallery-delay',(index%4)*90+'ms');
     galleryReveal.observe(card);
@@ -331,9 +353,6 @@
       releaseAboutScroll();
       if (document.documentElement.dataset.progressNavigating === 'true') return;
       document.documentElement.classList.add('is-about-pin-holding');
-      window.addEventListener('wheel', blockAboutScroll, { passive: false, capture: true });
-      window.addEventListener('touchmove', blockAboutScroll, { passive: false, capture: true });
-      window.addEventListener('keydown', blockAboutScroll, { capture: true });
       aboutHoldTimer = window.setTimeout(releaseAboutScroll, 1000);
     };
     const playHeroClick = now => {
@@ -366,7 +385,7 @@
       displayedProgress = reduced.matches || target<displayedProgress ? target : Math.min(target,displayedProgress+delta*2.8);
       // Complete the zoom before the sticky hero ends, leaving a readable
       // hold on the fully opened ABOUT ME screen.
-      const progress = clamp(displayedProgress / .78);
+      const progress = clamp(displayedProgress / .70);
       const zoom = smooth(clamp((progress-.28)/.57));
       const imageWidth = Math.min(art.clientWidth,art.clientHeight*1.5);
       const imageHeight = imageWidth/1.5;
@@ -463,7 +482,7 @@
         const progress = clamp(-rect.top / travel);
         cards.forEach((card, index) => {
           const enter = clamp((innerHeight - rect.top) / (innerHeight * .65) - index * .08);
-          const flip = clamp((progress - .12 - index * .05) / .65);
+          const flip = clamp((progress - .22 - index * .04) / .48);
           const eased = flip * flip * (3 - 2 * flip);
           card.style.opacity = String(enter);
           card.style.translate = `0 ${(1 - enter) * 64}px`;
@@ -537,7 +556,7 @@
       const body = container.querySelector('.case-doc-body');
       body.replaceChildren();
       if (data.image) {
-        const img = document.createElement('img');
+        const img = lazyImage();
         img.className = 'case-live-image';img.src = data.image;
         img.alt = '딥티크 팀 프로젝트 실제 웹사이트 화면';
         body.append(img);
@@ -570,10 +589,10 @@
           const figure = document.createElement('figure');
           figure.className = 'case-analysis-card';
           figure.dataset.interviewCard = String(index);
-          const image = document.createElement('img');
+          const image = lazyImage();
           image.src = './assets/img/portfolio/' + file;
           image.alt = labels[index] + ' 원본 자료';
-          image.loading = index === 0 ? 'eager' : 'lazy';
+          image.loading = 'lazy';
           const figureCaption = document.createElement('figcaption');
           figureCaption.textContent = labels[index];
           figure.append(image,figureCaption);
@@ -583,7 +602,7 @@
         caption.disabled = false;
         let selected = 0;
         const openMaterial = () => {
-          const full = document.createElement('img');
+          const full = lazyImage();
           full.src = deck.querySelector('.case-analysis-card.is-active img').src;
           full.alt = labels[selected];
           full.style.cssText = 'display:block;width:100%;height:auto;';
@@ -637,10 +656,10 @@
           const figure = document.createElement('figure');
           figure.className = 'case-analysis-card';
           figure.dataset.analysisCard = String(index);
-          const image = document.createElement('img');
+          const image = lazyImage();
           image.src = card.src;
           image.alt = card.alt;
-          image.loading = index === 0 ? 'eager' : 'lazy';
+          image.loading = 'lazy';
           const caption = document.createElement('figcaption');
           caption.textContent = card.label;
           figure.append(image,caption);
@@ -694,7 +713,7 @@
           content.className = 'case-planning-full';
           const indices = index === undefined ? [0,1,2] : [index];
           indices.forEach(i => {
-            const image = document.createElement('img');
+            const image = lazyImage();
             image.src = './assets/img/portfolio/' + group.files[i];
             image.alt = group.label + ' ' + (i+1);
             content.append(image);
@@ -711,7 +730,7 @@
             card.type = 'button';
             card.className = 'case-planning-image-card';
             card.setAttribute('aria-label',group.label + ' ' + (index+1) + ' 크게 보기');
-            const image = document.createElement('img');
+            const image = lazyImage();
             image.src = './assets/img/portfolio/' + file;
             image.alt = group.label + ' ' + (index+1) + ' 원본 자료';
             const label = document.createElement('span');
@@ -744,7 +763,7 @@
         gallery.className = 'case-flow-gallery';
         const viewport = document.createElement('div');
         viewport.className = 'case-flow-viewport';
-        const image = document.createElement('img');
+        const image = lazyImage();
         image.className = 'case-flow-image';
         image.loading = 'lazy';
         const flowSelector = document.createElement('div');
@@ -799,7 +818,7 @@
           }
           const content = document.createElement('div');
           content.className = 'case-flow-full';
-          const fullImage = document.createElement('img');
+          const fullImage = lazyImage();
           fullImage.src = activeChart.src;
           fullImage.alt = activeChart.alt;
           content.append(fullImage);
@@ -823,7 +842,7 @@
         gallery.className = 'case-design-gallery';
         const viewport = document.createElement('div');
         viewport.className = 'case-design-viewport';
-        const image = document.createElement('img');
+        const image = lazyImage();
         image.className = 'case-design-image';
         image.loading = 'lazy';
         viewport.append(image);
@@ -850,7 +869,7 @@
         section.querySelector('.case-enlarge').addEventListener('click',() => {
           const content = document.createElement('div');
           content.className = 'case-design-full';
-          const fullImage = document.createElement('img');
+          const fullImage = lazyImage();
           fullImage.src = activeBoard.src;
           fullImage.alt = activeBoard.alt;
           content.append(fullImage);
@@ -869,7 +888,7 @@
         const preview = document.createElement('iframe');
         preview.className = 'case-live-preview';
         preview.title = '딥티크 팀 프로젝트 메인부터 푸터까지 자동 재생';
-        preview.src = './team-preview.html';
+        preview.dataset.src = './team-preview.html';
         preview.loading = 'lazy';
         preview.allow = 'autoplay';
         preview.setAttribute('sandbox','allow-scripts allow-same-origin');
@@ -880,6 +899,7 @@
         preview.addEventListener('load',syncPreview);
         new IntersectionObserver(entries=>{
           previewVisible=entries[0].isIntersecting;
+          if(previewVisible&&!preview.hasAttribute('src')) preview.src=preview.dataset.src;
           syncPreview();
         },{threshold:.15}).observe(screen);
         document.addEventListener('visibilitychange',syncPreview);
@@ -965,9 +985,6 @@
     const holdWalkthrough=()=>{
       if(walkthroughHeld||!horizontalMode.matches) return;
       walkthroughHeld=true;
-      addEventListener('wheel',preventWalkthroughScroll,{passive:false,capture:true});
-      addEventListener('touchmove',preventWalkthroughScroll,{passive:false,capture:true});
-      addEventListener('keydown',preventWalkthroughKey,{capture:true});
       walkthroughRelease=()=>{
         removeEventListener('wheel',preventWalkthroughScroll,{capture:true});
         removeEventListener('touchmove',preventWalkthroughScroll,{capture:true});
@@ -987,6 +1004,7 @@
       const travel=stride*(panels.length-1);
       const firstPanelHold=horizontalMode.matches?innerHeight*.25:0;
       walkthrough.classList.toggle('case-horizontal-pinned',horizontalMode.matches);
+      if (horizontalMode.matches && viewport.scrollLeft !== 0) viewport.scrollLeft = 0;
       panels.forEach(panel=>{
         const css=getComputedStyle(panel);
         const left=parseFloat(css.paddingLeft),right=parseFloat(css.paddingRight);
@@ -1027,7 +1045,6 @@
         const sectionTop=window.scrollY+walkthroughRect.top;
         const snapY=sectionTop+firstPanelHold+(nextPanel*stride);
         pausedPanel=nextPanel;
-        if(Math.abs(window.scrollY-snapY)>1) window.scrollTo({top:snapY,behavior:'smooth'});
         holdWalkthrough();
         return;
       }
@@ -1286,8 +1303,9 @@
     if (footerLogo && !footerLogo.querySelector('.footer-hana-brand')) {
       const contactTitle = footerLogo.querySelector('.footer-contact-flight-title');
       const brand = document.createElement('img');
+      brand.loading = 'lazy';
       brand.className = 'footer-hana-brand';
-      brand.src = './assets/img/brand/hana-lavender.png';
+      brand.src = './assets/img/brand/hana-lavender-optimized.png';
       brand.alt = 'HANA';
       brand.width = 2172;
       brand.height = 724;
@@ -1331,13 +1349,6 @@
         return;
       }
 
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (entry.intersectionRatio >= .3) heading.classList.add('is-title-arrived');
-          else if (!entry.isIntersecting) heading.classList.remove('is-title-arrived');
-        });
-      }, { threshold: [0, .3], rootMargin: '0px 0px -10% 0px' });
-      observer.observe(heading);
     });
   };
 
@@ -1392,13 +1403,6 @@
       return;
     }
 
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.intersectionRatio >= .34) heading.classList.add('is-title-arrived');
-        else if (!entry.isIntersecting) heading.classList.remove('is-title-arrived');
-      });
-    }, { threshold: [0, .34], rootMargin: '0px 0px -8% 0px' });
-    observer.observe(heading);
   };
 
   if (document.readyState === 'loading') {
@@ -1467,7 +1471,7 @@
       const bounds = stage.getBoundingClientRect();
       const pinDistance = stage.offsetHeight - innerHeight;
       const progress = pinDistance > 1
-        ? Math.max(0, Math.min(1, -bounds.top / pinDistance))
+        ? Math.max(0, Math.min(1, -bounds.top / (pinDistance * .72)))
         : Math.max(0, Math.min(1, (innerHeight * .76 - bounds.top) / (innerHeight * .62)));
       const sweep = letters.length + 7;
       letters.forEach((letter, index) => {
@@ -1751,103 +1755,85 @@
   else addEventListener('load', initReplayableEntrances, { once: true });
 })();
 
-// Briefly hold each primary section heading while its entrance interaction plays.
+// Original staggered title flight, using lightweight one-time observation.
 (() => {
-  const initInteractionPins = () => {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (!window.ScrollTrigger || document.documentElement.dataset.interactionPinsReady === 'true') return;
-    document.documentElement.dataset.interactionPinsReady = 'true';
-
-    let holdTimer = 0;
-    let isHolding = false;
-    const blockedKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ']);
-    const blockScroll = event => {
-      if (event.type !== 'keydown' || blockedKeys.has(event.key)) event.preventDefault();
-    };
-    const releaseScroll = () => {
-      if (!isHolding) return;
-      isHolding = false;
-      clearTimeout(holdTimer);
-      window.removeEventListener('wheel', blockScroll, { capture: true });
-      window.removeEventListener('touchmove', blockScroll, { capture: true });
-      window.removeEventListener('keydown', blockScroll, { capture: true });
-      document.documentElement.classList.remove('is-title-pin-holding');
-    };
-    document.addEventListener('portfolio:navigate', releaseScroll);
-    const holdScrollForTitle = () => {
-      releaseScroll();
-      isHolding = true;
-      document.documentElement.classList.add('is-title-pin-holding');
-      window.addEventListener('wheel', blockScroll, { passive: false, capture: true });
-      window.addEventListener('touchmove', blockScroll, { passive: false, capture: true });
-      window.addEventListener('keydown', blockScroll, { capture: true });
-      holdTimer = window.setTimeout(releaseScroll, 1000);
-    };
-
-    const headings = [...document.querySelectorAll([
-      '.section-title-flight-host:not(.logo)',
-      '.movie-section-heading'
-    ].join(','))].filter(heading => !heading.closest('.journey-pin-stage'));
-
-    headings.forEach(heading => {
-      heading.classList.add('has-brief-scroll-pin');
-      const allProjectsSection = heading.closest('.all-projects');
-      const isPersonalWorkHeading = heading.matches('.team-personal-heading');
-      const pinTarget = allProjectsSection || heading;
-      let replayFrame = 0;
-      let hasLeftViewport = true;
-      const rearmObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) hasLeftViewport = true;
-        });
-      }, { threshold: 0 });
-      rearmObserver.observe(pinTarget);
-      const replayTitle = pinScrollTop => {
-        hasLeftViewport = false;
-        if (document.documentElement.dataset.progressNavigating === 'true') {
-          heading.classList.add('is-title-arrived');
-          return;
-        }
-        if ((allProjectsSection || isPersonalWorkHeading) && Number.isFinite(pinScrollTop)) {
-          scrollTo({top:pinScrollTop,left:scrollX,behavior:'auto'});
-        }
-        cancelAnimationFrame(replayFrame);
-        heading.classList.remove('is-title-arrived');
-        // Commit the reset before starting the stagger again at the pin point.
-        void heading.offsetWidth;
-        replayFrame = requestAnimationFrame(() => heading.classList.add('is-title-arrived'));
-        holdScrollForTitle();
-      };
-      window.ScrollTrigger.create({
-        trigger: pinTarget,
-        start: allProjectsSection ? 'top 7%' : 'center center',
-        // The time-based input hold owns the pause; only a tiny pin runway is needed.
-        end: '+=2',
-        pin: pinTarget,
-        pinSpacing: true,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        onEnter: self => replayTitle(self.start),
-        onEnterBack: self => {
-          if (hasLeftViewport) replayTitle(self.start);
-        },
-        onLeave: () => heading.classList.add('is-title-arrived'),
-        // The IntersectionObserver resets the title only after it is fully off-screen.
-        onLeaveBack: () => heading.classList.add('is-title-arrived')
-      });
-    });
-    window.ScrollTrigger.refresh();
-    addEventListener('pagehide', releaseScroll, { once: true });
+  const root=document.documentElement;
+  const motion=matchMedia('(prefers-reduced-motion: reduce)');
+  const completed=new WeakSet();
+  let timer=0;
+  let holding=false;
+  const keys=new Set(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' ']);
+  const block=event=>{
+    if(event.type!=='keydown'||keys.has(event.key))event.preventDefault();
   };
-
-  if (document.readyState === 'complete') requestAnimationFrame(initInteractionPins);
-  else addEventListener('load', () => requestAnimationFrame(initInteractionPins), { once: true });
+  const release=()=>{
+    clearTimeout(timer);
+    holding=false;
+    root.classList.remove('is-title-pin-holding');
+    window.removeEventListener('wheel',block,true);
+    window.removeEventListener('touchmove',block,true);
+    window.removeEventListener('keydown',block,true);
+  };
+  const reveal=heading=>{
+    if(completed.has(heading))return;
+    completed.add(heading);
+    heading.classList.add('is-title-arrived');
+    if(motion.matches||root.dataset.progressNavigating==='true'||document.hidden||holding)return;
+    holding=true;
+    root.classList.add('is-title-pin-holding');
+    window.addEventListener('wheel',block,{passive:false,capture:true});
+    window.addEventListener('touchmove',block,{passive:false,capture:true});
+    window.addEventListener('keydown',block,{capture:true});
+    const letters=heading.querySelectorAll('.section-flight-letter,.movie-title-letter').length;
+    const stagger=heading.matches('.movie-section-heading')?55:46;
+    const duration=Math.max(1170,850+Math.max(0,letters-1)*stagger)+80;
+    timer=setTimeout(release,Math.min(2400,duration));
+  };
+  const observed=new WeakSet();
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting)return;
+      observer.unobserve(entry.target);
+      reveal(entry.target);
+    });
+  },{rootMargin:'-30% 0px -30% 0px',threshold:0});
+  const init=()=>{
+    document.querySelectorAll('.section-title-flight-host:not(.logo),.movie-section-heading').forEach(heading=>{
+      if(observed.has(heading))return;
+      observed.add(heading);
+      const rect=heading.getBoundingClientRect();
+      if(motion.matches||rect.top<innerHeight*.3||rect.height>innerHeight*.7){
+        completed.add(heading);
+        heading.classList.add('is-title-arrived');
+      }else observer.observe(heading);
+    });
+  };
+  document.addEventListener('portfolio:navigate',()=>{
+    release();
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      document.querySelectorAll('.section-title-flight-host:not(.logo),.movie-section-heading').forEach(heading=>{
+        const rect=heading.getBoundingClientRect();
+        if(rect.bottom>0&&rect.top<innerHeight*.3){
+          observer.unobserve(heading);
+          completed.add(heading);
+          heading.classList.add('is-title-arrived');
+        }
+      });
+    }));
+  });
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)release();});
+  addEventListener('pagehide',release);
+  motion.addEventListener('change',()=>{release();init();});
+  const schedule=()=>requestAnimationFrame(()=>requestAnimationFrame(init));
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});
+  else schedule();
+  document.addEventListener('portfolio:sections-ready',schedule);
 })();
 
 // A shallow pointer-responsive tilt on selected primary surfaces only.
 (() => {
   const motion = matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
-  const initDepth = () => document.querySelectorAll('.clone-value-card, .case-macbook, .project-category-tab, .retrospective-card, .project-details:not(.team-intro-copy), .case-scroll-card, .diptyque-story-panel, .section-admissions .admissions-list .item > a, .portfolio-film-frame, .monster-film-frame').forEach(surface => {
+  const initDepth = () => document.querySelectorAll('.clone-value-card, .case-macbook, .retrospective-card, .project-details:not(.team-intro-copy), .case-scroll-card, .diptyque-story-panel, .section-admissions .admissions-list .item > a').forEach(surface => {
     if (surface.hasAttribute('data-depth-surface') || surface.parentElement.closest('[data-depth-surface]')) return;
     surface.dataset.depthSurface = '';
     let frame = 0;
@@ -1880,29 +1866,33 @@
   if (document.readyState !== 'complete') addEventListener('load', initDepth, { once: true });
 })();
 
-// Reveal navigation as soon as the reader scrolls upward.
+// Reveal navigation when the pointer approaches the header area.
 (() => {
   const header = document.querySelector('header.header');
   if (!header) return;
   header.classList.add('has-scroll-navigation');
-  let previousY = Math.max(0, scrollY);
-  let downwardTravel = 0;
+  const hoverPointer = matchMedia('(hover: hover) and (pointer: fine)');
+  let pointerY = Infinity;
   const update = () => {
-    const currentY = Math.max(0, scrollY);
-    const delta = currentY - previousY;
-    if (currentY <= 40 || delta <= -2) {
-      header.classList.remove('is-scroll-hidden');
-      downwardTravel = 0;
-    } else if (delta > 0) {
-      downwardTravel += delta;
-      if (currentY > 120 && downwardTravel > 18 && !header.contains(document.activeElement)) {
-        header.classList.add('is-scroll-hidden');
-      }
-    }
-    previousY = currentY;
+    const nearHeader = pointerY <= header.offsetHeight + 16;
+    const focused = header.contains(document.activeElement);
+    const hidden = hoverPointer.matches && scrollY > 40 && !nearHeader && !focused;
+    header.classList.toggle('is-scroll-hidden', hidden);
   };
+  document.addEventListener('pointermove', event => {
+    if (event.pointerType === 'touch') return;
+    pointerY = event.clientY;
+    update();
+  }, { passive: true });
+  document.documentElement.addEventListener('pointerleave', () => {
+    pointerY = Infinity;
+    update();
+  });
   addEventListener('scroll', update, { passive: true });
-  header.addEventListener('focusin', () => header.classList.remove('is-scroll-hidden'));
+  addEventListener('resize', update, { passive: true });
+  hoverPointer.addEventListener('change', update);
+  header.addEventListener('focusin', update);
+  header.addEventListener('focusout', () => requestAnimationFrame(update));
   update();
 })();
 
@@ -1930,4 +1920,20 @@
       }, 300);
     });
   }, true);
+})();
+
+// Coalesce layout updates instead of refreshing the animation runtime per asset.
+(() => {
+  let refreshTimer=0;
+  const refresh=()=>{
+    clearTimeout(refreshTimer);
+    refreshTimer=setTimeout(()=>{
+      if(document.documentElement.classList.contains('is-title-pin-holding')){refresh();return;}
+      window.ScrollTrigger?.refresh();
+    },180);
+  };
+  document.fonts?.ready.then(refresh);
+  document.addEventListener('load',event=>{
+    if(event.target instanceof HTMLImageElement) refresh();
+  },true);
 })();

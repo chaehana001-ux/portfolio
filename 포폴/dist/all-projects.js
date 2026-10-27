@@ -24,6 +24,31 @@
   personalHeading.className = 'team-personal-heading personal-details-heading';
   personalHeading.innerHTML = '<div class="team-intro-eyebrow personal-project-eyebrow project-sparkle-label"><span class="gallery-label-sparkle project-label-sparkle" aria-hidden="true"><svg viewBox="0 0 90 90" aria-hidden="true" focusable="false"><path d="M45 15Q48 43 75 46Q48 49 45 77Q42 49 15 46Q42 43 45 15Z" fill="#f9ecf0" stroke="#c5b0de" stroke-width="3"/><path d="M17 2Q18 15 30 17Q18 19 17 32Q15 19 3 17Q15 15 17 2Z" fill="#e7d7f6" stroke="#c5b0de" stroke-width="1.5"/><circle cx="76" cy="72" r="5" fill="#e2cdef"/><circle cx="85" cy="84" r="2.5" fill="#f4dfce"/></svg></span><span class="project-label-number">02</span><span class="project-label-name">PERSONAL PROJECT <span lang="ko">개인 프로젝트</span></span><span class="gallery-label-sparkle project-label-sparkle gallery-label-sparkle-right" aria-hidden="true"><svg viewBox="0 0 90 90" aria-hidden="true" focusable="false"><path d="M45 15Q48 43 75 46Q48 49 45 77Q42 49 15 46Q42 43 45 15Z" fill="#f9ecf0" stroke="#c5b0de" stroke-width="3"/><path d="M17 2Q18 15 30 17Q18 19 17 32Q15 19 3 17Q15 15 17 2Z" fill="#e7d7f6" stroke="#c5b0de" stroke-width="1.5"/><circle cx="76" cy="72" r="5" fill="#e2cdef"/><circle cx="85" cy="84" r="2.5" fill="#f4dfce"/></svg></span></div><h3 id="personal-details-title">PERSONAL PROJECT</h3><p>브랜드의 인상을 화면과 인터랙션으로 풀어낸 두 개의 개인 웹 프로젝트입니다.</p>';
   personal.prepend(personalHeading);
+  // Separate copy reserved for the work explanation above personal projects.
+  const workExplanation = personal.cloneNode(true);
+  workExplanation.id = 'work-explanation';
+  workExplanation.querySelectorAll('.personal-case').forEach(project => project.remove());
+  workExplanation.querySelector('h3').textContent = 'MY WORK';
+  workExplanation.querySelector('.project-label-name').innerHTML = 'MY WORK <span lang="ko">작업 소개</span>';
+  workExplanation.querySelector('.personal-details-heading > p').textContent = '직접 작업한 화면과 인터랙션을 소개합니다.';
+  const copiedIds = new Map();
+  workExplanation.querySelectorAll('[id]').forEach(element => {
+    const originalId = element.id;
+    element.id = 'work-explanation-' + originalId;
+    copiedIds.set(originalId, element.id);
+  });
+  workExplanation.querySelectorAll('[aria-labelledby], [aria-describedby], [aria-controls], a[href^="#"]').forEach(element => {
+    ['aria-labelledby', 'aria-describedby', 'aria-controls'].forEach(attribute => {
+      if (element.hasAttribute(attribute)) {
+        element.setAttribute(attribute, element.getAttribute(attribute).split(/\s+/).map(id => copiedIds.get(id) || id).join(' '));
+      }
+    });
+    const href = element.getAttribute('href');
+    if (href && copiedIds.has(href.slice(1))) element.setAttribute('href', '#' + copiedIds.get(href.slice(1)));
+  });
+  workExplanation.setAttribute('role', 'region');
+  workExplanation.setAttribute('aria-labelledby', 'work-explanation-personal-details-title');
+  personal.before(workExplanation);
   const movie = document.querySelector('.section-movie');
   const clone = document.querySelector('#clone-coding');
   const panels = {team, personal, movie, clone};

@@ -356,17 +356,28 @@ html.is-about-pin-holding {
 
 /* Repeat the personal work introduction above the detailed case studies. */
 .personal-details-heading { padding-top: var(--page-space); }
+#work-explanation .personal-details-heading {
+  text-align: left;
+}
+#work-explanation .project-sparkle-label {
+  justify-content: flex-start;
+}
 
-/* Place the scroll cue beneath the hero introduction. */
-.hero-introduction > .hero-scroll-cue {
-  position: static;
+/* Center the scroll cue in the lower part of the hero scene. */
+.hero-creative-scene > .hero-scroll-cue {
+  position: absolute;
+  left: 50%;
+  top: calc(93.6% - 20px);
+  bottom: auto;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
-  width: fit-content;
-  margin-top: clamp(24px, 2.3vw, 36px);
+  width: max-content;
+  margin: 0;
+  z-index: 5;
 }
 @media (max-width: 767px) {
-  .hero-introduction > .hero-scroll-cue { margin-top: 16px; }
+  .hero-creative-scene > .hero-scroll-cue { top: calc(93.6% - 20px); bottom: auto; }
 }
 
 /* Keep the about invitation arrow next to its text. */
@@ -451,7 +462,7 @@ html.is-about-pin-holding {
 [data-layout="page-home"] .scrollbar-container .point-5 { left: 78.8%; }
 [data-layout="page-home"] .scrollbar-container .point-6 { left: 98%; }
 
-/* Keep navigation available on a small upward scroll across every section. */
+/* Reveal fixed navigation when the pointer approaches the header area. */
 html body header.header.has-scroll-navigation {
   position: fixed !important;
   top: 0;
@@ -650,4 +661,351 @@ html body header.header.has-scroll-navigation.is-scroll-hidden {
   position: absolute;
   inset: 0;
   object-position: 50% top;
+}
+
+/* Fit the supplied MacBook artwork around the desktop capture. */
+.personal-case-images .culita-macbook {
+  position: relative;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
+  transform: rotate(-3deg);
+}
+.culita-macbook-device {
+  position: relative;
+  aspect-ratio: 600 / 350;
+  filter: drop-shadow(0 15px 15px rgb(64 55 82 / 14%));
+}
+.culita-macbook-art {
+  position: absolute;
+  inset: 0;
+  background: url('./assets/img/macbook.png') center / 123.333% 211.429% no-repeat;
+  clip-path: polygon(11% 0, 89% 0, 90.5% 1%, 91% 3%, 91% 94.3%, 100% 94.3%, 100% 95.5%, 96% 98%, 92% 99%, 8% 99%, 4% 98%, 0 95.5%, 0 94.3%, 9% 94.3%, 9% 3%, 9.5% 1%);
+}
+.culita-macbook-screen {
+  position: absolute;
+  left: 11%;
+  top: 6%;
+  width: 78%;
+  height: 83.7%;
+  overflow: hidden;
+  background: #fff;
+}
+.personal-case-images .culita-macbook-screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+.personal-case-images .culita-macbook figcaption {
+  text-align: center;
+  padding: 10px 0;
+}
+
+/* Use the supplied iPhone image, cropping its surrounding white canvas. */
+.personal-case-images .iphone17-mockup {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  width: 28%;
+  aspect-ratio: 258 / 532;
+  padding: 0;
+  border: 0;
+  border-radius: 17% / 8.3%;
+  background: url('./assets/img/IPHONE%2017%20PRO.png') center / 242.64% 117.67% no-repeat;
+  transform: rotate(4deg);
+  box-shadow: 7px 10px 15px rgb(64 55 82 / 16%);
+  overflow: visible;
+}
+.iphone17-screen {
+  position: absolute;
+  inset: 1.7% 3.7% 1.7%;
+  overflow: hidden;
+  border-radius: 14.5% / 6.8%;
+  background: #fff;
+}
+.personal-case-images .iphone17-screen > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center top;
+}
+.iphone17-mockup::after {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  top: 3.4%;
+  left: 36%;
+  width: 28%;
+  height: 3.8%;
+  border-radius: 999px;
+  background: #080909;
+  box-shadow: inset 0 0 0 1px #333;
+  pointer-events: none;
+}
+.personal-case-onda .iphone17-screen > img {
+  width: 104%;
+  object-position: left top;
+}
+.personal-case-images .iphone17-mockup figcaption {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  padding: 8px 0;
+  text-align: center;
+  font-size: 8px;
+}
+
+/* Values use a single visible card surface, with flat paper colors. */
+html [data-layout="page-home"] .about-hana .about-value article {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+html [data-layout="page-home"] .about-hana .about-art {
+  background: var(--palette-ivory);
+  box-shadow: none;
+}
+html [data-layout="page-home"] .about-hana .about-value-copy {
+  background: #F4EEFB;
+  box-shadow: none;
+}
+
+/* Flat category buttons with quiet hover feedback. */
+html .project-category-tabs .project-category-tab {
+  background: var(--palette-lavender);
+  border: 1px solid var(--page-line);
+  box-shadow: none;
+  rotate: none;
+  translate: none;
+  transform: none;
+  transition: background-color .2s ease, border-color .2s ease;
+}
+html .project-category-tabs .project-category-tab:hover,
+html .project-category-tabs .project-category-tab:focus-visible {
+  background: color-mix(in srgb, var(--palette-lavender) 80%, var(--palette-ivory));
+  border-color: var(--palette-navy);
+  box-shadow: none;
+  translate: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html .project-category-tabs .project-category-tab { transition: none; }
+}
+
+/* Movie projects share the clone studies' simple horizontal card layout. */
+html [data-layout="page-home"] .section-movie .movie-list.portfolio-movies {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  width: min(92%, 1540px);
+  margin: clamp(42px, 6vw, 90px) auto 0;
+  gap: clamp(22px, 2.4vw, 38px);
+}
+html [data-layout="page-home"] .section-movie .portfolio-movies > .item {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--page-line);
+  border-radius: 24px;
+  background: var(--palette-ivory);
+  transform: none !important;
+}
+html [data-layout="page-home"] .section-movie .portfolio-movies .item .portfolio-film-frame {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 4 / 3;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+  background: var(--palette-lavender);
+  box-shadow: none;
+  transform: none !important;
+  rotate: none;
+  translate: none;
+}
+html .section-movie .portfolio-film-frame .monster-video,
+html .section-movie .portfolio-film-frame .film-placeholder {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  border-radius: 0;
+  object-fit: contain;
+}
+html .section-movie .portfolio-film-heading { display: none; }
+html .section-movie .film-tagline { font-size: clamp(20px, 2vw, 32px); }
+html .section-movie .film-brand { font-size: clamp(8px, .7vw, 11px); }
+html .section-movie .film-description {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: clamp(22px, 2vw, 32px);
+}
+html .section-movie .film-description h3 {
+  font: 700 clamp(20px, 1.7vw, 28px)/1.3 var(--font-body);
+  margin: 0 0 20px;
+}
+html .section-movie .monster-eyebrow { font-size: 9px; margin-bottom: 12px; }
+html .section-movie .monster-summary { font-size: 14px; margin-bottom: 20px; }
+html .section-movie .film-description dl > div {
+  grid-template-columns: 1fr;
+  gap: 6px;
+  padding: 14px 0;
+}
+html .section-movie .film-description dt,
+html .section-movie .film-description dd { font-size: 13px; line-height: 1.8; }
+@media (max-width: 900px) {
+  html [data-layout="page-home"] .section-movie .movie-list.portfolio-movies {
+    grid-template-columns: 1fr;
+    max-width: 600px;
+  }
+}
+
+/* Soften the transparent hero artwork to match the original pastel palette. */
+html .hero-creative .hero-art-world .hero-ideas-art {
+  opacity: .82;
+  filter: saturate(.85);
+}
+
+/* Leave room to read completed scroll scenes without blocking input. */
+@media (prefers-reduced-motion: no-preference) {
+  section.hero-creative { height: 280svh; }
+}
+@media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
+  [data-layout="page-home"] .about-hana > .journey-pin-stage { height: 210svh; }
+  .is-values-flip-stage .about-values-pin { height: 260svh; }
+  [data-layout="page-home"] .about-hana.is-values-flip-stage .about-value article {
+    height: min(650px, 76svh) !important;
+    min-height: 0 !important;
+  }
+}
+/* A short viewport must not crop the sticky hero below the screen. */
+.hero-creative-scene { min-height: 0; }
+html { scroll-padding-block: 80px 32px; }
+@media (max-width: 900px) {
+  .hero-creative .hero-portal-copy { overflow-y: auto; overscroll-behavior-y: auto; }
+}
+
+/* Desktop tracks move with vertical scroll; native snapping must not add a second offset. */
+.case-horizontal-pinned .case-horizontal-viewport,
+.diptyque-story.is-pinned .diptyque-story-viewport {
+  scroll-snap-type: none;
+  overflow: clip !important;
+}
+
+/* One document-length gradient, from the hero through the contact footer. */
+html:has(body.page-home) { background: #FFFCF8; }
+body.page-home, body.page-home.is-bg-green { background: #FFFCF8 !important; }
+html body [data-layout="page-home"] > .wrapper {
+  background: linear-gradient(to bottom, #FFFCF8 0%, #FFFCF8 72%, #FCF9F7 88%, #F5EFF6 96%, #F4EEFB 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+html body [data-layout="page-home"] .main,
+html body [data-layout="page-home"] .hero-creative,
+html body [data-layout="page-home"] .hero-creative-scene,
+html body [data-layout="page-home"] .about-hana,
+html body [data-layout="page-home"] .about-story-opening,
+html body [data-layout="page-home"] .journey-pin-stage,
+html body [data-layout="page-home"] .about-values-pin,
+html body [data-layout="page-home"] .all-projects,
+html body [data-layout="page-home"] .portfolio-projects,
+html body [data-layout="page-home"] .personal-case,
+html body [data-layout="page-home"] .team-personal-overview,
+html body [data-layout="page-home"] .scrollbar-trigger-wrap,
+html body [data-layout="page-home"] .information-wrapper,
+html body [data-layout="page-home"] .information-container,
+html body [data-layout="page-home"] .section-skills,
+html body [data-layout="page-home"] .section-movie,
+html body [data-layout="page-home"] .section-movie > .section-inner,
+html body [data-layout="page-home"] .section-short-movie,
+html body [data-layout="page-home"] .section-short-movie > .section-inner,
+html body [data-layout="page-home"] .section-messages,
+html body [data-layout="page-home"] .section-messages > .section-inner,
+html body [data-layout="page-home"] .portfolio-qa,
+html body [data-layout="page-home"] .footer {
+  background: transparent !important;
+}
+/* Remove the old section-to-section color washes. */
+html body [data-layout="page-home"] .all-projects::before,
+html body [data-layout="page-home"] .footer::before,
+html body [data-layout="page-home"] .about-hana > .bg-green,
+html body [data-layout="page-home"] .section-messages > .bg-green {
+  display: none !important;
+}
+
+/* Team-work wrappers must reveal the document gradient around their cards. */
+html body [data-layout="page-home"] .portfolio-projects .project-case-pin,
+html body [data-layout="page-home"] .portfolio-projects .team-project-intro,
+html body [data-layout="page-home"] .portfolio-projects .project-walkthrough,
+html body [data-layout="page-home"] .portfolio-projects .case-horizontal-sticky,
+html body [data-layout="page-home"] .portfolio-projects .case-horizontal-viewport,
+html body [data-layout="page-home"] .portfolio-projects .case-horizontal-track,
+html body [data-layout="page-home"] .diptyque-story,
+html body [data-layout="page-home"] .diptyque-story-sticky,
+html body [data-layout="page-home"] .diptyque-story-viewport,
+html body [data-layout="page-home"] .diptyque-story-track {
+  background: transparent !important;
+  border: 0;
+  box-shadow: none;
+}
+html body [data-layout="page-home"] .project-walkthrough::before,
+html body [data-layout="page-home"] .project-walkthrough::after,
+html body [data-layout="page-home"] .diptyque-story::before,
+html body [data-layout="page-home"] .diptyque-story::after {
+  background: none !important;
+  box-shadow: none;
+}
+
+/* Let the moving skill cards run from one viewport edge to the other. */
+html body [data-layout="page-home"] .skills-orbit.skills-linear > .skills-logo-reel {
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-inline: 0;
+  border-radius: 0;
+  box-sizing: border-box;
+}
+
+/* One gentle inflate-and-return cycle every four seconds. */
+html body [data-layout="page-home"] .footer .footer-hana-brand {
+  transform-origin: center;
+  animation: logo-four-second-pulse 4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  html body [data-layout="page-home"] .footer .footer-hana-brand { animation: none; }
+}
+
+/* Match the footer's four-second logo pulse in the header. */
+html body [data-layout="page-home"] .header .hana-brand-image {
+  transform-origin: center;
+  animation: logo-four-second-pulse 4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  html body [data-layout="page-home"] .header .hana-brand-image { animation: none; }
+}
+
+/* Rest for most of each cycle; inflate and return once every four seconds. */
+@keyframes logo-four-second-pulse {
+  0%, 70%, 95%, 100% { transform: scale(1); }
+  82.5% { transform: scale(1.1); }
 }

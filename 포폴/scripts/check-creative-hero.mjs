@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
+await fs.mkdir(new URL('../.preview/',import.meta.url),{recursive:true});
 const pages=await(await fetch('http://localhost:9223/json/list')).json();
 const ws=new WebSocket(pages.find(p=>p.type==='page').webSocketDebuggerUrl);
 await new Promise(r=>ws.addEventListener('open',r,{once:true}));

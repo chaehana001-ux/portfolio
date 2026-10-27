@@ -25,7 +25,8 @@ npm run build
 - `dist/team-preview.html`: 딥티크 목업의 실시간 미리보기에서 사용
 - `dist/assets/`: 현재 정적 리소스와 공통 스타일·애니메이션 런타임
 - `scripts/serve.mjs`, `scripts/check.mjs`: 로컬 서버와 정적 경로 검사
-- `scripts/`: 제작·캡처·브라우저 검증 도구. 현재 페이지가 실행할 때 자동 호출하지 않습니다.
+- `scripts/`: 로컬 실행·정적 검사·브라우저 검증 도구. 이전 일회성 제작 스크립트는 정리했습니다.
+- `.preview/`: 브라우저 검사를 실행할 때만 생성되는 임시 캡처 폴더입니다. 사이트 실행·배포에는 필요하지 않아 삭제해도 됩니다.
 
 CULITA 목업은 로컬 히어로 캡처 이미지를 사용합니다.
 링크 공유 이미지는 `dist/assets/img/og/hana-hero-share-v1.png`입니다.

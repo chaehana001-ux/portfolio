@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+await fs.mkdir(new URL('../.preview/',import.meta.url),{recursive:true});
 const pages = await (await fetch('http://localhost:9223/json/list')).json();
 const target = pages.find(p=>p.type==='page');
 const ws = new WebSocket(target.webSocketDebuggerUrl);
