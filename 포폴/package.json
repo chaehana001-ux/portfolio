@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node --check dist/all-projects.js && node --check dist/script.js && node --check dist/diptyque-story.js && node --check dist/assets/js/bundle.js && node scripts/check.mjs",
+    "build": "node --check all-projects.js && node --check script.js && node --check diptyque-story.js && node --check assets/js/bundle.js && node scripts/check.mjs",
     "start": "node scripts/serve.mjs",
     "check": "node scripts/check.mjs"
   }

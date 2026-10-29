@@ -1522,8 +1522,8 @@ section,
 .footer .page-top .btn-text,
 .header .nav li,
 .header .menu .menu-nav li .nav-text {
-  font-family: "Cherry Bomb One", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
-  font-weight: 400;
+  font-family: "Quicksand", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+  font-weight: 700;
 }
 [data-layout~="page-lookbook"] .section-style .block-sub .heading .emoji {
   font-family: "Noto Color Emoji", sans-serif;

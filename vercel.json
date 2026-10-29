@@ -3,5 +3,5 @@
   "framework": null,
   "installCommand": "echo Static website - no dependencies",
   "buildCommand": "npm --prefix 포폴 run build",
-  "outputDirectory": "포폴/dist"
+  "outputDirectory": "포폴"
 }

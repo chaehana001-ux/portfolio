@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
-const root = path.resolve(import.meta.dirname,'../dist');
+const root = path.resolve(import.meta.dirname,'..');
 const html = fs.readFileSync(path.join(root,'index.html'),'utf8');
 const assets = new Set([...html.matchAll(/\.\/assets\/[^\s"'<>),]+/g)].map(m=>m[0].split(/[?#]/)[0]));
 for (const asset of assets) assert(fs.existsSync(path.join(root,asset)), `Missing asset: ${asset}`);

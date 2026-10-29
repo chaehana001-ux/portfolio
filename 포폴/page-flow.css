@@ -84,9 +84,9 @@ section.hero-creative { height: 250svh; }
 [data-layout="page-home"] .clone-intro h2.section-heading,
 .portfolio-capabilities-heading h2,
 .portfolio-qa-heading h2 {
-  font-family: 'Cherry Bomb One', sans-serif;
+  font-family: 'Quicksand', sans-serif;
   font-size: var(--page-heading);
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.12;
   letter-spacing: -.025em;
   color: var(--palette-navy);
@@ -146,9 +146,9 @@ section.hero-creative { height: 250svh; }
 [data-layout="page-home"] .section-movie .movie-heading-title {
   display: block;
   margin: 16px 0 22px;
-  font-family: 'Cherry Bomb One', sans-serif;
+  font-family: 'Quicksand', sans-serif;
   font-size: var(--page-heading);
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.12;
   letter-spacing: -.025em;
   color: var(--palette-navy);
@@ -230,7 +230,7 @@ html.is-about-pin-holding {
 [data-layout="page-home"] .footer .footer-contact-flight-title {
   display: block;
   color: var(--palette-navy);
-  font: 400 clamp(46px, 5vw, 78px)/1 'Cherry Bomb One', sans-serif;
+  font: 700 clamp(46px, 5vw, 78px)/1 'Quicksand', sans-serif;
   letter-spacing: -.025em;
 }
 [data-layout="page-home"] .footer .footer-hana-brand {
@@ -781,7 +781,7 @@ html [data-layout="page-home"] .about-hana .about-value-copy {
 
 /* Flat category buttons with quiet hover feedback. */
 html .project-category-tabs .project-category-tab {
-  background: var(--palette-lavender);
+  background: #F5EAE7;
   border: 1px solid var(--page-line);
   box-shadow: none;
   rotate: none;
@@ -791,7 +791,7 @@ html .project-category-tabs .project-category-tab {
 }
 html .project-category-tabs .project-category-tab:hover,
 html .project-category-tabs .project-category-tab:focus-visible {
-  background: color-mix(in srgb, var(--palette-lavender) 80%, var(--palette-ivory));
+  background: #EDDDD9;
   border-color: var(--palette-navy);
   box-shadow: none;
   translate: none;
@@ -1008,4 +1008,141 @@ html body [data-layout="page-home"] .header .hana-brand-image {
 @keyframes logo-four-second-pulse {
   0%, 70%, 95%, 100% { transform: scale(1); }
   82.5% { transform: scale(1.1); }
+}
+
+/* Reuse the team introduction inside MY WORK without outer section spacing. */
+html body [data-layout="page-home"] #work-explanation .work-diptyque-copy {
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+}
+
+/* The KARST capture includes a 16px right and 95px bottom canvas margin. */
+.personal-case-onda .culita-macbook-screen > img {
+  display: block;
+  width: 101.124%;
+  height: 111.802%;
+  max-width: none;
+  object-fit: fill;
+  object-position: left top;
+}
+
+/* Let the design value cards share the continuous page background. */
+html body [data-layout="page-home"] .design-values-section .design-values-content .clone-value-card .slider-slide-inner,
+html body [data-layout="page-home"] .design-values-section .design-values-content .clone-value-card:nth-child(2) .slider-slide-inner,
+html body [data-layout="page-home"] .design-values-section .design-values-content .clone-value-card:nth-child(3) .slider-slide-inner {
+  background: transparent;
+}
+
+/* Keep the MY WORK heading and its copied project in one compact section. */
+#work-explanation .personal-details-heading {
+  margin-bottom: clamp(24px, 3vw, 40px);
+  padding-bottom: 0;
+}
+html body [data-layout="page-home"] #work-explanation .work-diptyque-copy > .team-project-intro {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* Give the personal project title more space after the preceding project. */
+#personal-projects > .personal-details-heading {
+  padding-top: clamp(144px, 14vw, 224px);
+}
+
+/* Compact gallery of the pages designed for the Diptyque team project. */
+.work-design-showcase { width: min(88%, 1480px); margin: 0 auto; color: var(--palette-navy); }
+.work-design-choices { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.work-design-choices button { padding: 10px 15px; border: 1px solid rgb(64 55 82 / 24%); border-radius: 999px; background: transparent; color: inherit; font: 600 12px/1.4 var(--font-body); cursor: pointer; transition: background .2s ease; }
+.work-design-choices button[aria-pressed="true"] { background: var(--palette-gold); border-color: var(--palette-navy); }
+.work-design-choices button:hover { background: color-mix(in srgb, var(--palette-lavender) 35%, transparent); }
+.work-design-choices button:focus-visible, .work-design-scroll:focus-visible, .work-design-original:focus-visible { outline: 2px solid var(--palette-navy); outline-offset: 4px; }
+.work-design-layout { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 64px); align-items: start; }
+.work-design-preview { min-width: 0; margin: 0; }
+.work-design-scroll { height: clamp(300px, 32vw, 460px); overflow-y: auto; border: 1px solid rgb(64 55 82 / 20%); border-radius: 18px; background: #f8f7f5; scrollbar-width: thin; scrollbar-color: #b9a9c7 transparent; }
+.work-design-scroll img { display: block; width: 100%; height: auto; }
+.work-design-preview figcaption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 12px; font: 600 10px/1.5 var(--font-body); letter-spacing: .04em; }
+.work-design-preview figcaption > span:last-child { opacity: .65; font-weight: 400; }
+.work-design-copy { min-width: 0; }
+.work-design-kicker { font: 600 10px/1.5 var(--font-body); letter-spacing: .12em; }
+.work-design-copy h3 { margin: 16px 0 20px; font: 700 clamp(24px, 2.3vw, 36px)/1.35 var(--font-body); word-break: keep-all; letter-spacing: -.035em; }
+.work-design-description, .work-design-point p { font: 500 clamp(13px, 1vw, 16px)/1.85 var(--font-body); word-break: keep-all; }
+.work-design-point { margin-top: 24px; padding-top: 20px; border-top: 1px solid rgb(64 55 82 / 18%); }
+.work-design-point h4 { margin: 0 0 10px; font: 700 13px/1.5 var(--font-body); }
+.work-design-credit { display: block; margin-top: 24px; font: 500 11px/1.6 var(--font-body); opacity: .7; }
+.work-design-original { display: inline-block; margin-top: 14px; padding-bottom: 4px; border-bottom: 1px solid currentColor; color: inherit; text-decoration: none; font: 600 12px/1.5 var(--font-body); }
+@media (max-width: 767px) {
+  .work-design-layout { grid-template-columns: 1fr; gap: 24px; }
+  .work-design-choices { gap: 6px; margin-bottom: 18px; }
+  .work-design-choices button { padding: 8px 11px; font-size: 11px; }
+  .work-design-scroll { height: 320px; }
+  .work-design-copy h3 { margin-block: 12px; }
+  .work-design-point { margin-top: 18px; padding-top: 16px; }
+}
+
+/* Lighten the plain lettering while keeping the rounded phrases bold. */
+.about-story-opening .opening-line:not(:nth-child(2)) em,
+.about-story-opening .opening-line:nth-child(1) strong {
+  font-weight: 400;
+}
+
+/* A soft warm blush that connects the ivory page and purple typography. */
+html body [data-layout="page-home"] .design-values-section .design-values-content .clone-value-card:nth-child(2) .slider-slide-inner {
+  background: #F5EAE7;
+}
+
+/* Share one alignment edge across the MY WORK heading, controls and preview. */
+#work-explanation > .personal-details-heading {
+  width: min(88%, 1480px);
+  max-width: 1480px;
+  margin-inline: auto;
+}
+.work-design-copy { padding-top: 4px; }
+
+/* Large English title directly below the team project label. */
+.portfolio-projects .team-section-heading > .team-section-title {
+  margin: 16px 0 32px;
+  color: var(--palette-navy);
+  font: 700 var(--page-heading)/1.12 'Quicksand', sans-serif;
+  letter-spacing: -.025em;
+}
+
+/* Place the section heading above the image and align the project copy higher. */
+.has-project-tabs .portfolio-projects .team-project-intro {
+  align-items: start;
+  row-gap: clamp(24px, 3vw, 40px);
+}
+.team-project-intro > .team-section-heading {
+  grid-column: 1 / -1;
+  text-align: left;
+}
+.portfolio-projects .team-section-heading > .team-section-title {
+  margin-bottom: 0;
+}
+.portfolio-projects .team-project-intro > .team-intro-copy {
+  grid-row: auto;
+}
+.portfolio-projects .team-project-intro .team-intro-copy > h3 {
+  margin-top: 0;
+}
+
+/* Raise the complete MY WORK section by reducing its leading space. */
+#work-explanation > .personal-details-heading {
+  padding-top: calc(var(--page-space) - 20px);
+}
+
+/* Fill the phone display to its lower edge; overlay the home indicator. */
+.team-iphone > .team-iphone-screen {
+  position: absolute;
+  inset: 5px;
+  width: auto;
+  height: auto;
+}
+.team-iphone > .team-iphone-home {
+  z-index: 5;
+  background: #fff;
+  box-shadow: 0 0 2px rgb(0 0 0 / 55%);
+  pointer-events: none;
+}
+@media (max-width: 767px) {
+  .team-iphone > .team-iphone-screen { inset: 3px; }
 }

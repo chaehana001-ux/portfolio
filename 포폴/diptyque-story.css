@@ -12,7 +12,7 @@
 .diptyque-story-visual img { display: block; width: 100%; height: 100%; object-fit: contain; background: var(--palette-ivory); }
 .diptyque-story-visual .case-macbook { position: relative; z-index: 2; }
 .diptyque-story-kicker { display: inline-block; padding: 9px 15px; border: 1px solid var(--palette-navy); border-radius: 999px; background: var(--palette-ivory); font: 600 10px/1.3 var(--font-body); letter-spacing: .06em; }
-.diptyque-story-copy h3 { margin: 24px 0; font: 400 clamp(27px,3vw,50px)/1.2 'Cherry Bomb One',sans-serif; overflow-wrap: anywhere; }
+.diptyque-story-copy h3 { margin: 24px 0; font: 700 clamp(27px,3vw,50px)/1.2 'Quicksand',sans-serif; overflow-wrap: anywhere; }
 .diptyque-story-copy h3 em { font: 500 1.05em/1 var(--font-body); }
 .diptyque-story-en { font: 500 clamp(17px,1.7vw,28px)/1.5 var(--font-body); letter-spacing: -.03em; }
 .diptyque-story-en em { font-style: italic; font-weight: 400; }
@@ -192,7 +192,7 @@
 .planet-work-showcase > .diptyque-story-kicker { grid-column: 1 / -1; justify-self: start; }
 .planet-work-heading { grid-column: 1 / -1; }
 .planet-work-heading h2 { margin: 0; font: 500 clamp(28px, 3vw, 50px)/1.1 var(--font-body); letter-spacing: -.045em; }
-.planet-work-heading h2 strong { font: 400 1em/1 'Cherry Bomb One', sans-serif; letter-spacing: 0; }
+.planet-work-heading h2 strong { font: 700 1em/1 'Quicksand', sans-serif; letter-spacing: 0; }
 .planet-work-heading p { margin: 7px 0 0; font-size: clamp(11px, .9vw, 15px); line-height: 1.6; }
 .planet-work-card {
   display: grid;

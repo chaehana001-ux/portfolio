@@ -16,24 +16,24 @@ npm run build
 
 ## 주요 파일
 
-- `dist/index.html`: 페이지 본문·프로젝트·갤러리·Q&A·컨택트
-- `dist/styles.css`: 컴포넌트 스타일
-- `dist/page-flow.css`: 섹션 간격과 최종 스타일 조정
-- `dist/script.js`: 히어로·헤더·스크롤 내비게이션·갤러리 등 상호작용
-- `dist/all-projects.js`, `dist/all-projects.css`: 프로젝트 탐색과 개인 프로젝트 제목
-- `dist/diptyque-story.js`, `dist/diptyque-story.css`: 딥티크 프로젝트 상세
-- `dist/team-preview.html`: 딥티크 목업의 실시간 미리보기에서 사용
-- `dist/assets/`: 현재 정적 리소스와 공통 스타일·애니메이션 런타임
+- `index.html`: 페이지 본문·프로젝트·갤러리·Q&A·컨택트
+- `styles.css`: 컴포넌트 스타일
+- `page-flow.css`: 섹션 간격과 최종 스타일 조정
+- `script.js`: 히어로·헤더·스크롤 내비게이션·갤러리 등 상호작용
+- `all-projects.js`, `all-projects.css`: 프로젝트 탐색과 개인 프로젝트 제목
+- `diptyque-story.js`, `diptyque-story.css`: 딥티크 프로젝트 상세
+- `team-preview.html`: 딥티크 목업의 실시간 미리보기에서 사용
+- `assets/`: 현재 정적 리소스와 공통 스타일·애니메이션 런타임
 - `scripts/serve.mjs`, `scripts/check.mjs`: 로컬 서버와 정적 경로 검사
 - `scripts/`: 로컬 실행·정적 검사·브라우저 검증 도구. 이전 일회성 제작 스크립트는 정리했습니다.
 - `.preview/`: 브라우저 검사를 실행할 때만 생성되는 임시 캡처 폴더입니다. 사이트 실행·배포에는 필요하지 않아 삭제해도 됩니다.
 
 CULITA 목업은 로컬 히어로 캡처 이미지를 사용합니다.
-링크 공유 이미지는 `dist/assets/img/og/hana-hero-share-v1.png`입니다.
+링크 공유 이미지는 `assets/img/og/hana-hero-share-v1.png`입니다.
 
 ## 배포
 
-저장소 루트의 `vercel.json`은 `포폴/dist`를 배포합니다.
+저장소 루트의 `vercel.json`은 `포폴` 폴더를 배포합니다.
 `포폴`을 프로젝트 루트로 선택할 경우 이 폴더의 `vercel.json`을 사용합니다.
 로컬 수정은 재배포 후 공개 사이트에 반영됩니다.
 

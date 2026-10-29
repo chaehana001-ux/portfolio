@@ -30,7 +30,45 @@
   workExplanation.querySelectorAll('.personal-case').forEach(project => project.remove());
   workExplanation.querySelector('h3').textContent = 'MY WORK';
   workExplanation.querySelector('.project-label-name').innerHTML = 'MY WORK <span lang="ko">작업 소개</span>';
-  workExplanation.querySelector('.personal-details-heading > p').textContent = '직접 작업한 화면과 인터랙션을 소개합니다.';
+  workExplanation.querySelector('.project-label-number')?.remove();
+  workExplanation.querySelector('.personal-details-heading > p').textContent = '딥티크 팀 프로젝트에서 직접 디자인한 페이지를 소개합니다.';
+  const designedPages = [
+    {label:'컬렉션 소개', image:'./assets/img/portfolio/work-collection-intro.jpg', continuation:'./assets/img/portfolio/work-collection-categories.jpg', title:'향에서 일상으로 이어지는 브랜드 탐색', description:'향수와 익스클루시브 컬렉션에서 캔들·홈, 배스·바디, 홈 데코까지 이어지는 하나의 소개 페이지입니다.', point:'큰 제품 이미지와 간결한 이야기로 시작하고, 아래에서는 이미지와 설명을 교차 배치해 다양한 제품군을 자연스럽게 탐색하도록 디자인했습니다.'},
+    {label:'장바구니 · 담김', image:'./assets/img/portfolio/work-cart-filled.jpg', title:'주문 정보를 한눈에', description:'담은 제품과 수량, 가격을 확인하고 주문을 이어가는 장바구니 화면입니다.', point:'제품 목록과 주문 요약을 분리하고, 종이 질감과 식물 일러스트로 브랜드의 감성을 더했습니다.'},
+    {label:'장바구니 · 비어 있음', image:'./assets/img/portfolio/work-cart-empty.jpg', title:'빈 화면에도 다음 행동을', description:'장바구니에 제품이 없을 때 보여주는 안내 화면입니다.', point:'쇼핑백 일러스트와 짧은 안내, Shop Now 버튼을 중심에 모아 다시 상품을 둘러보도록 구성했습니다.'},
+    {label:'상품문의', image:'./assets/img/portfolio/work-inquiries.jpg', title:'찾기 쉽고 구분하기 쉬운 문의', description:'상품 관련 질문을 찾아보고 답변 상태를 확인하는 목록 화면입니다.', point:'공개 여부 필터와 검색창을 배치하고, 자물쇠 아이콘과 상태 표시로 문의 정보를 구분했습니다.'},
+    {label:'문의 상세', image:'./assets/img/portfolio/work-inquiry-detail.jpg', title:'질문과 답변을 명확하게', description:'선택한 문의의 내용과 브랜드의 답변을 확인하는 상세 화면입니다.', point:'질문과 답변 영역을 나누고 답변에 은은한 배경색을 더해, 정보의 흐름과 읽는 순서를 정리했습니다.'},
+    {label:'1:1 문의', image:'./assets/img/portfolio/work-contact.jpg', title:'문의 작성부터 고객센터 안내까지', description:'문의 내용을 작성하고 고객센터 정보를 함께 확인하는 페이지입니다.', point:'입력 폼과 고객센터 안내를 나란히 배치하고, 필수 항목과 첨부파일 영역을 순서대로 정리했습니다.'}
+  ];
+  const designShowcase = document.createElement('div');
+  designShowcase.className = 'work-design-showcase';
+  designShowcase.innerHTML = `<nav class="work-design-choices" aria-label="직접 디자인한 페이지 선택">${designedPages.map((page,index)=>`<button type="button" data-design-page="${index}" aria-pressed="${index===0}">${page.label}</button>`).join('')}</nav><div class="work-design-layout"><figure class="work-design-preview"><div class="work-design-scroll" tabindex="0" role="region" aria-label="디자인 화면 미리보기, 스크롤하여 전체 보기"><img src="${designedPages[0].image}" alt="${designedPages[0].label} 직접 디자인한 화면" loading="lazy" decoding="async"></div><figcaption><span class="work-design-caption">01 / COLLECTION</span><span>스크롤하여 전체 화면 보기</span></figcaption></figure><div class="work-design-copy" aria-live="polite" aria-atomic="true"><span class="work-design-kicker">DIPTYQUE · MY DESIGN</span><h3></h3><p class="work-design-description"></p><div class="work-design-point"><h4>디자인 포인트</h4><p></p></div><span class="work-design-credit">담당 작업 · 페이지 UI 디자인</span></div></div>`;
+  const showDesign = index => {
+    const page = designedPages[index];
+    designShowcase.querySelectorAll('[data-design-page]').forEach(button => button.setAttribute('aria-pressed',String(Number(button.dataset.designPage)===index)));
+    const preview = designShowcase.querySelector('.work-design-preview img');
+    preview.src = page.image;
+    preview.alt = page.label + ' 직접 디자인한 화면';
+    designShowcase.querySelector('.work-design-continuation')?.remove();
+    if (page.continuation) {
+      const continuation = document.createElement('img');
+      continuation.className = 'work-design-continuation';
+      continuation.src = page.continuation;
+      continuation.alt = '컬렉션 소개에 이어지는 캔들·홈, 배스·바디, 홈 데코 제품 카테고리 디자인';
+      continuation.decoding = 'async';
+      continuation.loading = 'lazy';
+      preview.after(continuation);
+    }
+    designShowcase.querySelector('.work-design-scroll').scrollTop = 0;
+    designShowcase.querySelector('.work-design-caption').textContent = String(index+1).padStart(2,'0') + ' / ' + page.label;
+    designShowcase.querySelector('.work-design-copy h3').textContent = page.title;
+    designShowcase.querySelector('.work-design-description').textContent = page.description;
+    designShowcase.querySelector('.work-design-point p').textContent = page.point;
+
+  };
+  designShowcase.querySelectorAll('[data-design-page]').forEach(button => button.addEventListener('click',()=>showDesign(Number(button.dataset.designPage))));
+  showDesign(0);
+  workExplanation.append(designShowcase);
   const copiedIds = new Map();
   workExplanation.querySelectorAll('[id]').forEach(element => {
     const originalId = element.id;
