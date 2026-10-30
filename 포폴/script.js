@@ -455,6 +455,7 @@
     const values = aboutSection.querySelector('.about-values');
     const cards = [...aboutSection.querySelectorAll('.about-value article')];
     const motion = matchMedia('(min-width: 901px) and (prefers-reduced-motion: no-preference)');
+    const mobileValuesMotion = matchMedia('(max-width: 900px) and (prefers-reduced-motion: no-preference)');
     if (values && cards.length) {
       const stage = document.createElement('div');
       stage.className = 'about-values-pin';
@@ -468,7 +469,18 @@
       let frame = 0;
       const update = () => {
         frame = 0;
-        aboutSection.classList.toggle('is-values-flip-stage', motion.matches);
+        aboutSection.classList.toggle('is-values-flip-stage', motion.matches || mobileValuesMotion.matches);
+        if (mobileValuesMotion.matches) {
+          cards.forEach(card => {
+            const top = card.closest('.about-value').getBoundingClientRect().top;
+            const flip = clamp((innerHeight * .62 - top) / (innerHeight * .35));
+            const eased = flip * flip * (3 - 2 * flip);
+            card.style.opacity = '1';
+            card.style.translate = 'none';
+            card.style.setProperty('--flip-angle', `${eased * 180}deg`);
+          });
+          return;
+        }
         if (!motion.matches) {
           cards.forEach(card => {
             card.style.removeProperty('--flip-angle');
@@ -493,6 +505,7 @@
       addEventListener('scroll', queue, { passive: true });
       addEventListener('resize', queue);
       motion.addEventListener('change', queue);
+      mobileValuesMotion.addEventListener('change', queue);
       new ResizeObserver(queue).observe(values);
       update();
     }
@@ -551,6 +564,13 @@
       });
     }
     const dialog = document.querySelector('.case-document-dialog');
+    const revealMaterialImage = (card, image) => {
+      const reveal = () => {
+        if (image.naturalWidth > 0) card.classList.add('is-image-ready');
+      };
+      image.addEventListener('load', reveal, {once: true});
+      if (image.complete) reveal();
+    };
     const renderDocument = (container, data) => {
       container.querySelector('h4').textContent = data.title;
       const body = container.querySelector('.case-doc-body');
@@ -581,8 +601,8 @@
         section.querySelector('.case-step-copy h4').textContent = '사용자 인터뷰와 분석';
         section.querySelector('.case-step-english').textContent = 'Listening to users';
         section.querySelector('.case-step-description').textContent = '';
-        const labels = ['인터뷰 원문','인터뷰 질문','응답 요약','어피니티 다이어그램'];
-        const files = ['interview-full.jpg','interview-questions.png','interview-summary.jpg','interview-affinity.jpg'];
+        const labels = ['인터뷰 원문','응답 요약','어피니티 다이어그램'];
+        const files = ['interview-full.jpg','interview-summary.jpg','interview-affinity.jpg'];
         const deck = document.createElement('div');
         deck.className = 'case-analysis-deck case-interview-deck';
         files.forEach((file,index) => {
@@ -596,6 +616,7 @@
           const figureCaption = document.createElement('figcaption');
           figureCaption.textContent = labels[index];
           figure.append(image,figureCaption);
+          revealMaterialImage(figure, image);
           deck.append(figure);
         });
         const caption = section.querySelector('.case-enlarge');
@@ -611,7 +632,7 @@
           dialog.showModal();
         };
         deck.addEventListener('click',event => {
-          if (event.target.closest('.case-analysis-card.is-active')) openMaterial();
+          if (event.target.tagName === 'IMG' && event.target.closest('.case-analysis-card.is-active')) openMaterial();
         });
         caption.addEventListener('click',openMaterial);
         const selectMaterial = index => {
@@ -621,6 +642,9 @@
             card.style.setProperty('--stack-order',String(relative));
             card.classList.toggle('is-active',cardIndex === index);
             card.setAttribute('aria-hidden',String(cardIndex !== index));
+            card.tabIndex = cardIndex === index ? 0 : -1;
+            card.setAttribute('aria-label', labels[cardIndex] + ', 스크롤하여 전체 보기');
+            if (cardIndex === index) card.scrollTop = 0;
           });
           deck.setAttribute('aria-label',labels[index] + ' 크게 보기');
           caption.replaceChildren(document.createTextNode(labels[index]));
@@ -663,6 +687,7 @@
           const caption = document.createElement('figcaption');
           caption.textContent = card.label;
           figure.append(image,caption);
+          revealMaterialImage(figure, image);
           deck.append(figure);
         });
         documentPanel.replaceWith(deck);
@@ -681,6 +706,9 @@
             card.style.setProperty('--stack-order',String(relative));
             card.classList.toggle('is-active',cardIndex === index);
             card.setAttribute('aria-hidden',String(cardIndex !== index));
+            card.tabIndex = cardIndex === index ? 0 : -1;
+            card.setAttribute('aria-label', analysisCards[cardIndex].label + ', 스크롤하여 전체 보기');
+            if (cardIndex === index) card.scrollTop = 0;
           });
           tabs.querySelectorAll('button').forEach((button,buttonIndex) => button.setAttribute('aria-pressed',String(buttonIndex === index)));
         };
@@ -729,14 +757,14 @@
             const card = document.createElement('button');
             card.type = 'button';
             card.className = 'case-planning-image-card';
-            card.setAttribute('aria-label',group.label + ' ' + (index+1) + ' 크게 보기');
+            card.setAttribute('aria-label', group.label + ' ' + (index + 1) + ' 크게 보기');
             const image = lazyImage();
             image.src = './assets/img/portfolio/' + file;
-            image.alt = group.label + ' ' + (index+1) + ' 원본 자료';
+            image.alt = group.label + ' ' + (index + 1) + ' 원본 자료';
             const label = document.createElement('span');
-            label.textContent = group.label + ' ' + (index+1);
-            card.append(image,label);
-            card.addEventListener('click',() => openImages(group,index));
+            label.textContent = group.label + ' ' + (index + 1);
+            card.append(image, label);
+            card.addEventListener('click', () => openImages(group, index));
             return card;
           }));
           [...tabs.children].forEach((button,index) => button.setAttribute('aria-pressed',String(groups[index] === group)));
@@ -753,6 +781,7 @@
         return;
       }
       if (data.docs?.[0]?.title === 'Information architecture') {
+        const requirementsChart = { label: '요구사항 정의서', src: './assets/img/portfolio/process-requirements.png', alt: '딥티크 웹사이트 요구사항 정의서 수정본, 페이지별 58개 요구사항과 상세 기능' };
         const flowCharts = [
           { label: 'GALERIE FLOW', src: './assets/img/portfolio/user-flow-galerie.png', alt: '향을 시각적으로 이해하고 탐색하는 갤러리 사용자 플로우차트' },
           { label: 'FULL SITE FLOW', src: './assets/img/portfolio/user-flow-full-site.png', alt: '공식 정보 탐색부터 재구매까지 이어지는 전체 사이트 사용자 플로우차트' },
@@ -775,24 +804,32 @@
         const tabs = section.querySelector('.case-tabs');
         const menuTree = { label: '메뉴트리', src: './assets/img/portfolio/menu-tree.png', alt: '딥티크 리디자인 메뉴 구조와 페이지 계층을 정리한 메뉴트리' };
         let activeChart = menuTree;
-        const selectChart = (chart,index) => {
-          activeChart = chart;
-          image.src = chart.src;
-          image.alt = chart.alt;
-          viewport.scrollTop = 0;
-          flowSelector.querySelectorAll('button').forEach((button,buttonIndex) => button.setAttribute('aria-pressed',String(buttonIndex === index)));
-        };
-        flowSelector.replaceChildren(...flowCharts.map((chart,index) => {
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.textContent = chart.label;
-          button.addEventListener('click',() => selectChart(chart,index));
-          return button;
-        }));
+        const flowDeck = document.createElement('div');
+        flowDeck.className = 'case-flow-deck';
+        flowDeck.hidden = true;
+        flowDeck.setAttribute('aria-label', '사용자 플로우 자료 3개');
+        flowCharts.forEach(chart => {
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'case-planning-image-card';
+          card.setAttribute('aria-label', chart.label + ' 크게 보기');
+          const preview = lazyImage();
+          preview.src = chart.src;
+          preview.alt = chart.alt;
+          const label = document.createElement('span');
+          label.textContent = chart.label;
+          card.append(preview, label);
+          card.addEventListener('click', () => {
+            activeChart = chart;
+            section.querySelector('.case-enlarge').click();
+          });
+          flowDeck.append(card);
+        });
+        gallery.append(flowDeck);
         const modes = [
           { label: '메뉴트리', show: () => { activeChart = menuTree; image.src = menuTree.src; image.alt = menuTree.alt; viewport.scrollTop = 0; viewport.hidden = false; flowSelector.hidden = true; documentPanel.hidden = true; gallery.classList.add('is-menu-tree'); gallery.classList.remove('has-flow-selector'); } },
-          { label: '사용자 플로우', show: () => { viewport.hidden = false; flowSelector.hidden = false; documentPanel.hidden = true; gallery.classList.remove('is-menu-tree'); gallery.classList.add('has-flow-selector'); selectChart(flowCharts[0],0); } },
-          { label: '요구사항', show: () => { viewport.hidden = true; flowSelector.hidden = true; gallery.classList.remove('is-menu-tree','has-flow-selector'); renderDocument(documentPanel,data.docs[2]); documentPanel.hidden = false; activeChart = null; } }
+          { label: '사용자 플로우', show: () => { activeChart = flowCharts[0]; viewport.hidden = true; flowSelector.hidden = true; documentPanel.hidden = true; gallery.classList.remove('is-menu-tree','has-flow-selector'); } },
+          { label: '요구사항', show: () => { activeChart = requirementsChart; image.src = requirementsChart.src; image.alt = requirementsChart.alt; viewport.scrollTop = 0; viewport.hidden = false; flowSelector.hidden = true; documentPanel.hidden = true; gallery.classList.remove('is-menu-tree','has-flow-selector'); } }
         ];
         tabs.replaceChildren(...modes.map((mode,index) => {
           const button = document.createElement('button');
@@ -800,6 +837,9 @@
           button.textContent = mode.label;
           button.addEventListener('click',() => {
             modes.forEach((item,itemIndex) => tabs.children[itemIndex].setAttribute('aria-pressed',String(item === mode)));
+            gallery.classList.toggle('is-requirements', mode.label === '요구사항');
+            gallery.classList.toggle('is-flow-deck', mode.label === '사용자 플로우');
+            flowDeck.hidden = mode.label !== '사용자 플로우';
             mode.show();
           });
           button.setAttribute('aria-pressed',String(index === 0));
@@ -822,6 +862,15 @@
           fullImage.src = activeChart.src;
           fullImage.alt = activeChart.alt;
           content.append(fullImage);
+          if (activeChart === requirementsChart) {
+            const original = document.createElement('a');
+            original.href = requirementsChart.src;
+            original.target = '_blank';
+            original.rel = 'noopener noreferrer';
+            original.textContent = '고화질 원본 보기 ↗';
+            original.style.cssText = 'display:inline-block;margin:0 0 16px;color:inherit;text-underline-offset:4px';
+            content.prepend(original);
+          }
           dialog.querySelector('.case-dialog-content').replaceChildren(content);
           dialog.querySelector('#case-dialog-title').textContent = activeChart.label;
           dialog.showModal();
@@ -939,6 +988,7 @@
       if(event.target===dialog&&(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom)) dialog.close();
     });
     const walkthrough = document.querySelector('.project-walkthrough');
+    walkthrough.classList.add('is-materials-ready');
     const panels = [...walkthrough.querySelectorAll('.case-process-step')];
     const viewport = document.createElement('div');viewport.className='case-horizontal-viewport';
     const track = document.createElement('div');track.className='case-horizontal-track';
@@ -971,7 +1021,7 @@
       });
       return {characters,progress:-1};
     });
-    const horizontalMode=matchMedia('(min-width: 901px) and (prefers-reduced-motion: no-preference)');
+    const horizontalMode=matchMedia('(prefers-reduced-motion: no-preference)');
     let horizontalFrame=0;
     let walkthroughHeld=false;
     let pausedPanel=-1;
@@ -1026,7 +1076,7 @@
           ' Q '+w+' '+h+' '+(w-r)+' '+h+' H '+r+
           ' Q 0 '+h+' 0 '+(h-r)+' Z');
       });
-      walkthrough.style.height=horizontalMode.matches?sticky.offsetHeight+firstPanelHold+travel+'px':'';
+      walkthrough.style.setProperty('height', horizontalMode.matches ? sticky.offsetHeight+firstPanelHold+travel+'px' : 'auto', horizontalMode.matches ? 'important' : '');
       const walkthroughRect=walkthrough.getBoundingClientRect();
       const rawOffset=horizontalMode.matches?Math.max(0,Math.min(travel,-walkthroughRect.top-firstPanelHold)):viewport.scrollLeft;
       const nextPanel=Math.min(panels.length-1,Math.floor(rawOffset/Math.max(1,stride)));
@@ -1055,7 +1105,7 @@
         walkthroughRelease?.();
       }
       const offset=rawOffset;
-      track.style.transform=horizontalMode.matches?'translate3d('+(-offset)+'px,0,0)':'none';
+      track.style.setProperty('transform', horizontalMode.matches ? 'translate3d('+(-offset)+'px,0,0)' : 'none', horizontalMode.matches ? 'important' : '');
       const active=Math.round(offset/Math.max(1,stride));
       panels.forEach((panel,index)=>{
         const distance=Math.min(1,Math.abs(index-offset/Math.max(1,stride)));
@@ -1872,8 +1922,29 @@
   if (!header) return;
   header.classList.add('has-scroll-navigation');
   const hoverPointer = matchMedia('(hover: hover) and (pointer: fine)');
+  const mobileHeader = matchMedia('(max-width: 900px), (hover: none)');
   let pointerY = Infinity;
+  let lastHeaderScrollY = Math.max(0, scrollY);
+  let headerScrollDistance = 0;
+  let mobileHeaderHidden = false;
   const update = () => {
+    const currentY = Math.max(0, Math.min(scrollY, Math.max(0, document.documentElement.scrollHeight - innerHeight)));
+    const delta = currentY - lastHeaderScrollY;
+    lastHeaderScrollY = currentY;
+    if (mobileHeader.matches) {
+      if (delta && Math.sign(delta) !== Math.sign(headerScrollDistance)) headerScrollDistance = 0;
+      headerScrollDistance += delta;
+      if (currentY <= 40) {
+        mobileHeaderHidden = false;
+        headerScrollDistance = 0;
+      } else if (Math.abs(headerScrollDistance) >= 10) {
+        mobileHeaderHidden = headerScrollDistance > 0;
+        headerScrollDistance = 0;
+      }
+      const keyboardFocused = Boolean(header.querySelector(':focus-visible'));
+      header.classList.toggle('is-scroll-hidden', mobileHeaderHidden && !keyboardFocused);
+      return;
+    }
     const nearHeader = pointerY <= header.offsetHeight + 16;
     const focused = header.contains(document.activeElement);
     const hidden = hoverPointer.matches && scrollY > 40 && !nearHeader && !focused;
@@ -1891,6 +1962,12 @@
   addEventListener('scroll', update, { passive: true });
   addEventListener('resize', update, { passive: true });
   hoverPointer.addEventListener('change', update);
+  mobileHeader.addEventListener('change', () => {
+    mobileHeaderHidden = false;
+    headerScrollDistance = 0;
+    lastHeaderScrollY = Math.max(0, scrollY);
+    update();
+  });
   header.addEventListener('focusin', update);
   header.addEventListener('focusout', () => requestAnimationFrame(update));
   update();

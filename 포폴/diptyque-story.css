@@ -360,3 +360,55 @@
   .planet-work-copy p { font-size: 12px; }
 }
 
+
+/* Mobile story panels follow vertical scrolling just like the process section. */
+@media (max-width: 900px) and (prefers-reduced-motion: no-preference) {
+  html body [data-layout="page-home"] .diptyque-story.is-pinned {
+    width: 100vw;
+    max-width: none;
+    margin-inline: calc(50% - 50vw);
+  }
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-sticky {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100svh;
+    padding: 0;
+    justify-content: flex-start;
+    box-sizing: border-box;
+  }
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-viewport {
+    width: 100%;
+    height: 100svh;
+    min-height: 0;
+    overflow: hidden;
+    scroll-snap-type: none;
+  }
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-track {
+    width: max-content;
+    height: 100svh;
+    padding: 104px 4vw 32px;
+    align-items: center;
+    gap: 30px;
+    box-sizing: border-box;
+  }
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-panel {
+    flex: 0 0 92vw;
+    width: 92vw;
+    height: min(620px, calc(100svh - 144px));
+    min-height: 0;
+    padding: 16px;
+    gap: 12px;
+    overflow-y: auto;
+    overscroll-behavior-x: contain;
+  }
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-visual {
+    height: clamp(140px, 22svh, 200px);
+  }
+}
+@media (max-width: 900px) and (prefers-reduced-motion: no-preference) {
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-copy h3 { margin-block: 12px; font-size: 24px; }
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-en { font-size: 16px; line-height: 1.4; }
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-description,
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-ko { margin-top: 10px; font-size: 12px; line-height: 1.65; }
+}

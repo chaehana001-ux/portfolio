@@ -104,7 +104,7 @@
   const viewport = story.querySelector('.diptyque-story-viewport');
   const track = story.querySelector('.diptyque-story-track');
   const panels = [...story.querySelectorAll('.diptyque-story-panel')];
-  const mode = matchMedia('(min-width: 901px) and (prefers-reduced-motion: no-preference)');
+  const mode = matchMedia('(prefers-reduced-motion: no-preference)');
   const textReveals = panels.map(panel => {
     const paragraph = panel.querySelector('.diptyque-story-en, .planet-work-heading > p');
     if (!paragraph) return null;
@@ -155,10 +155,10 @@
   const usesScrollDrivenStory = () => mode.matches && !story.closest('[hidden]');
   const update = () => {
     queued = false;
-    const stride = panels[0].getBoundingClientRect().width + 30;
-    const travel = stride * (panels.length-1);
     const scrollDriven = usesScrollDrivenStory();
     story.classList.toggle('is-pinned',scrollDriven);
+    const stride = panels[0].getBoundingClientRect().width + 30;
+    const travel = stride * (panels.length-1);
     if (scrollDriven && viewport.scrollLeft !== 0) viewport.scrollLeft = 0;
     story.style.height = scrollDriven ? `${innerHeight+travel}px` : '';
     const distance = scrollDriven ? Math.max(0,Math.min(travel,-story.getBoundingClientRect().top)) : viewport.scrollLeft;

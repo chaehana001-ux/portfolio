@@ -75,7 +75,7 @@
   const autoplayButton = document.createElement('button');
   autoplayButton.type = 'button';
   autoplayButton.className = 'work-design-autoplay';
-  designShowcase.querySelector('figcaption > span:last-child').textContent = '직접 스크롤해서 볼 수도 있어요';
+  designShowcase.querySelector('figcaption > span:last-child').remove();
   designShowcase.querySelector('figcaption').append(autoplayButton);
   let designAutoplay = !motionPreference.matches;
   let designVisible = false;
@@ -198,7 +198,7 @@
     const movieNavigation = document.createElement('nav');
     movieNavigation.className = 'movie-carousel-nav';
     movieNavigation.setAttribute('aria-label', '영상 프로젝트 이동');
-    movieNavigation.innerHTML = '<span>옆으로 넘겨 다른 영상 보기</span><div><button type="button" data-movie-prev aria-label="이전 영상 카드">←</button><span class="movie-carousel-status" aria-live="polite"></span><button type="button" data-movie-next aria-label="다음 영상 카드">→</button></div>';
+    movieNavigation.innerHTML = '<div><button type="button" data-movie-prev aria-label="이전 영상 카드">←</button><span class="movie-carousel-status" aria-live="polite"></span><button type="button" data-movie-next aria-label="다음 영상 카드">→</button></div>';
     movieList.before(movieNavigation);
     const previous = movieNavigation.querySelector('[data-movie-prev]');
     const next = movieNavigation.querySelector('[data-movie-next]');
@@ -225,7 +225,11 @@
       event.preventDefault();
       moveMovie(event.key === 'ArrowLeft' ? -1 : 1);
     });
-    new ResizeObserver(updateMovieNavigation).observe(movieList);
+    new ResizeObserver(() => {
+      const card = movieCards[movieIndex];
+      movieList.scrollTo({left: movieList.scrollLeft + card.getBoundingClientRect().left - movieList.getBoundingClientRect().left, behavior: 'instant'});
+      updateMovieNavigation();
+    }).observe(movieList);
     updateMovieNavigation();
   }
   const clone = document.querySelector('#clone-coding');
