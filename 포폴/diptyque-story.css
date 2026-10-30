@@ -412,3 +412,55 @@
   html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-description,
   html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-ko { margin-top: 10px; font-size: 12px; line-height: 1.65; }
 }
+/* Keep the mobile photo composition inside its own row, above the copy. */
+@media (max-width: 900px) {
+  html body [data-layout="page-home"] .diptyque-story .diptyque-story-panel {
+    min-width: 0;
+    box-sizing: border-box;
+    grid-template-rows: auto auto;
+  }
+  html body [data-layout="page-home"] .diptyque-story .diptyque-story-copy {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    align-self: start;
+    overflow-wrap: anywhere;
+  }
+  html body [data-layout="page-home"] .diptyque-story .diptyque-story-visual .collaboration-photos {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    transform: none;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  html body [data-layout="page-home"] .diptyque-story .diptyque-story-visual .collaboration-photo {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    aspect-ratio: auto;
+    transform: none;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  html body [data-layout="page-home"] .diptyque-story .collaboration-photo-main {
+    top: 0;
+    left: 0;
+    right: auto;
+    bottom: auto;
+    width: 70%;
+    height: 82%;
+  }
+  html body [data-layout="page-home"] .diptyque-story .collaboration-photo-sub {
+    top: auto;
+    left: auto;
+    right: 0;
+    bottom: 0;
+    width: 58%;
+    height: 68%;
+  }
+}
