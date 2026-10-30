@@ -56,7 +56,7 @@
       continuation.src = page.continuation;
       continuation.alt = '컬렉션 소개에 이어지는 캔들·홈, 배스·바디, 홈 데코 제품 카테고리 디자인';
       continuation.decoding = 'async';
-      continuation.loading = 'lazy';
+      continuation.loading = 'eager';
       preview.after(continuation);
     }
     designShowcase.querySelector('.work-design-scroll').scrollTop = 0;
@@ -64,11 +64,112 @@
     designShowcase.querySelector('.work-design-copy h3').textContent = page.title;
     designShowcase.querySelector('.work-design-description').textContent = page.description;
     designShowcase.querySelector('.work-design-point p').textContent = page.point;
+    designShowcase.dispatchEvent(new Event('design-preview-change'));
 
   };
   designShowcase.querySelectorAll('[data-design-page]').forEach(button => button.addEventListener('click',()=>showDesign(Number(button.dataset.designPage))));
   showDesign(0);
   workExplanation.append(designShowcase);
+  const designScroller = designShowcase.querySelector('.work-design-scroll');
+  const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
+  const autoplayButton = document.createElement('button');
+  autoplayButton.type = 'button';
+  autoplayButton.className = 'work-design-autoplay';
+  designShowcase.querySelector('figcaption > span:last-child').textContent = '직접 스크롤해서 볼 수도 있어요';
+  designShowcase.querySelector('figcaption').append(autoplayButton);
+  let designAutoplay = !motionPreference.matches;
+  let designVisible = false;
+  let designPointerDown = false;
+  let designFrame = 0;
+  let designPreviousTime = 0;
+  let designPosition = 0;
+  let designHoldUntil = performance.now() + 1400;
+  let designAtEnd = false;
+  const updateAutoplayButton = () => {
+    autoplayButton.textContent = designAutoplay ? '자동 스크롤 일시정지' : '자동 스크롤 재생';
+  };
+  const runDesignScroll = now => {
+    designFrame = 0;
+    const elapsed = designPreviousTime ? Math.min(now - designPreviousTime, 64) : 0;
+    designPreviousTime = now;
+    if (designPointerDown || now < designHoldUntil) {
+      designPosition = designScroller.scrollTop;
+    } else {
+      const bottom = designScroller.scrollHeight - designScroller.clientHeight;
+      const loading = [...designScroller.querySelectorAll('img')].some(img => !img.complete);
+      if (bottom > 1 && !loading) {
+        if (designAtEnd) {
+          designScroller.scrollTop = 0;
+          designPosition = 0;
+          designAtEnd = false;
+          designHoldUntil = now + 1400;
+        } else {
+          designPosition = Math.min(bottom, designPosition + elapsed * .032);
+          designScroller.scrollTop = designPosition;
+          if (designPosition >= bottom) {
+            designAtEnd = true;
+            designHoldUntil = now + 2200;
+          }
+        }
+      }
+    }
+    designFrame = requestAnimationFrame(runDesignScroll);
+  };
+  const syncDesignAutoplay = () => {
+    cancelAnimationFrame(designFrame);
+    designFrame = 0;
+    designPreviousTime = 0;
+    designPosition = designScroller.scrollTop;
+    if (designAutoplay && designVisible && !document.hidden) {
+      designFrame = requestAnimationFrame(runDesignScroll);
+    }
+  };
+  const pauseForManualScroll = () => {
+    designHoldUntil = performance.now() + 4500;
+    designAtEnd = false;
+    designPosition = designScroller.scrollTop;
+  };
+  designScroller.addEventListener('wheel', pauseForManualScroll, {passive: true});
+  designScroller.addEventListener('touchmove', pauseForManualScroll, {passive: true});
+  designScroller.addEventListener('pointerdown', () => {
+    designPointerDown = true;
+    pauseForManualScroll();
+  });
+  const releaseDesignPointer = () => {
+    if (!designPointerDown) return;
+    designPointerDown = false;
+    pauseForManualScroll();
+  };
+  window.addEventListener('pointerup', releaseDesignPointer);
+  window.addEventListener('pointercancel', releaseDesignPointer);
+  window.addEventListener('blur', releaseDesignPointer);
+  designScroller.addEventListener('keydown', event => {
+    if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) pauseForManualScroll();
+  });
+  autoplayButton.addEventListener('click', () => {
+    designAutoplay = !designAutoplay;
+    designHoldUntil = performance.now() + 600;
+    updateAutoplayButton();
+    syncDesignAutoplay();
+  });
+  designShowcase.addEventListener('design-preview-change', () => {
+    designAtEnd = false;
+    designPosition = 0;
+    designHoldUntil = performance.now() + 1400;
+    syncDesignAutoplay();
+  });
+  new IntersectionObserver(([entry]) => {
+    designVisible = entry.isIntersecting;
+    designHoldUntil = performance.now() + 1400;
+    syncDesignAutoplay();
+  }, {threshold: .2}).observe(designScroller);
+  document.addEventListener('visibilitychange', syncDesignAutoplay);
+  motionPreference.addEventListener('change', () => {
+    designAutoplay = !motionPreference.matches;
+    updateAutoplayButton();
+    syncDesignAutoplay();
+  });
+  updateAutoplayButton();
   const copiedIds = new Map();
   workExplanation.querySelectorAll('[id]').forEach(element => {
     const originalId = element.id;
@@ -88,6 +189,45 @@
   workExplanation.setAttribute('aria-labelledby', 'work-explanation-personal-details-title');
   personal.before(workExplanation);
   const movie = document.querySelector('.section-movie');
+  const movieList = movie?.querySelector('.portfolio-movies');
+  if (movieList) {
+    movieList.classList.add('movie-carousel');
+    movieList.tabIndex = 0;
+    movieList.setAttribute('aria-label', '영상 프로젝트 카드, 좌우 방향키로 이동');
+    const movieCards = [...movieList.children];
+    const movieNavigation = document.createElement('nav');
+    movieNavigation.className = 'movie-carousel-nav';
+    movieNavigation.setAttribute('aria-label', '영상 프로젝트 이동');
+    movieNavigation.innerHTML = '<span>옆으로 넘겨 다른 영상 보기</span><div><button type="button" data-movie-prev aria-label="이전 영상 카드">←</button><span class="movie-carousel-status" aria-live="polite"></span><button type="button" data-movie-next aria-label="다음 영상 카드">→</button></div>';
+    movieList.before(movieNavigation);
+    const previous = movieNavigation.querySelector('[data-movie-prev]');
+    const next = movieNavigation.querySelector('[data-movie-next]');
+    const status = movieNavigation.querySelector('.movie-carousel-status');
+    let movieIndex = 0;
+    const updateMovieNavigation = () => {
+      const left = movieList.getBoundingClientRect().left;
+      movieIndex = movieCards.reduce((nearest, card, index) => Math.abs(card.getBoundingClientRect().left - left) < Math.abs(movieCards[nearest].getBoundingClientRect().left - left) ? index : nearest, 0);
+      previous.disabled = movieList.scrollLeft <= 1;
+      next.disabled = movieList.scrollLeft >= movieList.scrollWidth - movieList.clientWidth - 1;
+      const label = String(movieIndex + 1).padStart(2, '0') + ' / ' + String(movieCards.length).padStart(2, '0');
+      if (status.textContent !== label) status.textContent = label;
+    };
+    const moveMovie = direction => {
+      const card = movieCards[Math.max(0, Math.min(movieCards.length - 1, movieIndex + direction))];
+      const left = movieList.scrollLeft + card.getBoundingClientRect().left - movieList.getBoundingClientRect().left;
+      movieList.scrollTo({left, behavior: motionPreference.matches ? 'instant' : 'smooth'});
+    };
+    previous.addEventListener('click', () => moveMovie(-1));
+    next.addEventListener('click', () => moveMovie(1));
+    movieList.addEventListener('scroll', updateMovieNavigation, {passive: true});
+    movieList.addEventListener('keydown', event => {
+      if (event.target !== movieList || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+      event.preventDefault();
+      moveMovie(event.key === 'ArrowLeft' ? -1 : 1);
+    });
+    new ResizeObserver(updateMovieNavigation).observe(movieList);
+    updateMovieNavigation();
+  }
   const clone = document.querySelector('#clone-coding');
   const panels = {team, personal, movie, clone};
   const buttons = [...hub.querySelectorAll('[data-project-tab]')];

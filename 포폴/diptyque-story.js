@@ -22,8 +22,8 @@
       <div class="planet-work-copy"><h3>브랜드 감성을 담은 비주얼 구성</h3><p>자연 풍경과 제품 이미지를 조화롭게 배치하여 딥티크 특유의 감각적인 분위기와 자연 친화적인 브랜드 이미지를 표현했습니다.</p></div>
     </article>
     <article class="planet-work-card">
-      ${livePlanetPanel('아치형 이미지 확대와 화면 전환 인터랙션', 'planet-arch')}
-      <div class="planet-work-copy"><h3>시각적 흐름을 연결하는 인터랙션</h3><p>아치형 이미지 확대와 이미지 전환, 좌우 스와이프 등을 통해 사용자가 콘텐츠를 자연스럽게 탐색할 수 있도록 화면의 움직임을 구성했습니다.</p></div>
+      <div class="planet-ipad-pro" aria-label="다람쥐 클릭 인터랙션을 담은 태블릿 목업"><div class="planet-work-preview"><video class="planet-interaction-recording" autoplay muted loop playsinline preload="metadata" poster="./assets/img/portfolio/diptyque-planet-squirrel-poster.jpg?v=screen-fill-2" aria-label="For The Planet에서 다람쥐를 클릭하면 도토리가 떨어지는 실제 화면 녹화"><source src="./assets/video/diptyque-planet-squirrel.mp4?v=screen-fill-2" type="video/mp4">다람쥐를 클릭하면 도토리가 떨어지는 인터랙션입니다.</video></div><span class="planet-ipad-camera" aria-hidden="true"></span></div>
+      <div class="planet-work-copy"><h3>클릭으로 반응하는 작은 즐거움</h3><p>숲속의 다람쥐를 클릭하면 도토리가 떨어지고 튀어 오릅니다. 자연을 담은 화면에 작은 반응을 더해, 사용자가 브랜드의 이야기를 직접 탐색하도록 구성했습니다.</p></div>
     </article>
   </div>`;
   const slides = [
@@ -88,13 +88,11 @@
     }, {rootMargin: '250px', threshold: 0});
     preloadObserver.observe(screen);
     const sync = () => preview.contentWindow?.postMessage({type:'team-preview-visibility',visible:visible&&!document.hidden},location.origin);
-    new ResizeObserver(() => {
-      const scale = screen.clientWidth / Number(screen.dataset.deviceWidth);
+    new ResizeObserver(([entry]) => {
+      const scale = entry.contentRect.width / Number(screen.dataset.deviceWidth);
       if (!scale) return;
       screen.style.setProperty('--device-scale', String(scale));
-      if (screen.classList.contains('team-iphone-screen')) {
-        preview.style.height = Math.ceil(screen.clientHeight / scale) + 1 + 'px';
-      }
+      preview.style.height = Math.ceil(entry.contentRect.height / scale) + 'px';
     }).observe(screen);
     new IntersectionObserver(entries => { visible = entries[0].isIntersecting; if (visible) mountPreview(); sync(); },{threshold:.35}).observe(screen);
     preview.addEventListener('load',sync);
