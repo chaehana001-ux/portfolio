@@ -32,7 +32,7 @@
       en: 'DESIGNING <em>the</em> EXPERIENCE',
       description: 'Connecting fragrance, storytelling, and visual experiences to bring Diptyque’s unique brand world to life.',
       ko: '향을 넘어 브랜드의 이야기를 경험할 수 있도록, 딥티크의 고유한 세계관을 시각적 스토리텔링과 인터랙션으로 풀어냈습니다.',
-      visual: `<div class="team-device-stage"><div class="case-macbook team-desktop-device"><div class="case-macbook-display"><div class="case-macbook-screen team-preview-screen" data-device-width="1440"><iframe class="team-device-preview" data-src="./team-preview.html" title="딥티크 메인페이지 PC 느린 자동 스크롤 반복" width="1440" height="930" loading="lazy" allow="autoplay"></iframe></div></div><div class="case-macbook-base" aria-hidden="true"></div></div><div class="team-iphone" aria-label="iPhone 17 Pro 모바일 미리보기"><div class="team-iphone-screen team-preview-screen" data-device-width="402"><iframe class="team-device-preview" data-src="./team-preview.html" title="딥티크 메인페이지 모바일 느린 자동 스크롤 반복" width="402" height="874" loading="lazy" allow="autoplay"></iframe></div><span class="team-iphone-island" aria-hidden="true"></span><span class="team-iphone-home" aria-hidden="true"></span></div></div>`
+      visual: `<div class="team-device-stage"><div class="case-macbook team-desktop-device"><div class="case-macbook-display"><div class="case-macbook-screen team-preview-screen" data-device-width="1440"><video class="team-intro-recording" autoplay muted loop playsinline preload="none" poster="./assets/img/portfolio/diptyque-intro-desktop-poster.jpg" aria-label="딥티크 메인페이지 PC 자동 스크롤 녹화"><source data-src="./assets/video/diptyque-intro-desktop.webm" type="video/webm"></video></div></div><div class="case-macbook-base" aria-hidden="true"></div></div><div class="team-iphone" aria-label="iPhone 17 Pro 모바일 미리보기"><div class="team-iphone-screen team-preview-screen" data-device-width="402"><video class="team-intro-recording" autoplay muted loop playsinline preload="none" poster="./assets/img/portfolio/diptyque-intro-mobile-poster.jpg" aria-label="딥티크 메인페이지 모바일 자동 스크롤 녹화"><source data-src="./assets/video/diptyque-intro-mobile.webm" type="video/webm"></video></div><span class="team-iphone-island" aria-hidden="true"></span><span class="team-iphone-home" aria-hidden="true"></span></div></div>`
     },
     {
       title: 'VISUAL <em>storytelling</em>',
@@ -74,7 +74,29 @@
   story.className = 'diptyque-story';
   story.setAttribute('aria-label', '딥티크 리디자인과 For The Planet 담당 작업');
   story.innerHTML = `<div class="diptyque-story-sticky"><div class="diptyque-story-viewport" tabindex="0" role="region" aria-label="딥티크 상세 가로 스크롤"><div class="diptyque-story-track">${slides.map((slide,index) => index === 4 ? `<section class="diptyque-story-panel diptyque-story-panel--planet-work" aria-labelledby="diptyque-story-title-${index}">${planetWorkShowcase(index)}</section>` : `<article class="diptyque-story-panel" aria-labelledby="diptyque-story-title-${index}"><div class="diptyque-story-visual">${slide.visual}</div><div class="diptyque-story-copy"><span class="diptyque-story-kicker">TEAM PROJECT · ${String(index+1).padStart(2,'0')} / 06</span><h3 id="diptyque-story-title-${index}">${slide.title}</h3><p class="diptyque-story-en" lang="en">${slide.en}</p>${slide.description ? `<p class="diptyque-story-description" lang="en">${slide.description}</p>` : ''}<p class="diptyque-story-ko">${slide.ko}</p>${slide.extra || ''}</div></article>`).join('')}</div></div><nav class="diptyque-story-nav" aria-label="딥티크 상세 이동"><button type="button" data-direction="-1" aria-label="이전 내용">←</button><span class="diptyque-story-status" aria-live="polite">01 / 06</span><span class="diptyque-story-hint">SCROLL TO EXPLORE →</span><button type="button" data-direction="1" aria-label="다음 내용">→</button></nav></div>`;
-  research.after(story);
+  research.before(story);
+  story.querySelectorAll('.team-intro-recording').forEach(video => {
+    video.muted = true;
+    let visible = false;
+    const sync = () => {
+      if (visible && !document.hidden) video.play().catch(() => {});
+      else video.pause();
+    };
+    const preload = new IntersectionObserver(entries => {
+      if (!entries.some(entry => entry.isIntersecting)) return;
+      const source = video.querySelector('source');
+      source.src = source.dataset.src;
+      video.load();
+      preload.disconnect();
+    }, {rootMargin: '300px'});
+    preload.observe(video);
+    new IntersectionObserver(entries => {
+      visible = entries[0].isIntersecting;
+      sync();
+    }, {threshold: .15}).observe(video);
+    video.addEventListener('loadeddata', sync);
+    document.addEventListener('visibilitychange', sync);
+  });
   story.querySelectorAll('.team-device-preview').forEach(preview => {
     const screen = preview.closest('.team-preview-screen');
     let visible = false;

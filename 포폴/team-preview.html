@@ -46,6 +46,16 @@
     parent.postMessage({type:'team-preview-ready'},location.origin);
     new MutationObserver(playVideos).observe(document.querySelector('#root'),{childList:true,subtree:true});
     const setPreviewRange=()=>{
+      if(previewMode==='footer'){
+        const footer=document.querySelector('footer');
+        if(footer){
+          document.querySelector('#root').replaceChildren(footer);
+          document.documentElement.style.setProperty('overflow','auto','important');
+          document.body.style.margin='0';
+          scrollTo({top:0,behavior:'instant'});
+        }
+        return;
+      }
       const bottom=Math.max(0,document.documentElement.scrollHeight-innerHeight);
       let section=null;
       if(previewMode==='planet-squirrel') section=document.querySelector('.ftp-arch-scroll--first');
@@ -71,6 +81,7 @@
         if(document.readyState==='complete'&&document.fonts.status==='loaded'&&document.querySelector('footer')&&height>innerHeight+100&&stable>750&&targetReady){ready=true;setPreviewRange();}
         previous=0;return;
       }
+      if(previewMode==='footer')return;
       if(!active||document.hidden||reduced.matches){previous=0;return;}
       const delta=previous?now-previous:0;previous=now;
       if(hold>0){hold-=delta;return;}

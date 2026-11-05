@@ -38,7 +38,8 @@
     {label:'장바구니 · 비어 있음', image:'./assets/img/portfolio/work-cart-empty.jpg', title:'빈 화면에도 다음 행동을', description:'장바구니에 제품이 없을 때 보여주는 안내 화면입니다.', point:'쇼핑백 일러스트와 짧은 안내, Shop Now 버튼을 중심에 모아 다시 상품을 둘러보도록 구성했습니다.'},
     {label:'상품문의', image:'./assets/img/portfolio/work-inquiries.jpg', title:'찾기 쉽고 구분하기 쉬운 문의', description:'상품 관련 질문을 찾아보고 답변 상태를 확인하는 목록 화면입니다.', point:'공개 여부 필터와 검색창을 배치하고, 자물쇠 아이콘과 상태 표시로 문의 정보를 구분했습니다.'},
     {label:'문의 상세', image:'./assets/img/portfolio/work-inquiry-detail.jpg', title:'질문과 답변을 명확하게', description:'선택한 문의의 내용과 브랜드의 답변을 확인하는 상세 화면입니다.', point:'질문과 답변 영역을 나누고 답변에 은은한 배경색을 더해, 정보의 흐름과 읽는 순서를 정리했습니다.'},
-    {label:'1:1 문의', image:'./assets/img/portfolio/work-contact.jpg', title:'문의 작성부터 고객센터 안내까지', description:'문의 내용을 작성하고 고객센터 정보를 함께 확인하는 페이지입니다.', point:'입력 폼과 고객센터 안내를 나란히 배치하고, 필수 항목과 첨부파일 영역을 순서대로 정리했습니다.'}
+    {label:'1:1 문의', image:'./assets/img/portfolio/work-contact.jpg', title:'문의 작성부터 고객센터 안내까지', description:'문의 내용을 작성하고 고객센터 정보를 함께 확인하는 페이지입니다.', point:'입력 폼과 고객센터 안내를 나란히 배치하고, 필수 항목과 첨부파일 영역을 순서대로 정리했습니다.'},
+    {label:'푸터', image:'./assets/img/portfolio/work-footer.jpg', title:'페이지의 끝까지 이어지는 브랜드 경험', description:'딥티크 웹사이트의 공통 푸터도 직접 제작했습니다.', point:'페이지 하단의 정보와 링크를 정리하고, 사이트의 전체적인 분위기와 연결되는 공통 영역으로 구성했습니다.', credit:'담당 작업 · 공통 푸터 제작'}
   ];
   const designShowcase = document.createElement('div');
   designShowcase.className = 'work-design-showcase';
@@ -48,6 +49,11 @@
     designShowcase.querySelectorAll('[data-design-page]').forEach(button => button.setAttribute('aria-pressed',String(Number(button.dataset.designPage)===index)));
     const preview = designShowcase.querySelector('.work-design-preview img');
     preview.src = page.image;
+    designShowcase.querySelector('.work-design-preview').classList.toggle('is-footer-image', page.label === '푸터');
+    const previewScroller = designShowcase.querySelector('.work-design-scroll');
+    previewScroller.setAttribute('aria-label', page.label === '푸터' ? '직접 제작한 딥티크 푸터 이미지' : '디자인 화면 미리보기, 스크롤하여 전체 보기');
+    previewScroller.tabIndex = page.label === '푸터' ? -1 : 0;
+    designShowcase.querySelector('.work-design-credit').textContent = page.credit || '담당 작업 · 페이지 UI 디자인';
     preview.alt = page.label + ' 직접 디자인한 화면';
     designShowcase.querySelector('.work-design-continuation')?.remove();
     if (page.continuation) {
@@ -200,6 +206,19 @@
     movieNavigation.setAttribute('aria-label', '영상 프로젝트 이동');
     movieNavigation.innerHTML = '<div><button type="button" data-movie-prev aria-label="이전 영상 카드">←</button><span class="movie-carousel-status" aria-live="polite"></span><button type="button" data-movie-next aria-label="다음 영상 카드">→</button></div>';
     movieList.before(movieNavigation);
+    const movieStage = document.createElement('div');
+    movieStage.className = 'movie-carousel-stage';
+    movieList.before(movieStage);
+    movieStage.append(movieList);
+    const sidePrevious = document.createElement('button');
+    const sideNext = document.createElement('button');
+    [sidePrevious, sideNext].forEach((button, index) => {
+      button.type = 'button';
+      button.className = 'movie-carousel-side movie-carousel-side--' + (index ? 'next' : 'prev');
+      button.setAttribute('aria-label', index ? '다음 영상 카드' : '이전 영상 카드');
+      button.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${index ? 'M9 5l7 7-7 7' : 'M15 5l-7 7 7 7'}"/></svg>`;
+      movieStage.append(button);
+    });
     const previous = movieNavigation.querySelector('[data-movie-prev]');
     const next = movieNavigation.querySelector('[data-movie-next]');
     const status = movieNavigation.querySelector('.movie-carousel-status');
@@ -209,6 +228,8 @@
       movieIndex = movieCards.reduce((nearest, card, index) => Math.abs(card.getBoundingClientRect().left - left) < Math.abs(movieCards[nearest].getBoundingClientRect().left - left) ? index : nearest, 0);
       previous.disabled = movieList.scrollLeft <= 1;
       next.disabled = movieList.scrollLeft >= movieList.scrollWidth - movieList.clientWidth - 1;
+      sidePrevious.disabled = previous.disabled;
+      sideNext.disabled = next.disabled;
       const label = String(movieIndex + 1).padStart(2, '0') + ' / ' + String(movieCards.length).padStart(2, '0');
       if (status.textContent !== label) status.textContent = label;
     };
@@ -219,6 +240,8 @@
     };
     previous.addEventListener('click', () => moveMovie(-1));
     next.addEventListener('click', () => moveMovie(1));
+    sidePrevious.addEventListener('click', () => moveMovie(-1));
+    sideNext.addEventListener('click', () => moveMovie(1));
     movieList.addEventListener('scroll', updateMovieNavigation, {passive: true});
     movieList.addEventListener('keydown', event => {
       if (event.target !== movieList || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;

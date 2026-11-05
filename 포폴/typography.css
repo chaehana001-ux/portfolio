@@ -1,0 +1,63 @@
+/* Font size and weight only. Preserve all existing card dimensions, spacing and font families.
+ * Header, footer and embedded project sites are outside this scope.
+ * Canonical rules: DESIGN_GUIDE.md. Component overrides belong before this file.
+ */
+:root {
+  --type-section: 72px;
+  --type-title: 36px;
+  --type-subtitle: 22px;
+  --type-lead: 18px;
+  --type-text: 16px;
+  --type-label: 12px;
+  --type-caption: 13px;
+}
+@media (max-width: 767px) {
+  :root {
+    --type-section: 40px;
+    --type-title: 28px;
+    --type-subtitle: 18px;
+    --type-lead: 16px;
+    --type-text: 15px;
+    --type-caption: 12px;
+  }
+}
+html body [data-layout="page-home"] :is(main.main, #quick-qa) :is(p, dd, li, input, textarea) {
+  font-size: var(--type-text) !important; font-weight: 400 !important; }
+
+html body [data-layout="page-home"] :is(main.main, #quick-qa) :is(h3) {
+  font-size: var(--type-title) !important; font-weight: 700 !important; }
+
+html body [data-layout="page-home"] :is(main.main, #quick-qa) :is(h4, h5, dt, .skill-tool-group h3, .skill-card h3, .clone-value-copy h3, .retrospective-card h3, .personal-case-info h3, .personal-case-role h3) {
+  font-size: var(--type-text) !important; font-weight: 700 !important; }
+
+html body [data-layout="page-home"] :is(main.main, #quick-qa) :is(.case-step-copy > h4, .personal-case-copy > h2, .project-details > h3, .planet-work-copy > h3, .team-personal-copy > h4, .clone-project-copy > h3, .film-description > h3, .diptyque-story-copy > h3) {
+  font-size: var(--type-title) !important; font-weight: 700 !important; }
+
+html body [data-layout="page-home"] :is(main.main, #quick-qa) :is(.case-step-english, .diptyque-story-en, .personal-case-subtitle) {
+  font-size: var(--type-subtitle) !important; font-weight: 500 !important; }
+
+html body [data-layout="page-home"] :is(main.main, #quick-qa) :is(.monster-summary, .macbook-summary, .team-intro-summary, .collaboration-statement) {
+  font-size: var(--type-lead) !important; font-weight: 500 !important; }
+
+html body [data-layout="page-home"] :is(main.main, #quick-qa) :is(button, .case-step-count, .diptyque-story-kicker, .macbook-eyebrow, .monster-eyebrow, .team-intro-eyebrow, .personal-case-eyebrow, .project-sparkle-label, .projects-kicker, .clone-project-copy > span, .team-personal-copy > span, .team-personal-tags span, .personal-case-actions a, .team-personal-links a, .project-link-slots a, .case-website-link) {
+  font-size: var(--type-label) !important; font-weight: 500 !important; }
+
+html body [data-layout="page-home"] :is(main.main, #quick-qa) :is(small, figcaption, .team-intro-meta, .team-visual-note, .work-design-credit) {
+  font-size: var(--type-caption) !important; font-weight: 400 !important; }
+
+html body [data-layout="page-home"] :is(main.main, #quick-qa) :is(.section-heading, .team-section-title, .team-personal-heading h3, .projects-heading h2, .skills-heading h2, .movie-heading-title, .gallery-heading h2, .all-projects-heading h2, .case-process-heading h3, .planet-work-heading h2) {
+  font-size: var(--type-section) !important; font-weight: 700 !important; }
+
+html body [data-layout="page-home"] :is(main.main, #quick-qa) :is(h2 em, h3 em, h4 em, h2 strong, h3 strong, .movie-title-letter, .section-flight-letter, .diptyque-story-tone-character, .case-step-tone-character) {
+  font-size: inherit !important; font-weight: inherit !important; }
+
+/* Titles inside a contribution card are subtitles, not standalone card titles. */
+html body [data-layout="page-home"] :is(main.main, #quick-qa) .diptyque-story-panel--planet-work .planet-work-copy > h3 {
+  font-size: 22px !important;
+  font-weight: 700 !important;
+}
+@media (max-width: 767px) {
+  html body [data-layout="page-home"] :is(main.main, #quick-qa) .diptyque-story-panel--planet-work .planet-work-copy > h3 {
+    font-size: 18px !important;
+  }
+}
