@@ -1996,15 +1996,19 @@ html [data-layout="page-home"] .section-movie .movie-carousel-stage > .movie-lis
   outline: none;
 }
 
-/* Footer is a single still image filling the existing preview box. */
+/* Preserve the full footer width and crop only the blank strip in its source. */
 .work-design-preview.is-footer-image .work-design-scroll {
+  height: auto;
   overflow: hidden;
   scrollbar-width: none;
+  background: #1c1c1c;
 }
 .work-design-preview.is-footer-image .work-design-scroll img {
   width: 100%;
-  height: 100%;
-  object-fit: fill;
+  height: auto;
+  max-width: 100%;
+  margin-top: -7.37%;
+  object-fit: contain;
 }
 
 /* Center the introductory copy on narrow screens. */
