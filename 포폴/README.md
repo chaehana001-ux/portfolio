@@ -11,7 +11,7 @@ npm start
 npm run build
 ```
 
-로컬 주소는 http://localhost:4173 입니다. 별도 패키지 설치는 필요하지 않습니다.
+로컬 주소는 https://portfolio-lac-eight-c3v8s16wj4.vercel.app/#all-projects 입니다. 별도 패키지 설치는 필요하지 않습니다.
 저장소 루트에서는 `npm --prefix 포폴 start` 또는 `npm --prefix 포폴 run build`를 사용합니다.
 
 ## 주요 파일

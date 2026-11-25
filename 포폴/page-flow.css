@@ -2091,10 +2091,11 @@ html [data-layout="page-home"] .section-movie .movie-carousel-stage > .movie-lis
 }
 
 /* Center the hero illustration beneath the mobile introduction. */
-@media (max-width: 767px) {
+@media (max-width: 900px) {
   html body [data-layout="page-home"] .hero-creative .hero-art-world {
-    width: 94%;
-    right: 3%;
+    width: min(100%, 600px);
+    right: calc((100% - min(100%, 600px)) / 2 + 2%);
+    bottom: 9%;
   }
 }
 
@@ -2265,4 +2266,13 @@ html [data-layout="page-home"] .section-movie .movie-carousel-stage > .movie-lis
     object-fit: contain;
     object-position: center;
   }
+}
+
+/* Shared body type for desktop and mobile. */
+@font-face {
+  font-family: 'NanumSquareRound';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
