@@ -707,7 +707,7 @@
             card.classList.toggle('is-active',cardIndex === index);
             card.setAttribute('aria-hidden',String(cardIndex !== index));
             card.tabIndex = cardIndex === index ? 0 : -1;
-            card.setAttribute('aria-label', analysisCards[cardIndex].label + ', 스크롤하여 전체 보기');
+            card.setAttribute('aria-label', analysisCards[cardIndex].label + ' 자료');
             if (cardIndex === index) card.scrollTop = 0;
           });
           tabs.querySelectorAll('button').forEach((button,buttonIndex) => button.setAttribute('aria-pressed',String(buttonIndex === index)));
@@ -735,6 +735,27 @@
         const gallery = document.createElement('div');
         gallery.className = 'case-planning-gallery';
         documentPanel.replaceWith(gallery);
+        const galleryNav = document.createElement('nav');
+        galleryNav.className = 'case-planning-nav';
+        galleryNav.setAttribute('aria-label', '기획 자료 이동');
+        galleryNav.innerHTML = '<button type="button" data-planning-prev aria-label="이전 자료">&lsaquo;</button><button type="button" data-planning-next aria-label="다음 자료">&rsaquo;</button>';
+        gallery.after(galleryNav);
+        const prev = galleryNav.querySelector('[data-planning-prev]');
+        const next = galleryNav.querySelector('[data-planning-next]');
+        const updatePlanningNav = () => {
+          prev.disabled = gallery.scrollLeft <= 1;
+          next.disabled = gallery.scrollLeft >= gallery.scrollWidth - gallery.clientWidth - 1;
+        };
+        const movePlanning = direction => {
+          const cards = [...gallery.querySelectorAll('.case-planning-image-card')];
+          const index = cards.reduce((best, card, i) => Math.abs(card.offsetLeft - gallery.scrollLeft) < Math.abs(cards[best].offsetLeft - gallery.scrollLeft) ? i : best, 0);
+          const target = cards[Math.max(0, Math.min(cards.length - 1, index + direction))];
+          if (target) gallery.scrollTo({left: target.offsetLeft, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+        };
+        prev.addEventListener('click', () => movePlanning(-1));
+        next.addEventListener('click', () => movePlanning(1));
+        gallery.addEventListener('scroll', updatePlanningNav, {passive: true});
+        new ResizeObserver(updatePlanningNav).observe(gallery);
         const tabs = section.querySelector('.case-tabs');
         const openImages = (group, index) => {
           const content = document.createElement('div');
@@ -767,6 +788,8 @@
             card.addEventListener('click', () => openImages(group, index));
             return card;
           }));
+          gallery.scrollTo({left: 0, behavior: 'instant'});
+          requestAnimationFrame(updatePlanningNav);
           [...tabs.children].forEach((button,index) => button.setAttribute('aria-pressed',String(groups[index] === group)));
         };
         tabs.replaceChildren(...groups.map(group => {
@@ -1805,7 +1828,7 @@
   else addEventListener('load', initReplayableEntrances, { once: true });
 })();
 
-// Original staggered title flight, using lightweight one-time observation.
+// Replay the staggered title flight after a heading leaves the viewport.
 (() => {
   const root=document.documentElement;
   const motion=matchMedia('(prefers-reduced-motion: reduce)');
@@ -1843,10 +1866,16 @@
   const observer=new IntersectionObserver(entries=>{
     entries.forEach(entry=>{
       if(!entry.isIntersecting)return;
-      observer.unobserve(entry.target);
       reveal(entry.target);
     });
   },{rootMargin:'-30% 0px -30% 0px',threshold:0});
+  const exitObserver=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting || motion.matches || !completed.has(entry.target)) return;
+      completed.delete(entry.target);
+      entry.target.classList.remove('is-title-arrived');
+    });
+  },{threshold:0});
   const init=()=>{
     document.querySelectorAll('.section-title-flight-host:not(.logo),.movie-section-heading').forEach(heading=>{
       if(observed.has(heading))return;
@@ -1855,7 +1884,9 @@
       if(motion.matches||rect.top<innerHeight*.3||rect.height>innerHeight*.7){
         completed.add(heading);
         heading.classList.add('is-title-arrived');
-      }else observer.observe(heading);
+      }
+      observer.observe(heading);
+      exitObserver.observe(heading);
     });
   };
   document.addEventListener('portfolio:navigate',()=>{
@@ -1864,7 +1895,6 @@
       document.querySelectorAll('.section-title-flight-host:not(.logo),.movie-section-heading').forEach(heading=>{
         const rect=heading.getBoundingClientRect();
         if(rect.bottom>0&&rect.top<innerHeight*.3){
-          observer.unobserve(heading);
           completed.add(heading);
           heading.classList.add('is-title-arrived');
         }

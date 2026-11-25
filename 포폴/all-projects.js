@@ -110,7 +110,9 @@
           designAtEnd = false;
           designHoldUntil = now + 1400;
         } else {
-          designPosition = Math.min(bottom, designPosition + elapsed * .032);
+          const baseDuration = bottom / .032;
+          const duration = matchMedia('(max-width: 900px)').matches ? Math.max(1, baseDuration - 3200) : baseDuration;
+          designPosition = Math.min(bottom, designPosition + elapsed * (bottom / duration));
           designScroller.scrollTop = designPosition;
           if (designPosition >= bottom) {
             designAtEnd = true;

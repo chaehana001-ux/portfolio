@@ -1851,7 +1851,8 @@ html body [data-layout="page-home"] .project-walkthrough .case-doc-side > .case-
 }
 
 @media (max-width: 900px) {
-  .personal-case-luma .personal-case-images { order: -1; }
+  .personal-case-luma .personal-case-images,
+  .personal-case-onda .personal-case-images { order: -1; }
 }
 
 /* Keep the mobile journey heading close to the introduction. */
@@ -2084,7 +2085,184 @@ html [data-layout="page-home"] .section-movie .movie-carousel-stage > .movie-lis
   html body header.header .nav.md li { flex: 0 0 auto; margin: 0; }
   html body header.header .nav.md a { display: flex; align-items: center; min-height: 40px; padding: 4px 1px; font-size: clamp(8px, 2.2vw, 12px); line-height: 1.2; white-space: nowrap; }
   html body header.header.has-scroll-navigation.is-project-story {
-    background: #eee7e2;
-    box-shadow: 0 2px 10px rgb(64 55 82 / 8%);
+    background: var(--page-paper);
+    box-shadow: none;
+  }
+}
+
+/* Center the hero illustration beneath the mobile introduction. */
+@media (max-width: 767px) {
+  html body [data-layout="page-home"] .hero-creative .hero-art-world {
+    width: 94%;
+    right: 3%;
+  }
+}
+
+/* Keep the mobile menu compact with a little space after the logo. */
+@media (max-width: 900px) {
+  html body header.header .header-inner { gap: clamp(14px, 4vw, 24px); }
+  html body header.header .nav.md ul { justify-content: flex-start; gap: clamp(6px, 2.5vw, 14px); }
+}
+
+/* Match mobile process cards to the team-project introduction cards. */
+@media (max-width: 900px) and (prefers-reduced-motion: no-preference) {
+  html body [data-layout="page-home"] .project-walkthrough.case-horizontal-pinned .case-horizontal-track {
+    padding: 88px 4vw 16px;
+    gap: 30px;
+  }
+  html body [data-layout="page-home"] .project-walkthrough.case-horizontal-pinned .case-horizontal-track > .case-process-step {
+    height: calc(100svh - 112px) !important;
+    max-height: none;
+  }
+  html body [data-layout="page-home"] .project-walkthrough.case-horizontal-pinned .case-horizontal-track > .case-process-step .case-scroll-card {
+    grid-template-rows: max-content max-content;
+    align-content: start;
+    gap: 28px !important;
+    padding: clamp(20px, 5vw, 28px) !important;
+    border-radius: 26px !important;
+  }
+  html body [data-layout="page-home"] .project-walkthrough.case-horizontal-pinned .case-horizontal-track > .case-process-step .case-doc-side {
+    --process-visual-height: clamp(150px, 23svh, 200px);
+  }
+  html body [data-layout="page-home"] .project-walkthrough.case-horizontal-pinned .case-step-copy > h4 {
+    margin-block: 20px !important;
+  }
+  html body [data-layout="page-home"] .project-walkthrough.case-horizontal-pinned .case-step-english {
+    margin-bottom: 18px !important;
+  }
+}
+
+/* Put the two footer links on one row on mobile. */
+@media (max-width: 767px) {
+  html body [data-layout="page-home"] .footer .footer-inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: 'logo logo' 'contact contact' 'btn-jyukensei btn-official' 'copyright copyright';
+    column-gap: 12px;
+  }
+  html body [data-layout="page-home"] .footer .btn-jyukensei,
+  html body [data-layout="page-home"] .footer .btn-official {
+    width: 100%;
+    height: 80px;
+    min-width: 0;
+    justify-self: stretch;
+  }
+  html body [data-layout="page-home"] .footer .btn-jyukensei .campus,
+  html body [data-layout="page-home"] .footer .btn-official .campus { margin-bottom: 6px; }
+  html body [data-layout="page-home"] .footer .btn-jyukensei .btn-text,
+  html body [data-layout="page-home"] .footer .btn-official .btn-text { font-size: clamp(13px, 3.6vw, 16px); }
+  html body [data-layout="page-home"] .footer .btn-jyukensei .btn-icon,
+  html body [data-layout="page-home"] .footer .btn-official .btn-icon { top: 10px; right: 12px; }
+}
+
+/* Use the taller mobile process cards for a larger, unobstructed preview. */
+@media (max-width: 900px) and (prefers-reduced-motion: no-preference) {
+  html body [data-layout="page-home"] .project-walkthrough.case-horizontal-pinned .case-horizontal-track > .case-process-step .case-doc-side {
+    --process-visual-height: clamp(200px, 31svh, 290px);
+  }
+  html body [data-layout="page-home"] .project-walkthrough.case-horizontal-pinned .case-process-step::before {
+    display: none;
+  }
+}
+
+/* Synchronize mobile handwriting by the two alternating photo groups. */
+@media (max-width: 900px) and (prefers-reduced-motion: no-preference) {
+  html body [data-layout="page-home"] .messages-list[data-ink-phase] .photo-sample .gallery-photo-writing--ready {
+    opacity: 0 !important;
+    animation: none;
+  }
+  html body [data-layout="page-home"] .messages-list[data-ink-phase="a"] .photo-sample:is([data-gallery-index="1"], [data-gallery-index="4"], [data-gallery-index="5"], [data-gallery-index="8"]) .gallery-photo-writing--ready,
+  html body [data-layout="page-home"] .messages-list[data-ink-phase="b"] .photo-sample:is([data-gallery-index="2"], [data-gallery-index="3"], [data-gallery-index="6"], [data-gallery-index="7"]) .gallery-photo-writing--ready {
+    opacity: 1 !important;
+  }
+}
+
+@media (max-width: 767px) {
+  html body [data-layout="page-home"] .footer .btn-jyukensei,
+  html body [data-layout="page-home"] .footer .btn-official {
+    width: 88%;
+    justify-self: center;
+  }
+}
+
+/* Fill the mobile gallery cards and keep their edges soft. */
+@media (max-width: 767px) {
+  html body [data-layout="page-home"] .section-messages .messages-list .photo-sample .item-contents {
+    border: 0;
+    box-shadow: 0 14px 36px rgb(64 55 82 / 7.2%);
+  }
+  html body [data-layout="page-home"] .section-messages .messages-list .photo-sample :is(.gallery-photo-original, .gallery-photo-writing) {
+    object-fit: cover;
+    object-position: center;
+  }
+  html body [data-layout="page-home"] .section-messages .messages-list .photo-sample:is(:hover, :focus-within) .gallery-photo-surface {
+    box-shadow: none;
+  }
+}
+
+.case-planning-nav { display: none; }
+@media (max-width: 900px) {
+  html body [data-layout="page-home"] .project-walkthrough .case-doc-side > .case-planning-gallery {
+    padding-bottom: 0;
+    scrollbar-width: none;
+  }
+  html body [data-layout="page-home"] .project-walkthrough .case-planning-gallery::-webkit-scrollbar { display: none; }
+  html body [data-layout="page-home"] .project-walkthrough .case-planning-nav {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: 5px;
+    pointer-events: none;
+    z-index: 8;
+  }
+  html body [data-layout="page-home"] .project-walkthrough .case-planning-nav button {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid rgb(64 55 82 / 30%);
+    border-radius: 50%;
+    background: rgb(255 252 248 / 94%);
+    color: var(--palette-navy);
+    font-size: 19px;
+    line-height: 1;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  html body [data-layout="page-home"] .project-walkthrough .case-planning-nav button:disabled { opacity: .35; cursor: default; }
+}
+
+@media (max-width: 900px) {
+  html body [data-layout="page-home"] .project-walkthrough .case-doc-side > .case-planning-gallery {
+    width: calc(100% - 64px);
+    margin-inline: 32px;
+  }
+  html body [data-layout="page-home"] .project-walkthrough .case-planning-nav {
+    padding-inline: 0;
+  }
+  html body [data-layout="page-home"] .project-walkthrough .case-planning-nav button {
+    width: 32px;
+    height: 44px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    font-size: 32px;
+    font-weight: 400;
+  }
+}
+
+/* Show the complete market research image without an inner scrollbar on mobile. */
+@media (max-width: 900px) {
+  html body [data-layout="page-home"] .project-walkthrough .case-process-step[data-case-step="0"] .case-analysis-card.is-active {
+    overflow: hidden;
+  }
+  html body [data-layout="page-home"] .project-walkthrough .case-process-step[data-case-step="0"] .case-analysis-card img {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
   }
 }
