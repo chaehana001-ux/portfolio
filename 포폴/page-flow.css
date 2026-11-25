@@ -1989,11 +1989,23 @@ html [data-layout="page-home"] .section-movie .movie-carousel-stage > .movie-lis
 }
 
 /* A static capture shows only the authored footer. */
-.work-design-preview.is-footer-image .work-design-autoplay { display: none; }
+.work-design-preview.is-static-image .work-design-autoplay { display: none; }
 
 /* Section containers do not need a full-panel focus ring. */
 .has-project-tabs .all-project-panel:focus-visible {
   outline: none;
+}
+
+/* Still screenshots keep their original aspect ratio without an empty fixed-height frame. */
+.work-design-preview.is-static-image .work-design-scroll {
+  height: auto;
+  overflow: hidden;
+}
+.work-design-preview.is-static-image .work-design-scroll img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
 }
 
 /* Preserve the full footer width and crop only the blank strip in its source. */
@@ -2106,7 +2118,7 @@ html [data-layout="page-home"] .section-movie .movie-carousel-stage > .movie-lis
 /* Keep the mobile menu compact with a little space after the logo. */
 @media (max-width: 900px) {
   html body header.header .header-inner { gap: clamp(14px, 4vw, 24px); }
-  html body header.header .nav.md ul { justify-content: flex-start; gap: clamp(6px, 2.5vw, 14px); }
+  html body header.header .nav.md ul { justify-content: flex-end; gap: clamp(6px, 2.5vw, 14px); }
 }
 
 /* Match mobile process cards to the team-project introduction cards. */
@@ -2279,4 +2291,43 @@ html [data-layout="page-home"] .section-movie .movie-carousel-stage > .movie-lis
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+}
+
+/* Give the mobile MacBook film more of the available card width. */
+@media (max-width: 767px) {
+  html body [data-layout="page-home"] .section-movie .movie-list.portfolio-movies.movie-carousel > .item.item-macbook:not(.item-monster) > .movie-macbook {
+    width: calc(100% + 36px);
+    max-width: none;
+    justify-self: center;
+  }
+}
+
+/* Resume link supporting text inside the footer button. */
+html body [data-layout="page-home"] .footer .btn-official .footer-resume-label {
+  display: inline;
+  color: inherit;
+  font: 400 11px/1.3 var(--font-body);
+  white-space: nowrap;
+}
+@media (max-width: 767px) {
+  html body [data-layout="page-home"] .footer .btn-official .footer-resume-label {
+    display: block;
+    margin-top: 3px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 767px) {
+  html body [data-layout="page-home"] .portfolio-projects .team-intro-copy > #zara-overview-title {
+    font-size: clamp(20px, 6.2vw, 28px) !important;
+    white-space: nowrap;
+  }
+  html body [data-layout="page-home"] .portfolio-projects .team-intro-copy > #zara-overview-title br { display: none; }
+}
+
+/* Enlarge the laptop while keeping the phone's mobile size and layering. */
+@media (max-width: 767px) {
+  html body [data-layout="page-home"] .personal-case-images.culita-devices {
+    padding-right: 8%;
+  }
 }

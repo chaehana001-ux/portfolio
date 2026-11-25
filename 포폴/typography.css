@@ -13,7 +13,7 @@
 }
 @media (max-width: 767px) {
   :root {
-    --type-section: 40px;
+    --type-section: clamp(24px, 7vw, 32px);
     --type-title: 28px;
     --type-subtitle: 18px;
     --type-lead: 16px;

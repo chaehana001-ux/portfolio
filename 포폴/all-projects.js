@@ -49,10 +49,13 @@
     designShowcase.querySelectorAll('[data-design-page]').forEach(button => button.setAttribute('aria-pressed',String(Number(button.dataset.designPage)===index)));
     const preview = designShowcase.querySelector('.work-design-preview img');
     preview.src = page.image;
-    designShowcase.querySelector('.work-design-preview').classList.toggle('is-footer-image', page.label === '푸터');
+    const previewFigure = designShowcase.querySelector('.work-design-preview');
+    const isStaticImage = !page.continuation;
+    previewFigure.classList.toggle('is-footer-image', page.label === '푸터');
+    previewFigure.classList.toggle('is-static-image', isStaticImage);
     const previewScroller = designShowcase.querySelector('.work-design-scroll');
-    previewScroller.setAttribute('aria-label', page.label === '푸터' ? '직접 제작한 딥티크 푸터 이미지' : '디자인 화면 미리보기, 스크롤하여 전체 보기');
-    previewScroller.tabIndex = page.label === '푸터' ? -1 : 0;
+    previewScroller.setAttribute('aria-label', isStaticImage ? page.label + ' 디자인 화면' : '디자인 화면 미리보기, 스크롤하여 전체 보기');
+    previewScroller.tabIndex = isStaticImage ? -1 : 0;
     designShowcase.querySelector('.work-design-credit').textContent = page.credit || '담당 작업 · 페이지 UI 디자인';
     preview.alt = page.label + ' 직접 디자인한 화면';
     designShowcase.querySelector('.work-design-continuation')?.remove();
@@ -128,7 +131,7 @@
     designFrame = 0;
     designPreviousTime = 0;
     designPosition = designScroller.scrollTop;
-    if (designAutoplay && designVisible && !document.hidden) {
+    if (designAutoplay && designVisible && !document.hidden && !designShowcase.querySelector('.work-design-preview').classList.contains('is-static-image')) {
       designFrame = requestAnimationFrame(runDesignScroll);
     }
   };
