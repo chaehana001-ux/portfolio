@@ -34,12 +34,12 @@
   workExplanation.querySelector('.personal-details-heading > p').textContent = '딥티크 팀 프로젝트에서 직접 디자인한 페이지를 소개합니다.';
   const designedPages = [
     {label:'컬렉션 소개', image:'./assets/img/portfolio/work-collection-intro.jpg', continuation:'./assets/img/portfolio/work-collection-categories.jpg', title:'향에서 일상으로 이어지는 브랜드 탐색', description:'향수와 익스클루시브 컬렉션에서 캔들·홈, 배스·바디, 홈 데코까지 이어지는 하나의 소개 페이지입니다.', point:'큰 제품 이미지와 간결한 이야기로 시작하고, 아래에서는 이미지와 설명을 교차 배치해 다양한 제품군을 자연스럽게 탐색하도록 디자인했습니다.'},
+    {label:'푸터', image:'./assets/img/portfolio/work-footer.jpg', title:'페이지의 끝까지 이어지는 브랜드 경험', description:'딥티크 웹사이트의 공통 푸터도 직접 제작했습니다.', point:'페이지 하단의 정보와 링크를 정리하고, 사이트의 전체적인 분위기와 연결되는 공통 영역으로 구성했습니다.', credit:'담당 작업 · 공통 푸터 제작'},
     {label:'장바구니 · 담김', image:'./assets/img/portfolio/work-cart-filled.jpg', title:'주문 정보를 한눈에', description:'담은 제품과 수량, 가격을 확인하고 주문을 이어가는 장바구니 화면입니다.', point:'제품 목록과 주문 요약을 분리하고, 종이 질감과 식물 일러스트로 브랜드의 감성을 더했습니다.'},
     {label:'장바구니 · 비어 있음', image:'./assets/img/portfolio/work-cart-empty.jpg', title:'빈 화면에도 다음 행동을', description:'장바구니에 제품이 없을 때 보여주는 안내 화면입니다.', point:'쇼핑백 일러스트와 짧은 안내, Shop Now 버튼을 중심에 모아 다시 상품을 둘러보도록 구성했습니다.'},
     {label:'상품문의', image:'./assets/img/portfolio/work-inquiries.jpg', title:'찾기 쉽고 구분하기 쉬운 문의', description:'상품 관련 질문을 찾아보고 답변 상태를 확인하는 목록 화면입니다.', point:'공개 여부 필터와 검색창을 배치하고, 자물쇠 아이콘과 상태 표시로 문의 정보를 구분했습니다.'},
     {label:'문의 상세', image:'./assets/img/portfolio/work-inquiry-detail.jpg', title:'질문과 답변을 명확하게', description:'선택한 문의의 내용과 브랜드의 답변을 확인하는 상세 화면입니다.', point:'질문과 답변 영역을 나누고 답변에 은은한 배경색을 더해, 정보의 흐름과 읽는 순서를 정리했습니다.'},
-    {label:'1:1 문의', image:'./assets/img/portfolio/work-contact.jpg', title:'문의 작성부터 고객센터 안내까지', description:'문의 내용을 작성하고 고객센터 정보를 함께 확인하는 페이지입니다.', point:'입력 폼과 고객센터 안내를 나란히 배치하고, 필수 항목과 첨부파일 영역을 순서대로 정리했습니다.'},
-    {label:'푸터', image:'./assets/img/portfolio/work-footer.jpg', title:'페이지의 끝까지 이어지는 브랜드 경험', description:'딥티크 웹사이트의 공통 푸터도 직접 제작했습니다.', point:'페이지 하단의 정보와 링크를 정리하고, 사이트의 전체적인 분위기와 연결되는 공통 영역으로 구성했습니다.', credit:'담당 작업 · 공통 푸터 제작'}
+    {label:'1:1 문의', image:'./assets/img/portfolio/work-contact.jpg', title:'문의 작성부터 고객센터 안내까지', description:'문의 내용을 작성하고 고객센터 정보를 함께 확인하는 페이지입니다.', point:'입력 폼과 고객센터 안내를 나란히 배치하고, 필수 항목과 첨부파일 영역을 순서대로 정리했습니다.'}
   ];
   const designShowcase = document.createElement('div');
   designShowcase.className = 'work-design-showcase';
@@ -196,6 +196,18 @@
   personal.before(workExplanation);
   const movie = document.querySelector('.section-movie');
   const movieList = movie?.querySelector('.portfolio-movies');
+  movie?.querySelectorAll('.macbook-movie-video, .monster-video').forEach(video => {
+    let visible = false;
+    const syncVideo = () => {
+      if (visible && !document.hidden) video.play().catch(() => {});
+      else video.pause();
+    };
+    new IntersectionObserver(entries => {
+      visible = entries[0].isIntersecting;
+      syncVideo();
+    }, {threshold: .35}).observe(video);
+    document.addEventListener('visibilitychange', syncVideo);
+  });
   if (movieList) {
     movieList.classList.add('movie-carousel');
     movieList.tabIndex = 0;
@@ -284,9 +296,17 @@
     });
     document.body.dataset.projectCategory=key;
     if (userAction) {
-      panels[key].scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
+      document.documentElement.dataset.progressNavigating = 'true';
+      document.dispatchEvent(new Event('portfolio:navigate'));
+      requestAnimationFrame(() => {
+        const headerHeight = document.querySelector('header.header')?.getBoundingClientRect().height || 0;
+        const top = Math.max(0, panels[key].getBoundingClientRect().top + window.scrollY - headerHeight - 16);
+        window.scrollTo({top, behavior: 'instant'});
+        history.replaceState(null, '', '#' + panels[key].id);
+        setTimeout(() => { delete document.documentElement.dataset.progressNavigating; }, 300);
+      });
     }
-    requestAnimationFrame(()=>{refresh();requestAnimationFrame(refresh);});
+    if (!userAction) requestAnimationFrame(()=>{refresh();requestAnimationFrame(refresh);});
   };
   buttons.forEach((button,index)=>{
     button.addEventListener('click',()=>select(button.dataset.projectTab,true));

@@ -32,12 +32,12 @@
     const previewScreens=previewMode==='planet-main'?1.65:previewMode==='flow'?2.75:previewMode==='sensory'?2.4:previewMode==='brand-history'?2.2:2.25;
     const minimumScrollDuration=previewMode==='planet-main'?21000:planetModes.includes(previewMode)?18000:previewMode==='flow'?17000:previewMode==='sensory'?16000:previewMode==='brand-history'?19000:previewMode==='interaction'?14000:30000;
     const scrollSpeed=innerWidth<600?75:110;
-    let active=false,previous=0,elapsed=0,hold=1800,phase='start';
+    let active=false,previous=0,elapsed=0,hold=1800,phase='start',direction=1;
     let stable=0,lastHeight=0,ready=false,startPoint=0,endPoint=0,interactionPlayed=false;
     const reduced=matchMedia('(prefers-reduced-motion: reduce)');
     const playVideos=()=>document.querySelectorAll('video').forEach(video=>{
       video.muted=true;video.playsInline=true;
-      if(active&&!reduced.matches)video.play().catch(()=>{});else video.pause();
+      if(active&&!reduced.matches&&!document.hidden){if(video.paused)video.play().catch(()=>{});}else if(!video.paused)video.pause();
     });
     addEventListener('message',event=>{
       if(event.source!==parent||event.origin!==location.origin||event.data?.type!=='team-preview-visibility')return;
@@ -86,14 +86,17 @@
       const delta=previous?now-previous:0;previous=now;
       if(hold>0){hold-=delta;return;}
       if(phase==='end'){
-        elapsed=0;phase='start';hold=2200;interactionPlayed=false;setPreviewRange();return;
+        elapsed=0;phase='start';hold=2200;interactionPlayed=false;
+        if(previewMode==='planet-squirrel') direction*=-1;
+        else setPreviewRange();
+        return;
       }
       elapsed+=delta;
       const scrollTarget=Math.max(0,endPoint-startPoint);
       const scrollDuration=Math.max(minimumScrollDuration,scrollTarget/scrollSpeed*1000);
       const progress=Math.min(1,elapsed/scrollDuration);
-      scrollTo({top:startPoint+scrollTarget*progress,behavior:'instant'});
-      if(previewMode==='planet-squirrel'&&!interactionPlayed&&progress>.28){
+      scrollTo({top:startPoint+scrollTarget*(direction===1?progress:1-progress),behavior:'instant'});
+      if(previewMode==='planet-squirrel'&&direction===1&&!interactionPlayed&&progress>.28){
         const squirrelTrigger=document.querySelector('.ftp-hamster-trigger');
         if(squirrelTrigger&&!squirrelTrigger.disabled){interactionPlayed=true;squirrelTrigger.click();}
       }

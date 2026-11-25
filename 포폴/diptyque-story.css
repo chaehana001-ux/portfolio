@@ -493,3 +493,24 @@
     padding-inline: 0;
   }
 }
+
+/* Bring the collaboration photos into their existing positions. */
+@media (prefers-reduced-motion: no-preference) {
+  .diptyque-story.has-photo-entrance .collaboration-photo {
+    opacity: 0;
+  }
+  .diptyque-story.has-photo-entrance .is-current .collaboration-photo-main {
+    animation: collaboration-photo-main-arrive 850ms cubic-bezier(.2,.75,.2,1) both;
+  }
+  .diptyque-story.has-photo-entrance .is-current .collaboration-photo-sub {
+    animation: collaboration-photo-sub-arrive 850ms cubic-bezier(.2,.75,.2,1) 180ms both;
+  }
+  @keyframes collaboration-photo-main-arrive {
+    from { opacity: 0; translate: -18% -12%; rotate: -6deg; scale: .88; }
+    to { opacity: 1; translate: 0 0; rotate: 0deg; scale: 1; }
+  }
+  @keyframes collaboration-photo-sub-arrive {
+    from { opacity: 0; translate: 18% 14%; rotate: 6deg; scale: .88; }
+    to { opacity: 1; translate: 0 0; rotate: 0deg; scale: 1; }
+  }
+}
