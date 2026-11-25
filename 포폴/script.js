@@ -1932,6 +1932,16 @@
     const delta = currentY - lastHeaderScrollY;
     lastHeaderScrollY = currentY;
     if (mobileHeader.matches) {
+      const projectStory = document.querySelector('.diptyque-story');
+      const storyRect = projectStory?.getBoundingClientRect();
+      const inProjectStory = Boolean(storyRect && storyRect.top <= header.offsetHeight && storyRect.bottom > header.offsetHeight);
+      header.classList.toggle('is-project-story', inProjectStory);
+      if (inProjectStory) {
+        mobileHeaderHidden = false;
+        headerScrollDistance = 0;
+        header.classList.remove('is-scroll-hidden');
+        return;
+      }
       if (delta && Math.sign(delta) !== Math.sign(headerScrollDistance)) headerScrollDistance = 0;
       headerScrollDistance += delta;
       if (currentY <= 40) {
@@ -1945,6 +1955,7 @@
       header.classList.toggle('is-scroll-hidden', mobileHeaderHidden && !keyboardFocused);
       return;
     }
+    header.classList.remove('is-project-story');
     const nearHeader = pointerY <= header.offsetHeight + 16;
     const focused = header.contains(document.activeElement);
     const hidden = hoverPointer.matches && scrollY > 40 && !nearHeader && !focused;

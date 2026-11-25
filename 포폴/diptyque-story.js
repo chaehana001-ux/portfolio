@@ -176,15 +176,24 @@
     textHoldTimer = setTimeout(releaseTextHold,500);
   };
   const usesScrollDrivenStory = () => mode.matches && !story.closest('[hidden]');
+  const contributionPanel = story.querySelector('.diptyque-story-panel--planet-work');
+  const contributionIndex = panels.indexOf(contributionPanel);
+  const contributionScrollRange = () => matchMedia('(max-width: 900px)').matches && contributionPanel
+    ? Math.max(0, contributionPanel.scrollHeight - contributionPanel.clientHeight)
+    : 0;
   const update = () => {
     queued = false;
     const scrollDriven = usesScrollDrivenStory();
     story.classList.toggle('is-pinned',scrollDriven);
     const stride = panels[0].getBoundingClientRect().width + 30;
     const travel = stride * (panels.length-1);
+    const extraScroll = scrollDriven ? contributionScrollRange() : 0;
+    const contributionStart = stride * contributionIndex;
     if (scrollDriven && viewport.scrollLeft !== 0) viewport.scrollLeft = 0;
-    story.style.height = scrollDriven ? `${innerHeight+travel}px` : '';
-    const distance = scrollDriven ? Math.max(0,Math.min(travel,-story.getBoundingClientRect().top)) : viewport.scrollLeft;
+    story.style.height = scrollDriven ? `${innerHeight+travel+extraScroll}px` : '';
+    const rawDistance = scrollDriven ? Math.max(0,Math.min(travel+extraScroll,-story.getBoundingClientRect().top)) : viewport.scrollLeft;
+    const distance = rawDistance <= contributionStart ? rawDistance : Math.max(contributionStart, rawDistance-extraScroll);
+    if (scrollDriven && extraScroll) contributionPanel.scrollTop = Math.max(0, Math.min(extraScroll, rawDistance-contributionStart));
     track.style.transform = scrollDriven ? `translate3d(${-distance}px,0,0)` : '';
     const position = stride ? distance/stride : 0;
     const storyTop = story.getBoundingClientRect().top;
@@ -215,7 +224,7 @@
   const go = index => {
     const next=Math.max(0,Math.min(panels.length-1,index));
     const stride = panels[0].getBoundingClientRect().width + 30;
-    if(usesScrollDrivenStory()) scrollTo({top:scrollY+story.getBoundingClientRect().top+next*stride,behavior:'smooth'});
+    if(usesScrollDrivenStory()) scrollTo({top:scrollY+story.getBoundingClientRect().top+next*stride+(next>contributionIndex?contributionScrollRange():0),behavior:'smooth'});
     else viewport.scrollTo({left:next*stride,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
   };
   story.querySelectorAll('[data-direction]').forEach(button=>button.addEventListener('click',()=>go(current+Number(button.dataset.direction))));
@@ -227,6 +236,9 @@
   viewport.addEventListener('scroll',queue,{passive:true});
   mode.addEventListener('change',()=>{viewport.scrollLeft=0;queue();});
   new ResizeObserver(queue).observe(viewport);
+  const contributionContent = contributionPanel?.querySelector('.planet-work-showcase');
+  if (contributionContent) new ResizeObserver(queue).observe(contributionContent);
+  contributionPanel?.querySelectorAll('img').forEach(image => image.addEventListener('load', queue));
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(entries => {
       const entry = entries[0];

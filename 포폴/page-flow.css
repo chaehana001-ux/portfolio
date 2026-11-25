@@ -2005,3 +2005,86 @@ html [data-layout="page-home"] .section-movie .movie-carousel-stage > .movie-lis
   height: 100%;
   object-fit: fill;
 }
+
+/* Center the introductory copy on narrow screens. */
+@media (max-width: 767px) {
+  .hero-creative-scene > .hero-introduction {
+    left: 5%;
+    width: 90%;
+    text-align: center;
+  }
+  .hero-introduction .hero-personal-title {
+    align-items: center;
+  }
+}
+
+/* Keep the values cards below the journey text on mobile. */
+@media (max-width: 900px) {
+  html body [data-layout="page-home"] .about-hana > .section-inner {
+    margin-top: 0;
+  }
+}
+
+/* Mobile team-project cards share a consistent rhythm for media and copy. */
+@media (max-width: 900px) and (prefers-reduced-motion: no-preference) {
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-track {
+    padding-top: 88px;
+    padding-bottom: 16px;
+  }
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-panel {
+    height: calc(100svh - 112px);
+    padding: clamp(20px, 5vw, 28px);
+  }
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-panel:not(.diptyque-story-panel--planet-work) {
+    grid-template-rows: max-content max-content;
+    gap: 28px;
+  }
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-panel:not(.diptyque-story-panel--planet-work) .diptyque-story-visual {
+    height: auto;
+    min-height: 0;
+    align-self: start;
+  }
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-copy h3 {
+    margin-block: 20px;
+  }
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-description {
+    margin-top: 18px;
+    padding-top: 18px;
+  }
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-copy .diptyque-story-ko {
+    margin-top: 16px;
+  }
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-panel:last-child .diptyque-story-visual {
+    height: clamp(220px, 55vw, 380px);
+  }
+}
+
+@media (max-width: 900px) and (prefers-reduced-motion: no-preference) {
+  html body [data-layout="page-home"] .diptyque-story.is-pinned .diptyque-story-panel--planet-work {
+    overflow-y: hidden;
+  }
+}
+
+/* Keep the mobile logo and section links together in one compact header. */
+@media (max-width: 900px) {
+  html body header.header.has-scroll-navigation { padding-bottom: 0; }
+  html body header.header .header-inner {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: clamp(8px, 2vw, 18px);
+    width: 100%;
+    padding: 8px 12px;
+    box-sizing: border-box;
+  }
+  html body header.header .hana-brand-logo { flex: 0 0 auto; margin: 0; }
+  html body header.header .hana-brand-logo .text-main { width: clamp(55px, 17vw, 85px); height: auto; }
+  html body header.header .nav.md { display: block; flex: 1 1 auto; width: auto; min-width: 0; max-width: none; margin: 0; overflow: visible; }
+  html body header.header .nav.md ul { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 2px; padding: 0; }
+  html body header.header .nav.md li { flex: 0 0 auto; margin: 0; }
+  html body header.header .nav.md a { display: flex; align-items: center; min-height: 40px; padding: 4px 1px; font-size: clamp(8px, 2.2vw, 12px); line-height: 1.2; white-space: nowrap; }
+  html body header.header.has-scroll-navigation.is-project-story {
+    background: #eee7e2;
+    box-shadow: 0 2px 10px rgb(64 55 82 / 8%);
+  }
+}
