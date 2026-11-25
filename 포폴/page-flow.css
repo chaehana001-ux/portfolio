@@ -220,12 +220,6 @@ section.hero-creative { height: 250svh; }
   opacity: 1;
   transform: none;
 }
-html.is-title-pin-holding {
-  overscroll-behavior: none;
-}
-html.is-about-pin-holding {
-  overscroll-behavior: none;
-}
 [data-layout="page-home"] .footer .logo.has-flight-title::after { display: none; }
 [data-layout="page-home"] .footer .footer-contact-flight-title {
   display: block;

@@ -154,27 +154,6 @@
   let queued = false;
   let current = -1;
   let storyInView = false;
-  let textHoldTimer = 0;
-  let textHoldActive = false;
-  const completedTextHolds = new Set();
-  const holdKeys = new Set(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' ']);
-  const blockTextHoldScroll = event => {
-    if (event.type !== 'keydown' || holdKeys.has(event.key)) event.preventDefault();
-  };
-  const releaseTextHold = () => {
-    if (!textHoldActive) return;
-    textHoldActive = false;
-    clearTimeout(textHoldTimer);
-    removeEventListener('wheel',blockTextHoldScroll,{capture:true});
-    removeEventListener('touchmove',blockTextHoldScroll,{capture:true});
-    removeEventListener('keydown',blockTextHoldScroll,{capture:true});
-  };
-  const holdAtTextEnd = (index,centerScrollTop) => {
-    if (document.documentElement.dataset.progressNavigating === 'true' || textHoldActive || completedTextHolds.has(index) || !usesScrollDrivenStory()) return;
-    completedTextHolds.add(index);
-    textHoldActive = true;
-    textHoldTimer = setTimeout(releaseTextHold,500);
-  };
   const usesScrollDrivenStory = () => mode.matches && !story.closest('[hidden]');
   const contributionPanel = story.querySelector('.diptyque-story-panel--planet-work');
   const contributionIndex = panels.indexOf(contributionPanel);
@@ -187,12 +166,18 @@
     story.classList.toggle('is-pinned',scrollDriven);
     const stride = panels[0].getBoundingClientRect().width + 30;
     const travel = stride * (panels.length-1);
+    const pauseDistance = Math.min(innerHeight * .28, 220);
     const extraScroll = scrollDriven ? contributionScrollRange() : 0;
-    const contributionStart = stride * contributionIndex;
+    const contributionStart = (stride + pauseDistance) * contributionIndex + pauseDistance;
+    const totalDistance = travel + pauseDistance * panels.length + extraScroll;
     if (scrollDriven && viewport.scrollLeft !== 0) viewport.scrollLeft = 0;
-    story.style.height = scrollDriven ? `${innerHeight+travel+extraScroll}px` : '';
-    const rawDistance = scrollDriven ? Math.max(0,Math.min(travel+extraScroll,-story.getBoundingClientRect().top)) : viewport.scrollLeft;
-    const distance = rawDistance <= contributionStart ? rawDistance : Math.max(contributionStart, rawDistance-extraScroll);
+    const storyHeight = scrollDriven ? `${innerHeight+totalDistance}px` : '';
+    if (story.style.height !== storyHeight) story.style.height = storyHeight;
+    const rawDistance = scrollDriven ? Math.max(0,Math.min(totalDistance,-story.getBoundingClientRect().top)) : viewport.scrollLeft;
+    const afterContribution = rawDistance <= contributionStart ? rawDistance : Math.max(contributionStart, rawDistance-extraScroll);
+    const panelIndex = Math.min(panels.length-1, Math.floor(afterContribution / (stride + pauseDistance)));
+    const panelProgress = afterContribution - panelIndex * (stride + pauseDistance);
+    const distance = scrollDriven ? Math.min(travel, panelIndex * stride + Math.max(0, panelProgress - pauseDistance)) : rawDistance;
     if (scrollDriven && extraScroll) contributionPanel.scrollTop = Math.max(0, Math.min(extraScroll, rawDistance-contributionStart));
     track.style.transform = scrollDriven ? `translate3d(${-distance}px,0,0)` : '';
     const position = stride ? distance/stride : 0;
@@ -204,9 +189,6 @@
         : Math.max(0,Math.min(1,(position-(index-.42))/.42));
       const litCount = Math.round(progress*reveal.characters.length);
       reveal.characters.forEach((character,characterIndex) => character.classList.toggle('is-deep',characterIndex<litCount));
-      if (storyInView && progress >= .999 && reveal.progress < .999) {
-        holdAtTextEnd(index,scrollY+storyTop+index*stride);
-      }
       reveal.progress = progress;
     });
     const next = Math.max(0,Math.min(panels.length-1,Math.round(distance/stride)));
@@ -224,7 +206,7 @@
   const go = index => {
     const next=Math.max(0,Math.min(panels.length-1,index));
     const stride = panels[0].getBoundingClientRect().width + 30;
-    if(usesScrollDrivenStory()) scrollTo({top:scrollY+story.getBoundingClientRect().top+next*stride+(next>contributionIndex?contributionScrollRange():0),behavior:'smooth'});
+    if(usesScrollDrivenStory()) scrollTo({top:scrollY+story.getBoundingClientRect().top+next*(stride+Math.min(innerHeight*.28,220))+(next>contributionIndex?contributionScrollRange():0),behavior:'smooth'});
     else viewport.scrollTo({left:next*stride,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
   };
   story.querySelectorAll('[data-direction]').forEach(button=>button.addEventListener('click',()=>go(current+Number(button.dataset.direction))));
@@ -245,15 +227,12 @@
       storyInView = entry.isIntersecting && entry.intersectionRatio >= .22;
       if (!storyInView) {
         panels.forEach(panel => panel.classList.remove('is-current'));
-        completedTextHolds.clear();
         textReveals.forEach(reveal => { if (reveal) reveal.progress = -1; });
-        releaseTextHold();
       }
       queue();
     }, {threshold:[0,.22],rootMargin:'0px 0px -4% 0px'}).observe(viewport);
   } else {
     storyInView = true;
   }
-  addEventListener('pagehide',releaseTextHold,{once:true});
   update();
 })();

@@ -334,27 +334,6 @@
     let clickPlayed = false;
     let clickUntil = 0;
     let displayedProgress = 0;
-    let lastHeroFrame = performance.now();
-    let aboutHoldPlayed = false;
-    let aboutHoldTimer = 0;
-    const aboutBlockedKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ']);
-    const blockAboutScroll = event => {
-      if (event.type !== 'keydown' || aboutBlockedKeys.has(event.key)) event.preventDefault();
-    };
-    const releaseAboutScroll = () => {
-      clearTimeout(aboutHoldTimer);
-      window.removeEventListener('wheel', blockAboutScroll, { capture: true });
-      window.removeEventListener('touchmove', blockAboutScroll, { capture: true });
-      window.removeEventListener('keydown', blockAboutScroll, { capture: true });
-      document.documentElement.classList.remove('is-about-pin-holding');
-    };
-    document.addEventListener('portfolio:navigate', releaseAboutScroll);
-    const holdAboutScroll = () => {
-      releaseAboutScroll();
-      if (document.documentElement.dataset.progressNavigating === 'true') return;
-      document.documentElement.classList.add('is-about-pin-holding');
-      aboutHoldTimer = window.setTimeout(releaseAboutScroll, 1000);
-    };
     const playHeroClick = now => {
       clickPlayed = true;
       clickUntil = now + 440;
@@ -377,12 +356,9 @@
       const distance = Math.max(1,creativeHero.offsetHeight-scene.offsetHeight);
       const rawProgress = clamp(-creativeHero.getBoundingClientRect().top/distance);
       const now = performance.now();
-      const delta = Math.min(.05,(now-lastHeroFrame)/1000);
-      lastHeroFrame = now;
       if(rawProgress<.12) { clickPlayed=false;clickUntil=0;cursor.getAnimations().forEach(animation=>animation.cancel()); }
       if(rawProgress>=.18&&!clickPlayed&&!reduced.matches) playHeroClick(now);
-      const target = now<clickUntil ? Math.min(rawProgress,.26) : rawProgress;
-      displayedProgress = reduced.matches || target<displayedProgress ? target : Math.min(target,displayedProgress+delta*2.8);
+      displayedProgress = rawProgress;
       // Complete the zoom before the sticky hero ends, leaving a readable
       // hold on the fully opened ABOUT ME screen.
       const progress = clamp(displayedProgress / .70);
@@ -416,12 +392,6 @@
       copy.style.visibility = reveal>0?'visible':'hidden';
       const aboutTitleVisible = reduced.matches || reveal >= .38;
       aboutTitle?.classList.toggle('is-about-title-visible', aboutTitleVisible);
-      if (!reduced.matches && aboutTitleVisible && !aboutHoldPlayed) {
-        aboutHoldPlayed = true;
-        holdAboutScroll();
-      } else if (reveal < .12) {
-        aboutHoldPlayed = false;
-      }
       const approach = smooth(clamp(progress/.18));
       const cursorX = baseLeft+baseWidth*(.94-.52*approach);
       const cursorY = baseTop+baseHeight*(.84-.44*approach);
@@ -446,7 +416,6 @@
     addEventListener('scroll', queueHero, {passive:true});
     addEventListener('resize', queueHero);
     reduced.addEventListener('change', queueHero);
-    addEventListener('pagehide', releaseAboutScroll, { once: true });
     new ResizeObserver(queueHero).observe(scene);
     updateHero();
   }
@@ -1046,30 +1015,6 @@
     });
     const horizontalMode=matchMedia('(prefers-reduced-motion: no-preference)');
     let horizontalFrame=0;
-    let walkthroughHeld=false;
-    let pausedPanel=-1;
-    let walkthroughRelease=null;
-    let walkthroughHoldTimer=0;
-    const walkthroughBlockedKeys=new Set(['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' ']);
-    const preventWalkthroughScroll=event=>event.preventDefault();
-    const preventWalkthroughKey=event=>{
-      if(walkthroughBlockedKeys.has(event.key)) event.preventDefault();
-    };
-    const holdWalkthrough=()=>{
-      if(walkthroughHeld||!horizontalMode.matches) return;
-      walkthroughHeld=true;
-      walkthroughRelease=()=>{
-        removeEventListener('wheel',preventWalkthroughScroll,{capture:true});
-        removeEventListener('touchmove',preventWalkthroughScroll,{capture:true});
-        removeEventListener('keydown',preventWalkthroughKey,{capture:true});
-        walkthroughRelease=null;
-      };
-      clearTimeout(walkthroughHoldTimer);
-      walkthroughHoldTimer=setTimeout(()=>{
-        walkthroughRelease?.();
-        walkthroughHeld=false;
-      },500);
-    };
     const updateHorizontal=()=>{
       horizontalFrame=0;
       const trackGap=parseFloat(getComputedStyle(track).columnGap)||0;
@@ -1078,32 +1023,15 @@
       const firstPanelHold=horizontalMode.matches?innerHeight*.25:0;
       walkthrough.classList.toggle('case-horizontal-pinned',horizontalMode.matches);
       if (horizontalMode.matches && viewport.scrollLeft !== 0) viewport.scrollLeft = 0;
-      panels.forEach(panel=>{
-        const css=getComputedStyle(panel);
-        const left=parseFloat(css.paddingLeft),right=parseFloat(css.paddingRight);
-        const w=panel.clientWidth-left-right,h=panel.offsetHeight-parseFloat(css.paddingBottom);
-        const tabTopEnd=Math.min(w*.3,190),r=26;
-        const shoulder=60;
-        const svg=panel.querySelector('.case-folder-outline');
-        svg.setAttribute('viewBox','0 0 '+w+' '+h);
-        svg.style.left=left+'px';svg.style.width=w+'px';svg.style.height=h+'px';
-        svg.querySelector('path').setAttribute('d',
-          'M 0 '+shoulder+
-          ' L 31 13'+
-          ' Q 38 0 53 0'+
-          ' H '+tabTopEnd+
-          ' Q '+(tabTopEnd+14)+' 0 '+(tabTopEnd+22)+' 13'+
-          ' L '+(tabTopEnd+60)+' '+shoulder+
-          ' H '+(w-r)+
-          ' Q '+w+' '+shoulder+' '+w+' '+(shoulder+r)+' V '+(h-r)+
-          ' Q '+w+' '+h+' '+(w-r)+' '+h+' H '+r+
-          ' Q 0 '+h+' 0 '+(h-r)+' Z');
-      });
-      walkthrough.style.setProperty('height', horizontalMode.matches ? sticky.offsetHeight+firstPanelHold+travel+'px' : 'auto', horizontalMode.matches ? 'important' : '');
+      const pauseDistance = Math.min(innerHeight * .28, 220);
+      const totalDistance = travel + pauseDistance * panels.length;
+      const stageHeight = horizontalMode.matches ? sticky.offsetHeight+firstPanelHold+totalDistance+'px' : 'auto';
+      if (walkthrough.style.height !== stageHeight) walkthrough.style.setProperty('height', stageHeight, horizontalMode.matches ? 'important' : '');
       const walkthroughRect=walkthrough.getBoundingClientRect();
-      const rawOffset=horizontalMode.matches?Math.max(0,Math.min(travel,-walkthroughRect.top-firstPanelHold)):viewport.scrollLeft;
-      const nextPanel=Math.min(panels.length-1,Math.floor(rawOffset/Math.max(1,stride)));
-      const hasReachedProjectWalkthrough = walkthroughRect.top <= -firstPanelHold;
+      const scrollDistance=horizontalMode.matches?Math.max(0,Math.min(totalDistance,-walkthroughRect.top-firstPanelHold)):viewport.scrollLeft;
+      const panelIndex=Math.min(panels.length-1,Math.floor(scrollDistance/(stride+pauseDistance)));
+      const panelProgress=scrollDistance-panelIndex*(stride+pauseDistance);
+      const rawOffset=horizontalMode.matches?Math.min(travel,panelIndex*stride+Math.max(0,panelProgress-pauseDistance)):scrollDistance;
       const panelPosition=rawOffset/Math.max(1,stride);
       englishTextReveals.forEach((reveal,index)=>{
         if(!reveal) return;
@@ -1114,19 +1042,6 @@
         reveal.characters.forEach((character,characterIndex)=>character.classList.toggle('is-deep',characterIndex<litCount));
         reveal.progress=progress;
       });
-      if(horizontalMode.matches && document.documentElement.dataset.progressNavigating !== 'true' && hasReachedProjectWalkthrough && nextPanel>pausedPanel){
-        const sectionTop=window.scrollY+walkthroughRect.top;
-        const snapY=sectionTop+firstPanelHold+(nextPanel*stride);
-        pausedPanel=nextPanel;
-        holdWalkthrough();
-        return;
-      }
-      if(walkthroughRect.top>2){
-        walkthroughHeld=false;
-        pausedPanel=-1;
-        clearTimeout(walkthroughHoldTimer);
-        walkthroughRelease?.();
-      }
       const offset=rawOffset;
       track.style.setProperty('transform', horizontalMode.matches ? 'translate3d('+(-offset)+'px,0,0)' : 'none', horizontalMode.matches ? 'important' : '');
       const active=Math.round(offset/Math.max(1,stride));
@@ -1830,37 +1745,12 @@
 
 // Replay the staggered title flight after a heading leaves the viewport.
 (() => {
-  const root=document.documentElement;
   const motion=matchMedia('(prefers-reduced-motion: reduce)');
   const completed=new WeakSet();
-  let timer=0;
-  let holding=false;
-  const keys=new Set(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' ']);
-  const block=event=>{
-    if(event.type!=='keydown'||keys.has(event.key))event.preventDefault();
-  };
-  const release=()=>{
-    clearTimeout(timer);
-    holding=false;
-    root.classList.remove('is-title-pin-holding');
-    window.removeEventListener('wheel',block,true);
-    window.removeEventListener('touchmove',block,true);
-    window.removeEventListener('keydown',block,true);
-  };
   const reveal=heading=>{
     if(completed.has(heading))return;
     completed.add(heading);
     heading.classList.add('is-title-arrived');
-    if(motion.matches||root.dataset.progressNavigating==='true'||document.hidden||holding)return;
-    holding=true;
-    root.classList.add('is-title-pin-holding');
-    window.addEventListener('wheel',block,{passive:false,capture:true});
-    window.addEventListener('touchmove',block,{passive:false,capture:true});
-    window.addEventListener('keydown',block,{capture:true});
-    const letters=heading.querySelectorAll('.section-flight-letter,.movie-title-letter').length;
-    const stagger=heading.matches('.movie-section-heading')?55:46;
-    const duration=Math.max(1170,850+Math.max(0,letters-1)*stagger)+80;
-    timer=setTimeout(release,Math.min(2400,duration));
   };
   const observed=new WeakSet();
   const observer=new IntersectionObserver(entries=>{
@@ -1890,7 +1780,6 @@
     });
   };
   document.addEventListener('portfolio:navigate',()=>{
-    release();
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       document.querySelectorAll('.section-title-flight-host:not(.logo),.movie-section-heading').forEach(heading=>{
         const rect=heading.getBoundingClientRect();
@@ -1901,9 +1790,7 @@
       });
     }));
   });
-  document.addEventListener('visibilitychange',()=>{if(document.hidden)release();});
-  addEventListener('pagehide',release);
-  motion.addEventListener('change',()=>{release();init();});
+  motion.addEventListener('change',init);
   const schedule=()=>requestAnimationFrame(()=>requestAnimationFrame(init));
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});
   else schedule();
@@ -2043,10 +1930,12 @@
 // Coalesce layout updates instead of refreshing the animation runtime per asset.
 (() => {
   let refreshTimer=0;
+  let lastScrollTime=0;
+  addEventListener('scroll',()=>{ lastScrollTime=performance.now(); },{passive:true});
   const refresh=()=>{
     clearTimeout(refreshTimer);
     refreshTimer=setTimeout(()=>{
-      if(document.documentElement.classList.contains('is-title-pin-holding')){refresh();return;}
+      if(performance.now()-lastScrollTime<250){ refresh(); return; }
       window.ScrollTrigger?.refresh();
     },180);
   };
